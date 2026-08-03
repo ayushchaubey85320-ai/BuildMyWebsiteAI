@@ -1,0 +1,25 @@
+# Node & Frontend dependencies
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+
+# Python & Backend temporary files
+backend/__pycache__/
+backend/*/__pycache__/
+backend/*/*/__pycache__/
+backend/venv/
+backend/.env
+*.pyc
+*.pyo
+*.pyd
+
+# SQLite Local Database
+*.db
+webrisk_fallback.db
+
+# OS & IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

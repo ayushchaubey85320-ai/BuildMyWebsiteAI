@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #f8fafc;
+    color: #0f172a;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    overflow-x: hidden;
+  }
+}
+
+/* Pure Luminous White Glassmorphism (No Dark Grey Cards) */
+.glass-panel {
+  background: #ffffff;
+  border: 1px solid #e0f2fe;
+  box-shadow: 0 10px 30px -5px rgba(56, 189, 248, 0.12), 0 4px 15px -2px rgba(244, 114, 182, 0.08);
+}
+
+.glass-panel-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.glass-panel-hover:hover {
+  background: #ffffff;
+  border-color: #38bdf8;
+  box-shadow: 0 20px 40px -10px rgba(56, 189, 248, 0.2), 0 8px 20px -4px rgba(244, 114, 182, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Cyan-Sky Blue-Pink Gradient Text */
+.gradient-text {
+  background: linear-gradient(135deg, #06b6d4 0%, #38bdf8 50%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Gradient Button Base */
+.btn-gradient {
+  background: linear-gradient(135deg, #06b6d4 0%, #38bdf8 50%, #ec4899 100%);
+  color: #ffffff;
+  transition: all 0.3s ease;
+}
+.btn-gradient:hover {
+  background: linear-gradient(135deg, #0891b2 0%, #0284c7 50%, #db2777 100%);
+  box-shadow: 0 10px 25px -5px rgba(6, 182, 212, 0.4);
+}
+
+/* Custom Scrollbar for Light Mode */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #38bdf8;
+}
