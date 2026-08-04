@@ -15,7 +15,10 @@ Base = declarative_base()
 def create_db_engine():
     connect_args = {}
     if "aivencloud.com" in db_url or "ssl-mode=REQUIRED" in db_url or "ssl_mode=REQUIRED" in db_url:
-        connect_args["ssl"] = {"check_hostname": False}
+        ssl_ctx = ssl.create_default_context()
+        ssl_ctx.check_hostname = False
+        ssl_ctx.verify_mode = ssl.CERT_NONE
+        connect_args["ssl"] = ssl_ctx
 
     # Attempt primary database connection (Aiven MySQL)
     try:
@@ -25,7 +28,7 @@ def create_db_engine():
             connect_args=connect_args,
             pool_pre_ping=True,
             pool_recycle=280,
-            pool_timeout=5,
+            pool_timeout=10,
             pool_size=10,
             max_overflow=20
         )
@@ -38,7 +41,7 @@ def create_db_engine():
         print(f"\n[NOTICE] Primary Database unreachable ({e}).")
         print("[FALLBACK] Switching to Resilient Local Database (SQLite)...")
         fallback_db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "buildmywebsiteai_fallback.db"))
-        fallback_url = f"sqlite:///{fallback_db_path}"
+        fallback_url = f"sqlite:///{fallback_url}" if 'fallback_url' in locals() else f"sqlite:///{fallback_db_path}"
         
         fallback_engine = create_engine(
             fallback_url,
