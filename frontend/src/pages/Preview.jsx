@@ -8,8 +8,11 @@ import {
 import api from '../api';
 import NavbarSection from '../components/NavbarSection';
 import HeroSection from '../components/HeroSection';
+import AboutSection from '../components/AboutSection';
+import ServicesSection from '../components/ServicesSection';
 import FeaturesSection from '../components/FeaturesSection';
 import FAQSection from '../components/FAQSection';
+import TestimonialsSection from '../components/TestimonialsSection';
 import CTASection from '../components/CTASection';
 import FooterSection from '../components/FooterSection';
 import AIEditBar from '../components/AIEditBar';
@@ -17,17 +20,30 @@ import AnimatedBackground from '../components/AnimatedBackground';
 import confetti from 'canvas-confetti';
 
 const getThemeColors = (themeName, themeMode = "dark") => {
-  if (themeMode === "light" || themeName === "MINIMAL_LIGHT") {
-    return { bg: "#f8fafc", surface: "#ffffff", primary: "#2563eb", secondary: "#0284c7", text: "#0f172a", accent: "#3b82f6", mode: "light" };
-  }
   const themes = {
-    MODERN_DARK: { bg: "#0f172a", surface: "#1e293b", primary: "#6366f1", secondary: "#ec4899", text: "#f8fafc", accent: "#38bdf8", mode: "dark" },
-    NEON_CYBER: { bg: "#09090b", surface: "#18181b", primary: "#22c55e", secondary: "#a855f7", text: "#ffffff", accent: "#06b6d4", mode: "dark" },
-    MINIMAL_LIGHT: { bg: "#f8fafc", surface: "#ffffff", primary: "#2563eb", secondary: "#475569", text: "#0f172a", accent: "#3b82f6", mode: "light" },
-    ELEGANT_GOLD: { bg: "#0b0f19", surface: "#111827", primary: "#eab308", secondary: "#f97316", text: "#fef08a", accent: "#d97706", mode: "dark" },
-    OCEAN_BLUE: { bg: "#030712", surface: "#0f172a", primary: "#0284c7", secondary: "#06b6d4", text: "#f0f9ff", accent: "#38bdf8", mode: "dark" },
-    SUNSET_ORANGE: { bg: "#180e29", surface: "#28153f", primary: "#f97316", secondary: "#ef4444", text: "#fff7ed", accent: "#fbbf24", mode: "dark" }
+    MODERN_DARK: { bg: "#0f172a", surface: "#1e293b", primary: "#6366f1", secondary: "#ec4899", text: "#f8fafc", muted: "#94a3b8", accent: "#38bdf8", card_bg: "#1e293b", card_border: "rgba(255,255,255,0.1)", mode: "dark" },
+    NEON_CYBER: { bg: "#09090b", surface: "#18181b", primary: "#22c55e", secondary: "#a855f7", text: "#ffffff", muted: "#a1a1aa", accent: "#06b6d4", card_bg: "#18181b", card_border: "rgba(255,255,255,0.1)", mode: "dark" },
+    MINIMAL_LIGHT: { bg: "#f8fafc", surface: "#ffffff", primary: "#2563eb", secondary: "#0284c7", text: "#0f172a", muted: "#475569", accent: "#ec4899", card_bg: "#ffffff", card_border: "#e2e8f0", mode: "light" },
+    ELEGANT_GOLD: { bg: "#0b0f19", surface: "#111827", primary: "#eab308", secondary: "#f97316", text: "#fef08a", muted: "#d1d5db", accent: "#d97706", card_bg: "#111827", card_border: "rgba(255,255,255,0.1)", mode: "dark" },
+    OCEAN_BLUE: { bg: "#030712", surface: "#0f172a", primary: "#0284c7", secondary: "#06b6d4", text: "#f0f9ff", muted: "#94a3b8", accent: "#38bdf8", card_bg: "#0f172a", card_border: "rgba(255,255,255,0.1)", mode: "dark" },
+    SUNSET_ORANGE: { bg: "#180e29", surface: "#28153f", primary: "#f97316", secondary: "#ef4444", text: "#fff7ed", muted: "#f5d0fe", accent: "#fbbf24", card_bg: "#28153f", card_border: "rgba(255,255,255,0.1)", mode: "dark" }
   };
+  
+  if (themeMode === "light" && themeName !== "MINIMAL_LIGHT") {
+    const darkTheme = themes[themeName] || themes.MODERN_DARK;
+    return {
+      bg: "#f8fafc",
+      surface: "#ffffff",
+      primary: darkTheme.primary,
+      secondary: darkTheme.secondary,
+      text: "#0f172a",
+      muted: "#475569",
+      accent: darkTheme.accent,
+      card_bg: "#ffffff",
+      card_border: "#e2e8f0",
+      mode: "light"
+    };
+  }
   return themes[themeName] || themes.MODERN_DARK;
 };
 
@@ -48,6 +64,7 @@ const Preview = () => {
   const [copied, setCopied] = useState(false);
 
   const fetchWebsiteDetails = async () => {
+    if (!id || isNaN(Number(id))) return;
     try {
       const [webResp, histResp] = await Promise.all([
         api.get(`/dashboard/projects/${id}`),
@@ -292,15 +309,54 @@ const Preview = () => {
                 }
               }}
             />
-            <HeroSection data={activePageData.hero || pageTree.hero} colors={colors} viewport={viewport} />
-            <FeaturesSection data={activePageData.features || pageTree.features} colors={colors} viewport={viewport} />
-            <FAQSection data={pageTree.faq} colors={colors} viewport={viewport} />
-            <CTASection
-              data={pageTree.cta}
-              colors={colors}
-              viewport={viewport}
-              contactEmail={website.contact_email || pageTree.footer?.contact_email}
-            />
+            {websiteType === 'single' ? (
+              <>
+                <HeroSection data={pageTree.hero} colors={colors} viewport={viewport} />
+                <AboutSection data={pageTree.about} colors={colors} viewport={viewport} />
+                <ServicesSection data={pageTree.services} colors={colors} viewport={viewport} />
+                <FeaturesSection data={pageTree.features} colors={colors} viewport={viewport} />
+                <FAQSection data={pageTree.faq} colors={colors} viewport={viewport} />
+                <TestimonialsSection data={pageTree.testimonials} colors={colors} viewport={viewport} />
+                <CTASection
+                  data={pageTree.cta}
+                  colors={colors}
+                  viewport={viewport}
+                  contactEmail={website.contact_email || pageTree.footer?.contact_email}
+                />
+              </>
+            ) : (
+              <>
+                <HeroSection data={activePageData.hero || pageTree.hero} colors={colors} viewport={viewport} />
+                {activePage === 'Home' && (
+                  <>
+                    <ServicesSection data={pageTree.services} colors={colors} viewport={viewport} />
+                    <FeaturesSection data={pageTree.features} colors={colors} viewport={viewport} />
+                    <TestimonialsSection data={pageTree.testimonials} colors={colors} viewport={viewport} />
+                    <FAQSection data={pageTree.faq} colors={colors} viewport={viewport} />
+                    <CTASection
+                      data={pageTree.cta}
+                      colors={colors}
+                      viewport={viewport}
+                      contactEmail={website.contact_email || pageTree.footer?.contact_email}
+                    />
+                  </>
+                )}
+                {activePage === 'About Us' && (
+                  <AboutSection data={activePageData.about || pageTree.about} colors={colors} viewport={viewport} />
+                )}
+                {activePage === 'Services' && (
+                  <ServicesSection data={activePageData.services || pageTree.services} colors={colors} viewport={viewport} />
+                )}
+                {activePage === 'Contact Us' && (
+                  <CTASection
+                    data={pageTree.cta}
+                    colors={colors}
+                    viewport={viewport}
+                    contactEmail={website.contact_email || pageTree.footer?.contact_email}
+                  />
+                )}
+              </>
+            )}
             <FooterSection data={pageTree.footer} colors={colors} viewport={viewport} />
           </div>
         </div>

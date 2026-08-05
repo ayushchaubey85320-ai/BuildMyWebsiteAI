@@ -16,8 +16,18 @@ const NavbarSection = ({ data, colors, viewport = 'desktop', onPageChange, logoU
   const navBorder = isLight ? 'border-slate-200' : 'border-white/10';
 
   const handleNavClick = (e, link) => {
+    if (e) e.preventDefault();
+
+    if (link.href && link.href.startsWith('#')) {
+      const targetId = link.href.substring(1);
+      const targetElement = document.getElementById(targetId);
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+    }
+
     if (onPageChange && link.label) {
-      e.preventDefault();
       onPageChange(link.label);
     }
   };
@@ -28,7 +38,7 @@ const NavbarSection = ({ data, colors, viewport = 'desktop', onPageChange, logoU
       <div 
         className="text-xl font-black tracking-tight cursor-pointer flex items-center gap-2.5" 
         style={{ color: textColor }} 
-        onClick={(e) => handleNavClick(e, { label: "Home" })}
+        onClick={(e) => handleNavClick(e, { label: "Home", href: "#home" })}
       >
         {logo ? (
           <img 
@@ -49,7 +59,7 @@ const NavbarSection = ({ data, colors, viewport = 'desktop', onPageChange, logoU
           {links.map((link, idx) => (
             <a
               key={idx}
-              href={link.href}
+              href={link.href || '#'}
               onClick={(e) => handleNavClick(e, link)}
               className="text-sm font-semibold hover:opacity-75 transition cursor-pointer"
               style={{ color: textColor }}
@@ -62,7 +72,7 @@ const NavbarSection = ({ data, colors, viewport = 'desktop', onPageChange, logoU
 
       <div className="flex items-center gap-3">
         <button
-          onClick={(e) => handleNavClick(e, { label: "Contact Us" })}
+          onClick={(e) => handleNavClick(e, { label: "Contact Us", href: "#contact" })}
           className="px-4 py-2 rounded-full font-bold text-xs sm:text-sm shadow-md transition transform hover:scale-105"
           style={{ backgroundColor: colors.primary, color: '#ffffff' }}
         >
@@ -80,7 +90,7 @@ const NavbarSection = ({ data, colors, viewport = 'desktop', onPageChange, logoU
           {links.map((link, idx) => (
             <a
               key={idx}
-              href={link.href}
+              href={link.href || '#'}
               onClick={(e) => { setMobileOpen(false); handleNavClick(e, link); }}
               className="text-sm font-semibold py-1 border-b border-slate-200/20 cursor-pointer"
               style={{ color: textColor }}

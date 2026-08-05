@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+const FALLBACK_HERO_IMAGE = "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80";
 
 const HeroSection = ({ data, colors, viewport = 'desktop' }) => {
   const badge = data?.badge || "Welcome";
@@ -7,16 +10,32 @@ const HeroSection = ({ data, colors, viewport = 'desktop' }) => {
   const subheadline = data?.subheadline || "Subheadline Here";
   const primaryCta = data?.primary_cta || "Get Started";
   const secondaryCta = data?.secondary_cta || "Learn More";
-  const heroImage = data?.hero_image;
+  const heroImageProp = data?.hero_image || FALLBACK_HERO_IMAGE;
+
+  const [imgSrc, setImgSrc] = useState(heroImageProp);
+
+  useEffect(() => {
+    setImgSrc(heroImageProp || FALLBACK_HERO_IMAGE);
+  }, [heroImageProp]);
 
   const isLight = colors?.mode === 'light';
   const textColor = isLight ? '#0f172a' : '#ffffff';
   const subtextColor = isLight ? '#475569' : '#94a3b8';
 
   return (
-    <section className="relative px-4 sm:px-8 py-16 sm:py-24 text-center max-w-6xl mx-auto flex flex-col items-center">
+    <motion.section 
+      id="home" 
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6 }}
+      className="relative px-4 sm:px-8 py-16 sm:py-24 text-center max-w-6xl mx-auto flex flex-col items-center scroll-mt-20"
+    >
       {badge && (
-        <div 
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
           className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-6 border shadow-sm"
           style={{ 
             backgroundColor: isLight ? '#eff6ff' : 'rgba(255,255,255,0.05)', 
@@ -26,18 +45,35 @@ const HeroSection = ({ data, colors, viewport = 'desktop' }) => {
         >
           <Sparkles className="w-3.5 h-3.5" />
           <span>{badge}</span>
-        </div>
+        </motion.div>
       )}
 
-      <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight max-w-4xl leading-[1.15] mb-6" style={{ color: textColor }}>
+      <motion.h1 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.1 }}
+        className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight max-w-4xl leading-[1.15] mb-6" 
+        style={{ color: textColor }}
+      >
         {headline}
-      </h1>
+      </motion.h1>
 
-      <p className="text-base sm:text-lg max-w-2xl leading-relaxed mb-8 font-medium" style={{ color: subtextColor }}>
+      <motion.p 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="text-base sm:text-lg max-w-2xl leading-relaxed mb-8 font-medium" 
+        style={{ color: subtextColor }}
+      >
         {subheadline}
-      </p>
+      </motion.p>
 
-      <div className="flex flex-col sm:flex-row items-center gap-4 justify-center w-full max-w-md mb-12">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.3 }}
+        className="flex flex-col sm:flex-row items-center gap-4 justify-center w-full max-w-md mb-12"
+      >
         <button 
           className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-xl transition transform hover:scale-105"
           style={{ backgroundColor: colors.primary, color: '#ffffff' }}
@@ -58,14 +94,23 @@ const HeroSection = ({ data, colors, viewport = 'desktop' }) => {
             {secondaryCta}
           </button>
         )}
-      </div>
+      </motion.div>
 
-      {heroImage && (
-        <div className="w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl border" style={{ borderColor: isLight ? '#e2e8f0' : 'rgba(255,255,255,0.1)' }}>
-          <img src={heroImage} alt="Hero" className="w-full h-auto object-cover max-h-[500px]" />
-        </div>
-      )}
-    </section>
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.7, delay: 0.4 }}
+        className="w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl border" 
+        style={{ borderColor: isLight ? '#e2e8f0' : 'rgba(255,255,255,0.1)' }}
+      >
+        <img 
+          src={imgSrc} 
+          alt="Hero Banner" 
+          onError={() => setImgSrc(FALLBACK_HERO_IMAGE)}
+          className="w-full h-auto object-cover max-h-[500px] min-h-[260px]" 
+        />
+      </motion.div>
+    </motion.section>
   );
 };
 
