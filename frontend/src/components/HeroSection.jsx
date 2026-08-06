@@ -13,6 +13,7 @@ const HeroSection = ({ data, colors, viewport = 'desktop' }) => {
   const heroImageProp = data?.hero_image || FALLBACK_HERO_IMAGE;
 
   const [imgSrc, setImgSrc] = useState(heroImageProp);
+  const isMobile = viewport === 'mobile';
 
   useEffect(() => {
     setImgSrc(heroImageProp || FALLBACK_HERO_IMAGE);
@@ -29,14 +30,18 @@ const HeroSection = ({ data, colors, viewport = 'desktop' }) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6 }}
-      className="relative px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-24 text-center max-w-6xl mx-auto flex flex-col items-center scroll-mt-20 overflow-hidden"
+      className={`relative text-center max-w-6xl mx-auto flex flex-col items-center scroll-mt-20 overflow-hidden ${
+        isMobile ? 'px-3 py-8' : 'px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-24'
+      }`}
     >
       {badge && (
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4 }}
-          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold mb-5 sm:mb-6 border shadow-sm max-w-full truncate"
+          className={`inline-flex items-center gap-1.5 rounded-full font-semibold border shadow-sm max-w-full truncate ${
+            isMobile ? 'px-3 py-1 text-[11px] mb-3' : 'px-3.5 py-1.5 text-xs mb-5 sm:mb-6'
+          }`}
           style={{ 
             backgroundColor: isLight ? '#eff6ff' : 'rgba(255,255,255,0.05)', 
             color: colors.primary, 
@@ -52,7 +57,9 @@ const HeroSection = ({ data, colors, viewport = 'desktop' }) => {
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.1 }}
-        className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight max-w-4xl leading-[1.2] sm:leading-[1.15] mb-4 sm:mb-6" 
+        className={`font-black tracking-tight max-w-4xl leading-[1.2] ${
+          isMobile ? 'text-xl mb-3 px-1' : 'text-2xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 sm:mb-6'
+        }`}
         style={{ color: textColor }}
       >
         {headline}
@@ -62,7 +69,9 @@ const HeroSection = ({ data, colors, viewport = 'desktop' }) => {
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
-        className="text-sm sm:text-base md:text-lg max-w-2xl leading-relaxed mb-6 sm:mb-8 font-medium px-2" 
+        className={`max-w-2xl leading-relaxed font-medium ${
+          isMobile ? 'text-xs mb-5 px-1' : 'text-sm sm:text-base md:text-lg mb-6 sm:mb-8 px-2'
+        }`}
         style={{ color: subtextColor }}
       >
         {subheadline}
@@ -72,10 +81,12 @@ const HeroSection = ({ data, colors, viewport = 'desktop' }) => {
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.3 }}
-        className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 justify-center w-full max-w-md mb-8 sm:mb-12"
+        className={`flex flex-col sm:flex-row items-center gap-2.5 sm:gap-4 justify-center w-full ${
+          isMobile ? 'max-w-xs mb-6' : 'max-w-md mb-8 sm:mb-12'
+        }`}
       >
         <button 
-          className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow-xl transition transform hover:scale-105"
+          className="w-full sm:w-auto px-5 py-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xl transition transform hover:scale-105"
           style={{ backgroundColor: colors.primary, color: '#ffffff' }}
         >
           <span>{primaryCta}</span>
@@ -84,7 +95,7 @@ const HeroSection = ({ data, colors, viewport = 'desktop' }) => {
 
         {secondaryCta && (
           <button 
-            className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-bold text-sm border transition"
+            className="w-full sm:w-auto px-5 py-3 rounded-xl font-bold text-xs sm:text-sm border transition"
             style={{ 
               backgroundColor: isLight ? '#ffffff' : 'transparent',
               color: textColor, 
@@ -107,7 +118,9 @@ const HeroSection = ({ data, colors, viewport = 'desktop' }) => {
           src={imgSrc} 
           alt="Hero Banner" 
           onError={() => setImgSrc(FALLBACK_HERO_IMAGE)}
-          className="w-full h-auto object-cover max-h-[260px] xs:max-h-[340px] sm:max-h-[500px] min-h-[180px]" 
+          className={`w-full h-auto object-cover ${
+            isMobile ? 'max-h-[220px] min-h-[160px]' : 'max-h-[260px] sm:max-h-[500px] min-h-[180px]'
+          }`}
         />
       </motion.div>
     </motion.section>
