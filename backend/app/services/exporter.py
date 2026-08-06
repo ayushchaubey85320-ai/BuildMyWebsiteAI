@@ -46,41 +46,52 @@ def generate_export_zip(website_data: Dict[str, Any]) -> io.BytesIO:
 html {{ scroll-behavior: smooth; }}
 body {{ background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-family); line-height: 1.6; overflow-x: hidden; }}
 a {{ color: inherit; text-decoration: none; }}
-.container {{ max-width: 1200px; margin: 0 auto; padding: 0 20px; }}
+.container {{ max-width: 1200px; margin: 0 auto; padding: 0 20px; width: 100%; }}
 
-header {{ position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(0, 0, 0, 0.08); padding: 16px 0; }}
-.nav-wrap {{ display: flex; justify-content: space-between; align-items: center; }}
-.logo-wrap {{ display: flex; align-items: center; gap: 10px; }}
+header {{ position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(0, 0, 0, 0.08); padding: 14px 0; }}
+.nav-wrap {{ display: flex; justify-content: space-between; align-items: center; position: relative; }}
+.logo-wrap {{ display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; color: var(--primary-color); }}
 .logo-img {{ height: 34px; width: 34px; object-fit: contain; border-radius: 8px; }}
-.logo {{ font-size: 24px; font-weight: 800; color: var(--primary-color); }}
-.nav-links {{ display: flex; gap: 24px; list-style: none; }}
+.nav-links {{ display: flex; gap: 24px; list-style: none; align-items: center; }}
 .nav-links a:hover {{ color: var(--accent-color); transition: color 0.2s ease; }}
-.btn-primary {{ background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: #fff; padding: 10px 24px; border-radius: 9999px; font-weight: 600; display: inline-block; border: none; cursor: pointer; box-shadow: 0 10px 25px -5px rgba(6, 182, 212, 0.4); transition: transform 0.2s ease; }}
+.btn-primary {{ background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: #fff; padding: 10px 24px; border-radius: 9999px; font-weight: 600; display: inline-block; border: none; cursor: pointer; box-shadow: 0 10px 25px -5px rgba(6, 182, 212, 0.4); transition: transform 0.2s ease; text-align: center; }}
 .btn-primary:hover {{ transform: scale(1.04); }}
 
-.hero-section {{ padding: 140px 0 80px; text-align: center; scroll-margin-top: 80px; }}
-.badge {{ display: inline-block; background: rgba(6, 182, 212, 0.1); border: 1px solid var(--primary-color); color: var(--primary-color); padding: 6px 16px; border-radius: 9999px; font-size: 13px; font-weight: 600; margin-bottom: 20px; }}
-.hero-title {{ font-size: 48px; font-weight: 900; margin-bottom: 20px; line-height: 1.15; color: var(--text-color); }}
-.hero-subtitle {{ font-size: 18px; color: rgba(15, 23, 42, 0.7); max-width: 700px; margin: 0 auto 30px; }}
-.hero-img {{ width: 100%; max-width: 900px; border-radius: 16px; margin-top: 30px; border: 1px solid rgba(0, 0, 0, 0.1); box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15); }}
+.mobile-toggle {{ display: none; background: transparent; border: 1px solid rgba(0, 0, 0, 0.15); border-radius: 8px; padding: 6px 10px; font-size: 18px; cursor: pointer; color: var(--text-color); }}
 
-.section {{ padding: 80px 0; scroll-margin-top: 80px; }}
-.section-alt {{ padding: 80px 0; background: var(--surface-color); scroll-margin-top: 80px; }}
-.section-header {{ text-align: center; margin-bottom: 50px; }}
-.grid-3 {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }}
-.card {{ background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 16px; padding: 28px; transition: transform 0.3s ease, box-shadow 0.3s ease; }}
-.card:hover {{ transform: translateY(-6px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); }}
+.hero-section {{ padding: 120px 0 60px; text-align: center; scroll-margin-top: 80px; }}
+.badge {{ display: inline-block; background: rgba(6, 182, 212, 0.1); border: 1px solid var(--primary-color); color: var(--primary-color); padding: 6px 16px; border-radius: 9999px; font-size: 13px; font-weight: 600; margin-bottom: 20px; max-width: 100%; word-break: break-word; }}
+.hero-title {{ font-size: 42px; font-weight: 900; margin-bottom: 20px; line-height: 1.2; color: var(--text-color); }}
+.hero-subtitle {{ font-size: 17px; color: rgba(15, 23, 42, 0.75); max-width: 700px; margin: 0 auto 30px; line-height: 1.6; }}
+.hero-img {{ width: 100%; max-width: 900px; height: auto; max-height: 480px; object-fit: cover; border-radius: 16px; margin-top: 30px; border: 1px solid rgba(0, 0, 0, 0.1); box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15); }}
 
-footer {{ background: #090d16; color: #94a3b8; padding: 50px 0 20px; text-align: center; font-size: 14px; }}
+.section {{ padding: 60px 0; scroll-margin-top: 80px; }}
+.section-alt {{ padding: 60px 0; background: var(--surface-color); scroll-margin-top: 80px; }}
+.section-header {{ text-align: center; margin-bottom: 40px; }}
+.section-title {{ font-size: 32px; font-weight: 800; margin-bottom: 12px; }}
+.section-subtitle {{ font-size: 15px; color: rgba(15, 23, 42, 0.7); max-width: 600px; margin: 0 auto; }}
+
+.grid-3 {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }}
+.grid-4 {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }}
+.card {{ background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 16px; padding: 24px; transition: transform 0.3s ease, box-shadow 0.3s ease; }}
+.card:hover {{ transform: translateY(-4px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); }}
+
+footer {{ background: #090d16; color: #94a3b8; padding: 40px 0 20px; text-align: center; font-size: 14px; margin-top: 40px; }}
 footer a {{ color: var(--accent-color); }}
 
+/* Full Mobile Viewport Responsiveness */
 @media (max-width: 768px) {{
   .container {{ padding: 0 16px; }}
-  .nav-links {{ display: none; }}
-  .hero-section {{ padding: 110px 0 50px; }}
-  .hero-title {{ font-size: 28px !important; }}
-  .hero-subtitle {{ font-size: 15px !important; }}
-  .grid-3 {{ grid-template-columns: 1fr !important; }}
+  .mobile-toggle {{ display: block; }}
+  .nav-links {{ display: none; position: absolute; top: 100%; left: 0; right: 0; background: #ffffff; flex-direction: column; padding: 20px; gap: 16px; border-bottom: 1px solid rgba(0,0,0,0.1); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); text-align: left; }}
+  .nav-links.active {{ display: flex; }}
+  .hero-section {{ padding: 100px 0 40px; }}
+  .hero-title {{ font-size: 26px !important; line-height: 1.25; }}
+  .hero-subtitle {{ font-size: 14px !important; padding: 0 8px; }}
+  .hero-img {{ max-height: 260px !important; margin-top: 20px; }}
+  .section-title {{ font-size: 24px !important; }}
+  .grid-3, .grid-4 {{ grid-template-columns: 1fr !important; gap: 16px !important; }}
+  .btn-primary {{ width: 100%; text-align: center; display: block; }}
 }}
 """
 
@@ -97,7 +108,7 @@ footer a {{ color: var(--accent-color); }}
         nav_items_html = "".join([f'<li><a href="{link.get("href")}">{link.get("label")}</a></li>' for link in navbar.get("links", [])])
         logo_img_html = f'<img src="{logo_url}" alt="Logo" class="logo-img">' if logo_url else ''
 
-        # Build Section HTML snippets with AOS Scroll Animations
+        # Build Section HTML snippets with AOS Scroll Animations & Mobile Compatibility
         hero_html = f"""
   <section id="home" class="hero-section" data-aos="fade-down">
     <div class="container">
@@ -113,15 +124,15 @@ footer a {{ color: var(--accent-color); }}
 
         about_html = ""
         if p_about and p_about.get("paragraphs"):
-            paragraphs_html = "".join([f'<p style="margin-bottom: 12px; font-size: 15px;">{p}</p>' for p in p_about.get("paragraphs", [])])
+            paragraphs_html = "".join([f'<p style="margin-bottom: 12px; font-size: 14px; line-height: 1.7;">{p}</p>' for p in p_about.get("paragraphs", [])])
             about_html = f"""
   <section id="about" class="section-alt" data-aos="fade-up">
     <div class="container">
       <div class="section-header">
-        <span class="badge">{p_about.get("section_badge", "Our Story")}</span>
-        <h2 style="font-size: 32px; font-weight: 900;">{p_about.get("section_title", "About Us")}</h2>
+        <span class="badge">{p_about.get("section_badge", "About Us")}</span>
+        <h2 class="section-title">{p_about.get("section_title", f"About {brand_name}")}</h2>
       </div>
-      <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+      <div style="max-width: 800px; margin: 0 auto;">
         {paragraphs_html}
       </div>
     </div>
@@ -129,187 +140,163 @@ footer a {{ color: var(--accent-color); }}
 
         services_html = ""
         if p_services and p_services.get("items"):
-            items_html = "".join([
-                f"""<div class="card" data-aos="fade-up" data-aos-delay="{idx * 100}">
-                      <h3 style="font-size: 18px; margin-bottom: 8px; color: var(--secondary-color);">{item.get('title')}</h3>
-                      <p style="color: rgba(15,23,42,0.7); font-size: 14px;">{item.get('description')}</p>
-                    </div>"""
-                for idx, item in enumerate(p_services.get("items", []))
-            ])
+            s_cards = "".join([f"""
+        <div class="card" data-aos="fade-up">
+          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 10px; color: var(--primary-color);">{item.get("title")}</h3>
+          <p style="font-size: 13px; color: rgba(15, 23, 42, 0.7);">{item.get("description")}</p>
+        </div>""" for item in p_services.get("items", [])])
             services_html = f"""
-  <section id="services" class="section">
+  <section id="services" class="section" data-aos="fade-up">
     <div class="container">
-      <div class="section-header" data-aos="fade-up">
-        <span class="badge">{p_services.get("section_badge", "Offerings")}</span>
-        <h2 style="font-size: 32px; font-weight: 900;">{p_services.get("section_title", "Our Services")}</h2>
-        <p style="color: rgba(15,23,42,0.7);">{p_services.get("section_subtitle", "")}</p>
+      <div class="section-header">
+        <span class="badge">{p_services.get("section_badge", "Services")}</span>
+        <h2 class="section-title">{p_services.get("section_title", "Our Services")}</h2>
+        <p class="section-subtitle">{p_services.get("section_subtitle", "")}</p>
       </div>
       <div class="grid-3">
-        {items_html}
+        {s_cards}
       </div>
     </div>
   </section>"""
 
         features_html = ""
         if p_features and p_features.get("items"):
-            items_html = "".join([
-                f"""<div class="card" data-aos="fade-up" data-aos-delay="{idx * 100}">
-                      <h3 style="font-size: 18px; margin-bottom: 8px; color: var(--primary-color);">{item.get('title')}</h3>
-                      <p style="color: rgba(15,23,42,0.7); font-size: 14px;">{item.get('description')}</p>
-                    </div>"""
-                for idx, item in enumerate(p_features.get("items", []))
-            ])
+            f_cards = "".join([f"""
+        <div class="card" data-aos="fade-up">
+          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">{item.get("title")}</h3>
+          <p style="font-size: 13px; color: rgba(15, 23, 42, 0.7);">{item.get("description")}</p>
+        </div>""" for item in p_features.get("items", [])])
             features_html = f"""
-  <section id="features" class="section-alt">
+  <section id="features" class="section-alt" data-aos="fade-up">
     <div class="container">
-      <div class="section-header" data-aos="fade-up">
+      <div class="section-header">
         <span class="badge">{p_features.get("section_badge", "Capabilities")}</span>
-        <h2 style="font-size: 32px; font-weight: 900;">{p_features.get("section_title", "Why Choose Us")}</h2>
-        <p style="color: rgba(15,23,42,0.7);">{p_features.get("section_subtitle", "")}</p>
+        <h2 class="section-title">{p_features.get("section_title", "Why Choose Us")}</h2>
+        <p class="section-subtitle">{p_features.get("section_subtitle", "")}</p>
       </div>
       <div class="grid-3">
-        {items_html}
-      </div>
-    </div>
-  </section>"""
-
-        testimonials_html = ""
-        if p_testimonials and p_testimonials.get("items"):
-            items_html = "".join([
-                f"""<div class="card" data-aos="fade-up" data-aos-delay="{idx * 100}">
-                      <p style="font-style: italic; margin-bottom: 12px; font-size: 14px;">"{item.get('quote')}"</p>
-                      <strong style="color: var(--primary-color);">{item.get('name')}</strong> - <span style="font-size: 12px; opacity: 0.8;">{item.get('role')}</span>
-                    </div>"""
-                for idx, item in enumerate(p_testimonials.get("items", []))
-            ])
-            testimonials_html = f"""
-  <section class="section">
-    <div class="container">
-      <div class="section-header" data-aos="fade-up">
-        <h2 style="font-size: 32px; font-weight: 900;">{p_testimonials.get("section_title", "What Clients Say")}</h2>
-        <p style="color: rgba(15,23,42,0.7);">{p_testimonials.get("section_subtitle", "")}</p>
-      </div>
-      <div class="grid-3">
-        {items_html}
+        {f_cards}
       </div>
     </div>
   </section>"""
 
         faq_html = ""
         if p_faq and p_faq.get("items"):
-            items_html = "".join([
-                f"""<div class="card" style="margin-bottom: 16px;" data-aos="fade-up">
-                      <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 6px;">{item.get('question')}</h4>
-                      <p style="color: rgba(15,23,42,0.7); font-size: 14px;">{item.get('answer')}</p>
-                    </div>"""
-                for item in p_faq.get("items", [])
-            ])
+            faq_items = "".join([f"""
+        <div class="card" style="margin-bottom: 12px; padding: 20px;" data-aos="fade-up">
+          <h4 style="font-size: 15px; font-weight: 700; margin-bottom: 6px;">{item.get("question")}</h4>
+          <p style="font-size: 13px; color: rgba(15, 23, 42, 0.7);">{item.get("answer")}</p>
+        </div>""" for item in p_faq.get("items", [])])
             faq_html = f"""
-  <section id="faq" class="section-alt">
+  <section id="faq" class="section" data-aos="fade-up">
     <div class="container" style="max-width: 800px;">
-      <div class="section-header" data-aos="fade-up">
-        <h2 style="font-size: 32px; font-weight: 900;">{p_faq.get("section_title", "Frequently Asked Questions")}</h2>
+      <div class="section-header">
+        <h2 class="section-title">{p_faq.get("section_title", "Frequently Asked Questions")}</h2>
       </div>
-      <div>
-        {items_html}
+      {faq_items}
+    </div>
+  </section>"""
+
+        testimonials_html = ""
+        if p_testimonials and p_testimonials.get("items"):
+            t_cards = "".join([f"""
+        <div class="card" data-aos="fade-up">
+          <p style="font-size: 13px; font-style: italic; margin-bottom: 16px;">"{item.get("quote")}"</p>
+          <div style="font-weight: 700; font-size: 14px; color: var(--primary-color);">{item.get("name")}</div>
+          <div style="font-size: 12px; color: rgba(15, 23, 42, 0.6);">{item.get("role")}</div>
+        </div>""" for item in p_testimonials.get("items", [])])
+            testimonials_html = f"""
+  <section id="testimonials" class="section-alt" data-aos="fade-up">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">{p_testimonials.get("section_title", "What Clients Say")}</h2>
+      </div>
+      <div class="grid-3">
+        {t_cards}
       </div>
     </div>
   </section>"""
 
-        cta_html = ""
-        if p_cta:
-            cta_html = f"""
-  <section id="contact" class="section" style="text-align: center; background: linear-gradient(135deg, rgba(6,182,212,0.1), rgba(236,72,153,0.1));" data-aos="zoom-in">
-    <div class="container" style="max-width: 600px;">
-      <h2 style="font-size: 32px; font-weight: 900; margin-bottom: 12px;">{p_cta.get("headline", "Contact Us")}</h2>
-      <p style="color: rgba(15,23,42,0.7); margin-bottom: 24px;">{p_cta.get("subheadline", "")}</p>
-      <a href="mailto:{p_footer.get('contact_email', 'contact@website.com')}" class="btn-primary">{p_cta.get("button_text", "Send Us a Message")}</a>
+        cta_html = f"""
+  <section id="contact" class="section" style="background: linear-gradient(135deg, var(--surface-color), var(--bg-color)); text-align: center;" data-aos="zoom-in">
+    <div class="container" style="max-width: 700px;">
+      <h2 class="section-title">{p_cta.get("headline", f"Ready to Connect with {brand_name}?")}</h2>
+      <p class="hero-subtitle">{p_cta.get("subheadline", "Reach out today and our dedicated team will respond promptly.")}</p>
+      <a href="mailto:{p_footer.get("contact_email", "info@example.com")}" class="btn-primary" style="margin-top: 10px;">{p_cta.get("button_text", "Contact Us Now")}</a>
     </div>
   </section>"""
 
         footer_html = f"""
   <footer>
     <div class="container">
-      <h3 style="color: #fff; margin-bottom: 8px;">{brand_name}</h3>
-      <p style="margin-bottom: 16px;">{p_footer.get("description", "")}</p>
-      <p style="font-size: 12px; opacity: 0.7;">{p_footer.get("copyright", "")} | {p_footer.get("credit", "BuildMyWebsiteAI")}</p>
+      <p style="font-weight: 700; margin-bottom: 6px; color: #fff;">{p_footer.get("brand", brand_name)}</p>
+      <p style="margin-bottom: 16px;">{p_footer.get("copyright", f"© 2026 {brand_name}. All rights reserved.")}</p>
+      <p style="font-size: 12px; opacity: 0.6;">{p_footer.get("credit", "Website built by BuildMyWebsiteAI")}</p>
     </div>
   </footer>"""
-
-        # Assemble page content strictly according to page_name
-        body_content = hero_html
-        if website_type == "single":
-            body_content += about_html + services_html + features_html + testimonials_html + faq_html + cta_html
-        else:
-            if page_name == "Home":
-                body_content += features_html + cta_html
-            elif page_name == "About Us":
-                body_content += about_html
-            elif page_name == "Services":
-                body_content += services_html
-            elif page_name == "Contact Us":
-                body_content += cta_html
-            else:
-                body_content += about_html + services_html
-
-        body_content += footer_html
 
         return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{page_name} - {brand_name}</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>{brand_name} - {page_name}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
-  <!-- AOS Animation Library CDN -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- AOS Animate On Scroll Library CDN -->
   <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-  <!-- Navbar -->
   <header>
-    <div class="container nav-wrap">
-      <div class="logo-wrap">
-        {logo_img_html}
-        <span class="logo">{brand_name}</span>
+    <div class="container">
+      <div class="nav-wrap">
+        <div class="logo-wrap">
+          {logo_img_html}
+          <span>{brand_name}</span>
+        </div>
+        <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle Menu">☰</button>
+        <ul class="nav-links" id="nav-links">
+          {nav_items_html}
+          <li><a href="#contact" class="btn-primary" style="padding: 6px 18px; font-size: 13px;">Get In Touch</a></li>
+        </ul>
       </div>
-      <ul class="nav-links">
-        {nav_items_html}
-      </ul>
-      <a href="#contact" class="btn-primary">{navbar.get('cta_button', 'Get In Touch')}</a>
     </div>
   </header>
 
-  {body_content}
+  {hero_html}
+  {about_html}
+  {services_html}
+  {features_html}
+  {faq_html}
+  {testimonials_html}
+  {cta_html}
+  {footer_html}
 
-  <!-- AOS Scroll Animation Script -->
+  <!-- AOS Animate On Scroll JS Script -->
   <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
   <script>
-    AOS.init({{
-      duration: 800,
-      once: true,
-      easing: 'ease-in-out'
+    AOS.init({{ duration: 800, once: true }});
+    // Mobile Hamburger Navigation Toggle Script
+    document.getElementById('mobile-toggle').addEventListener('click', function() {{
+      document.getElementById('nav-links').classList.toggle('active');
     }});
   </script>
-
 </body>
-</html>
-"""
+</html>"""
 
     zip_buffer = io.BytesIO()
-    with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
-        zip_file.writestr("styles.css", css_content)
-        
-        if website_type == "multi" and pages_dict:
-            for p_name, p_data in pages_dict.items():
-                filename = "index.html" if p_name == "Home" else f"{p_name.lower().replace(' ', '_')}.html"
-                html_content = build_page_html(p_name, p_data)
-                zip_file.writestr(filename, html_content)
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+        zip_file.writestr("style.css", css_content)
+
+        if website_type == "multi":
+            for p_name in selected_pages:
+                file_name = "index.html" if p_name == "Home" else f"{p_name.lower().replace(' ', '_')}.html"
+                p_data = pages_dict.get(p_name, {})
+                zip_file.writestr(file_name, build_page_html(p_name, p_data))
         else:
-            html_content = build_page_html("Home", page_tree)
-            zip_file.writestr("index.html", html_content)
-            
+            zip_file.writestr("index.html", build_page_html("Home", page_tree))
+
     zip_buffer.seek(0)
     return zip_buffer

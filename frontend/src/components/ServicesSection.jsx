@@ -20,29 +20,29 @@ export default function ServicesSection({ data, colors, viewport }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6 }}
-      className="py-16 px-6 relative z-10 scroll-mt-20" 
+      className="py-12 sm:py-16 px-4 sm:px-6 relative z-10 scroll-mt-20 overflow-hidden" 
       style={{ backgroundColor: colors.bg }}
     >
-      <div className="max-w-6xl mx-auto space-y-16">
+      <div className="max-w-6xl mx-auto space-y-12 sm:space-y-16">
         {/* Header */}
-        <div className="text-center space-y-3">
+        <div className="text-center space-y-3 max-w-3xl mx-auto">
           {data.section_badge && (
-            <span className="text-xs font-extrabold tracking-widest uppercase px-3.5 py-1.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+            <span className="text-xs font-extrabold tracking-widest uppercase px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 inline-block">
               {data.section_badge}
             </span>
           )}
-          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight" style={{ color: colors.text }}>
+          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight" style={{ color: colors.text }}>
             {data.section_title || 'Our Comprehensive Services'}
           </h2>
           {data.section_subtitle && (
-            <p className="text-base sm:text-lg max-w-2xl mx-auto leading-relaxed" style={{ color: colors.muted }}>
+            <p className="text-sm sm:text-base lg:text-lg max-w-2xl mx-auto leading-relaxed" style={{ color: colors.muted }}>
               {data.section_subtitle}
             </p>
           )}
         </div>
 
-        {/* 6 Rich Service Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* 6 Rich Service Cards Grid (Single Column on Mobile) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
           {items.map((item, idx) => (
             <motion.div
               key={idx}
@@ -50,18 +50,18 @@ export default function ServicesSection({ data, colors, viewport }) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: idx * 0.1 }}
-              className="p-8 rounded-2xl border transition-all duration-300 hover:scale-[1.02] flex flex-col justify-between shadow-lg"
+              className="p-6 sm:p-8 rounded-2xl border transition-all duration-300 hover:scale-[1.02] flex flex-col justify-between shadow-lg"
               style={{ backgroundColor: colors.card_bg, borderColor: colors.card_border }}
             >
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center font-bold">
-                  <CheckCircle2 className="w-6 h-6" />
+              <div className="space-y-3.5">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center font-bold">
+                  <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
-                <h3 className="text-xl font-bold" style={{ color: colors.text }}>{item.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: colors.muted }}>{item.description}</p>
+                <h3 className="text-lg sm:text-xl font-bold" style={{ color: colors.text }}>{item.title}</h3>
+                <p className="text-xs sm:text-sm leading-relaxed" style={{ color: colors.muted }}>{item.description}</p>
               </div>
 
-              <div className="pt-6 border-t mt-6 flex items-center justify-between text-xs font-bold" style={{ borderColor: colors.card_border, color: colors.primary }}>
+              <div className="pt-4 sm:pt-6 border-t mt-5 flex items-center justify-between text-xs font-bold" style={{ borderColor: colors.card_border, color: colors.primary }}>
                 <span>Learn More</span>
                 <ArrowRight className="w-4 h-4" />
               </div>
@@ -75,22 +75,22 @@ export default function ServicesSection({ data, colors, viewport }) {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="p-8 sm:p-12 rounded-3xl border shadow-2xl space-y-8" 
+          className="p-6 sm:p-10 lg:p-12 rounded-2xl sm:rounded-3xl border shadow-2xl space-y-6 sm:space-y-8" 
           style={{ backgroundColor: colors.surface, borderColor: colors.card_border }}
         >
-          <div className="text-center space-y-2">
-            <span className="text-xs font-extrabold tracking-widest uppercase px-3 py-1 rounded-full bg-pink-500/10 text-pink-400 border border-pink-500/20">
+          <div className="text-center space-y-2 max-w-2xl mx-auto">
+            <span className="text-xs font-extrabold tracking-widest uppercase px-3 py-1 rounded-full bg-pink-500/10 text-pink-400 border border-pink-500/20 inline-block">
               Our Methodology
             </span>
-            <h3 className="text-2xl sm:text-3xl font-extrabold" style={{ color: colors.text }}>
+            <h3 className="text-xl sm:text-3xl font-extrabold" style={{ color: colors.text }}>
               How We Deliver Excellence
             </h3>
-            <p className="text-sm max-w-xl mx-auto" style={{ color: colors.muted }}>
+            <p className="text-xs sm:text-sm max-w-xl mx-auto" style={{ color: colors.muted }}>
               A systematic, transparent 4-step execution model engineered to guarantee measurable results.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {processSteps.map((p, idx) => (
               <motion.div 
                 key={idx} 
@@ -98,11 +98,11 @@ export default function ServicesSection({ data, colors, viewport }) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: idx * 0.1 }}
-                className="p-6 rounded-2xl border space-y-3 relative" 
+                className="p-5 sm:p-6 rounded-xl sm:rounded-2xl border space-y-2.5 relative" 
                 style={{ backgroundColor: colors.card_bg, borderColor: colors.card_border }}
               >
-                <span className="text-2xl font-black text-cyan-400/40">{p.step}</span>
-                <h4 className="text-base font-bold" style={{ color: colors.text }}>{p.title}</h4>
+                <span className="text-xl sm:text-2xl font-black text-cyan-400/50">{p.step}</span>
+                <h4 className="text-sm sm:text-base font-bold" style={{ color: colors.text }}>{p.title}</h4>
                 <p className="text-xs leading-relaxed" style={{ color: colors.muted }}>{p.desc}</p>
               </motion.div>
             ))}
