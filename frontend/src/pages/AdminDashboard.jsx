@@ -7,9 +7,13 @@ import {
 } from 'lucide-react';
 import api from '../api';
 import AnimatedBackground from '../components/AnimatedBackground';
+import ThemeToggle from '../components/ThemeToggle';
+import { useTheme } from '../context/ThemeContext';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+  const { themeMode } = useTheme();
+  const isLight = themeMode === 'light';
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -45,7 +49,7 @@ const AdminDashboard = () => {
       if (e.key === 'buildmywebsiteai_token' || e.key === 'buildmywebsiteai_user') {
         const token = localStorage.getItem('buildmywebsiteai_token');
         if (!token) {
-          navigate('/login');
+          navigate('/');
         } else {
           fetchAdminData();
         }
@@ -59,7 +63,7 @@ const AdminDashboard = () => {
   const handleLogout = () => {
     localStorage.removeItem('buildmywebsiteai_token');
     localStorage.removeItem('buildmywebsiteai_user');
-    navigate('/login');
+    navigate('/');
   };
 
   const handleImpersonateUser = async (targetUser) => {
@@ -107,40 +111,52 @@ const AdminDashboard = () => {
   const totalProjectsCount = users.reduce((acc, u) => acc + (u.project_count || 0), 0);
 
   return (
-    <div className="relative min-h-screen bg-slate-50 text-slate-900 p-4 sm:p-8">
+    <div className={`relative min-h-screen p-4 sm:p-8 transition-colors duration-300 ${
+      isLight ? 'bg-slate-50 text-slate-900' : 'bg-slate-950 text-slate-100'
+    }`}>
       <AnimatedBackground />
 
       <div className="relative z-10 max-w-7xl mx-auto space-y-8">
         {/* Header Bar */}
-        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-200 pb-6">
+        <header className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-6 ${
+          isLight ? 'border-slate-200' : 'border-slate-800'
+        }`}>
           <div className="flex items-center gap-3">
             <div className="p-3 rounded-2xl bg-gradient-to-tr from-cyan-400 via-sky-400 to-pink-400 text-white shadow-md">
               <ShieldCheck className="w-7 h-7" />
             </div>
             <div>
-              <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+              <h1 className="text-3xl font-black tracking-tight flex items-center gap-3">
                 <span className="bg-gradient-to-r from-cyan-500 via-sky-400 to-pink-400 bg-clip-text text-transparent font-black">
                   Super Admin Portal
                 </span>
-                <span className="text-xs font-bold px-3 py-1 rounded-full bg-amber-50 text-amber-600 border border-amber-200">
+                <span className={`text-xs font-bold px-3 py-1 rounded-full border ${
+                  isLight ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-amber-950/60 text-amber-400 border-amber-800'
+                }`}>
                   Control Center
                 </span>
               </h1>
-              <p className="text-sm text-slate-500 mt-1 font-medium">
+              <p className={`text-sm mt-1 font-medium ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
                 Manage registered users, inspect credentials & launch direct user sessions
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center gap-2 px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-700 shadow-sm">
+            <ThemeToggle />
+
+            <div className={`hidden md:flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-medium shadow-sm ${
+              isLight ? 'bg-white border-slate-200 text-slate-700' : 'bg-slate-900 border-slate-800 text-slate-300'
+            }`}>
               <ShieldCheck className="w-4 h-4 text-amber-500" />
-              <span className="font-mono font-medium">{adminEmail}</span>
+              <span className="font-mono">{adminEmail}</span>
             </div>
 
             <button
               onClick={handleLogout}
-              className="px-4 py-2.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition shadow-sm"
+              className={`px-4 py-2.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition shadow-sm ${
+                isLight ? 'bg-white border-slate-200 hover:bg-slate-100 text-slate-700' : 'bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-300'
+              }`}
             >
               <LogOut className="w-4 h-4 text-pink-500" />
               <span>Admin Logout</span>
@@ -158,50 +174,60 @@ const AdminDashboard = () => {
 
         {/* Metrics Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div className="p-6 glass-panel rounded-3xl border border-sky-100 flex items-center justify-between shadow-sm">
+          <div className={`p-6 rounded-3xl border flex items-center justify-between shadow-md ${
+            isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-slate-900 border-slate-800 text-white'
+          }`}>
             <div>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Registered Users</p>
-              <h3 className="text-3xl font-black text-slate-900 mt-1">{totalUsersCount}</h3>
+              <p className={`text-xs font-bold uppercase tracking-wider ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Total Registered Users</p>
+              <h3 className="text-3xl font-black mt-1">{totalUsersCount}</h3>
             </div>
-            <div className="p-3 rounded-2xl bg-sky-50 text-sky-500 border border-sky-100">
+            <div className="p-3 rounded-2xl bg-sky-50 text-sky-600 dark:bg-sky-950/60 dark:text-sky-400 border border-sky-200 dark:border-sky-800">
               <Users className="w-6 h-6" />
             </div>
           </div>
 
-          <div className="p-6 glass-panel rounded-3xl border border-sky-100 flex items-center justify-between shadow-sm">
+          <div className={`p-6 rounded-3xl border flex items-center justify-between shadow-md ${
+            isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-slate-900 border-slate-800 text-white'
+          }`}>
             <div>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Generated Websites</p>
-              <h3 className="text-3xl font-black text-emerald-600 mt-1">{totalProjectsCount}</h3>
+              <p className={`text-xs font-bold uppercase tracking-wider ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>Total Generated Websites</p>
+              <h3 className="text-3xl font-black text-emerald-500 mt-1">{totalProjectsCount}</h3>
             </div>
-            <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-500 border border-emerald-100">
+            <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
               <Layers className="w-6 h-6" />
             </div>
           </div>
         </div>
 
         {/* Search Bar */}
-        <div className="flex items-center gap-3 bg-white p-2 rounded-2xl border border-slate-200 max-w-md shadow-sm">
+        <div className={`flex items-center gap-3 p-2 rounded-2xl border max-w-md shadow-sm ${
+          isLight ? 'bg-white border-slate-300 text-slate-900' : 'bg-slate-900 border-slate-800 text-white'
+        }`}>
           <Search className="w-5 h-5 text-slate-400 ml-3" />
           <input
             type="text"
             placeholder="Search users by name or email address..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-transparent text-sm text-slate-900 focus:outline-none py-2 pr-4 placeholder:text-slate-400 font-medium"
+            className="w-full bg-transparent text-sm focus:outline-none py-2 pr-4 font-bold"
           />
         </div>
 
         {/* Registered Users Table */}
         {loading ? (
-          <div className="p-12 text-center text-slate-500">
+          <div className={`p-12 text-center ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
             <Loader2 className="w-8 h-8 text-sky-500 animate-spin mx-auto mb-3" />
             <p className="text-sm font-medium">Loading User Records...</p>
           </div>
         ) : (
-          <div className="glass-panel rounded-3xl border border-slate-200 overflow-hidden shadow-lg">
+          <div className={`rounded-3xl border overflow-hidden shadow-lg ${
+            isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-slate-900 border-slate-800 text-white'
+          }`}>
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm text-slate-700">
-                <thead className="bg-slate-100/80 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
+              <table className="w-full text-left text-sm">
+                <thead className={`border-b text-xs font-bold uppercase tracking-wider ${
+                  isLight ? 'bg-slate-100 border-slate-200 text-slate-700' : 'bg-slate-950 border-slate-800 text-slate-400'
+                }`}>
                   <tr>
                     <th className="p-4 sm:p-5">ID</th>
                     <th className="p-4 sm:p-5">Full Name</th>
@@ -211,11 +237,15 @@ const AdminDashboard = () => {
                     <th className="p-4 sm:p-5 text-right">Actions (Direct Login)</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 bg-white/60">
+                <tbody className={`divide-y ${
+                  isLight ? 'divide-slate-200 bg-white' : 'divide-slate-800 bg-slate-900/60'
+                }`}>
                   {filteredUsers.map((u) => (
-                    <tr key={u.id} className="hover:bg-sky-50/50 transition">
-                      <td className="p-4 sm:p-5 font-mono text-xs text-slate-400">#{u.id}</td>
-                      <td className="p-4 sm:p-5 font-bold text-slate-900 flex items-center gap-2">
+                    <tr key={u.id} className={`transition ${
+                      isLight ? 'hover:bg-slate-50' : 'hover:bg-slate-800/40'
+                    }`}>
+                      <td className="p-4 sm:p-5 font-mono text-xs opacity-60">#{u.id}</td>
+                      <td className="p-4 sm:p-5 font-bold flex items-center gap-2">
                         <span>{u.full_name}</span>
                         {u.is_admin && (
                           <span className="text-[10px] bg-amber-50 text-amber-600 border border-amber-200 px-2 py-0.5 rounded-full font-bold">
@@ -223,13 +253,15 @@ const AdminDashboard = () => {
                           </span>
                         )}
                       </td>
-                      <td className="p-4 sm:p-5 font-mono text-xs text-slate-600">{u.email}</td>
+                      <td className="p-4 sm:p-5 font-mono text-xs opacity-80">{u.email}</td>
                       <td className="p-4 sm:p-5">
-                        <span className="px-2.5 py-1 rounded-full bg-sky-50 text-sky-600 border border-sky-200 text-xs font-bold">
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-bold border ${
+                          isLight ? 'bg-sky-50 text-sky-600 border-sky-200' : 'bg-indigo-950 text-indigo-300 border-indigo-800'
+                        }`}>
                           {u.project_count} Websites
                         </span>
                       </td>
-                      <td className="p-4 sm:p-5 text-xs text-slate-500 font-medium">
+                      <td className="p-4 sm:p-5 text-xs opacity-70 font-medium">
                         {new Date(u.created_at).toLocaleDateString()}
                       </td>
                       <td className="p-4 sm:p-5 text-right space-x-2">

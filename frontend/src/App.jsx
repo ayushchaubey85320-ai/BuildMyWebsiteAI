@@ -1,5 +1,12 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext';
+import LandingPage from './pages/LandingPage';
+import FeaturesPage from './pages/FeaturesPage';
+import ShowcasePage from './pages/ShowcasePage';
+import HowItWorksPage from './pages/HowItWorksPage';
+import PricingPage from './pages/PricingPage';
+import FAQPage from './pages/FAQPage';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import VerifyOTP from './pages/VerifyOTP';
@@ -7,6 +14,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import Dashboard from './pages/Dashboard';
 import Preview from './pages/Preview';
 import AdminDashboard from './pages/AdminDashboard';
+import CustomCursor from './components/CustomCursor';
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('buildmywebsiteai_token');
@@ -14,20 +22,6 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
   return children;
-};
-
-const RootRedirect = () => {
-  const token = localStorage.getItem('buildmywebsiteai_token');
-  if (token) {
-    try {
-      const user = JSON.parse(localStorage.getItem('buildmywebsiteai_user') || '{}');
-      if (user.is_admin || user.email === 'admin@buildmywebsiteai.ai') {
-        return <Navigate to="/admin" replace />;
-      }
-    } catch (e) {}
-    return <Navigate to="/dashboard" replace />;
-  }
-  return <Navigate to="/login" replace />;
 };
 
 /* Cross-Tab Authentication & Session Synchronization Listener */
@@ -41,9 +35,13 @@ const AuthSyncListener = ({ children }) => {
         const token = localStorage.getItem('buildmywebsiteai_token');
         const userStr = localStorage.getItem('buildmywebsiteai_user');
 
-        // Scenario 1: User signed out in another tab -> Automatically sign out this tab
+        const publicRoutes = ['/', '/features', '/showcase', '/how-it-works', '/pricing', '/faq', '/login', '/signup'];
+
+        // Scenario 1: User signed out in another tab -> Automatically sign out this tab if on protected route
         if (!token || !userStr) {
-          navigate('/login', { replace: true });
+          if (!publicRoutes.includes(location.pathname)) {
+            navigate('/', { replace: true });
+          }
           return;
         }
 
@@ -78,46 +76,58 @@ const AuthSyncListener = ({ children }) => {
 
 function App() {
   return (
-    <Router>
-      <AuthSyncListener>
-        <Routes>
-          <Route path="/" element={<RootRedirect />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/verify-otp" element={<VerifyOTP />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
+    <ThemeProvider>
+      <CustomCursor />
+      <Router>
+        <AuthSyncListener>
+          <Routes>
+            {/* Multi-Page Public Routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/features" element={<FeaturesPage />} />
+            <Route path="/showcase" element={<ShowcasePage />} />
+            <Route path="/how-it-works" element={<HowItWorksPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/faq" element={<FAQPage />} />
 
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
+            {/* Auth Routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/verify-otp" element={<VerifyOTP />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            
+            {/* Protected Routes */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/preview/:id"
-            element={
-              <ProtectedRoute>
-                <Preview />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </AuthSyncListener>
-    </Router>
+            <Route
+              path="/preview/:id"
+              element={
+                <ProtectedRoute>
+                  <Preview />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </AuthSyncListener>
+      </Router>
+    </ThemeProvider>
   );
 }
 

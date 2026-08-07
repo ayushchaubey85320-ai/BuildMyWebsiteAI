@@ -10,9 +10,13 @@ import api from '../api';
 import AnimatedBackground from '../components/AnimatedBackground';
 import CreationWizardModal from '../components/CreationWizardModal';
 import CreationLoader from '../components/CreationLoader';
+import ThemeToggle from '../components/ThemeToggle';
+import { useTheme } from '../context/ThemeContext';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { themeMode } = useTheme();
+  const isLight = themeMode === 'light';
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -110,7 +114,7 @@ const Dashboard = () => {
   const handleLogout = () => {
     localStorage.removeItem('buildmywebsiteai_token');
     localStorage.removeItem('buildmywebsiteai_user');
-    navigate('/login');
+    navigate('/');
   };
 
   const handleCreateSubmit = async (payload) => {
@@ -224,7 +228,9 @@ const Dashboard = () => {
   const userNameDisplay = userFullName || (userEmail ? userEmail.split('@')[0] : 'User');
 
   return (
-    <div className="relative min-h-screen bg-slate-50 text-slate-900 p-4 sm:p-8">
+    <div className={`relative min-h-screen p-4 sm:p-8 transition-colors duration-300 ${
+      isLight ? 'bg-slate-50 text-slate-900' : 'bg-slate-950 text-slate-100'
+    }`}>
       <AnimatedBackground />
 
       {/* 3-Second Welcome Pop-up Toast Notification Card */}
@@ -234,17 +240,19 @@ const Dashboard = () => {
             initial={{ opacity: 0, y: -50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            className="fixed top-6 right-6 z-50 p-4 sm:p-5 bg-white rounded-2xl border border-sky-300 shadow-2xl flex items-center gap-4 max-w-sm"
+            className={`fixed top-6 right-6 z-50 p-4 sm:p-5 rounded-2xl border shadow-2xl flex items-center gap-4 max-w-sm ${
+              isLight ? 'bg-white border-slate-300 text-slate-900' : 'bg-slate-900 border-slate-800 text-white'
+            }`}
           >
             <div className="p-3 rounded-xl bg-gradient-to-tr from-cyan-400 via-sky-400 to-pink-500 text-white shrink-0 shadow-lg">
               <Sparkles className="w-6 h-6 animate-pulse" />
             </div>
             <div className="flex-1 pr-2">
-              <h4 className="text-sm font-black text-slate-900 flex items-center gap-1.5">
+              <h4 className="text-sm font-black flex items-center gap-1.5">
                 <span>Welcome back, {userNameDisplay}!</span>
                 <span className="text-xs">👋</span>
               </h4>
-              <p className="text-xs text-slate-600 mt-0.5 font-mono truncate font-semibold">
+              <p className={`text-xs mt-0.5 font-mono truncate font-semibold ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
                 {userEmail}
               </p>
             </div>
@@ -260,33 +268,43 @@ const Dashboard = () => {
 
       <div className="relative z-10 max-w-7xl mx-auto space-y-8">
         {/* Dashboard Header */}
-        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-200 pb-6">
+        <header className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-6 ${
+          isLight ? 'border-slate-200' : 'border-slate-800'
+        }`}>
           <div>
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+            <h1 className="text-3xl font-black tracking-tight flex items-center gap-3">
               <span className="bg-gradient-to-r from-cyan-500 via-sky-400 to-pink-500 bg-clip-text text-transparent font-black">
                 BuildMyWebsiteAI
               </span>
-              <span className="text-xs font-extrabold px-3 py-1 rounded-full bg-sky-100 text-sky-700 border border-sky-300">
+              <span className={`text-xs font-extrabold px-3 py-1 rounded-full border ${
+                isLight ? 'bg-sky-100 text-sky-700 border-sky-300' : 'bg-indigo-950 text-indigo-400 border-indigo-800'
+              }`}>
                 Command Center
               </span>
             </h1>
-            <p className="text-sm text-slate-600 mt-1 font-semibold">
+            <p className={`text-sm mt-1 font-semibold ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
               Manage, edit, and publish your AI-generated websites
             </p>
           </div>
 
           <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+            <ThemeToggle />
+
             <button
               onClick={() => setIsProfileModalOpen(true)}
-              className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:border-sky-400 hover:bg-slate-50 text-xs text-slate-800 font-bold transition shadow-sm group"
+              className={`flex items-center gap-2.5 px-3.5 py-2 rounded-xl border text-xs font-bold transition shadow-sm group ${
+                isLight
+                  ? 'bg-white border-slate-300 text-slate-800 hover:border-sky-400 hover:bg-slate-50'
+                  : 'bg-slate-900 border-slate-800 text-white hover:border-slate-700'
+              }`}
               title="Click to View Account Profile & Settings"
             >
               <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-400 via-sky-400 to-pink-500 text-white flex items-center justify-center font-black text-xs shadow-sm group-hover:scale-105 transition">
                 {userNameDisplay.substring(0, 2).toUpperCase()}
               </div>
               <div className="text-left hidden sm:block">
-                <div className="font-extrabold text-xs text-slate-900 leading-tight">{userNameDisplay}</div>
-                <div className="text-[10px] text-slate-500 font-mono truncate max-w-[120px] font-semibold">{userEmail}</div>
+                <div className="font-extrabold text-xs leading-tight">{userNameDisplay}</div>
+                <div className="text-[10px] opacity-60 font-mono truncate max-w-[120px] font-semibold">{userEmail}</div>
               </div>
             </button>
 
@@ -300,43 +318,51 @@ const Dashboard = () => {
 
             <button
               onClick={handleLogout}
-              className="px-3.5 py-2.5 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition"
+              className={`px-3.5 py-2.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition ${
+                isLight ? 'bg-white border-slate-300 text-slate-700 hover:bg-slate-100' : 'bg-slate-900 border-slate-800 text-slate-300 hover:bg-slate-800'
+              }`}
               title="Sign Out"
             >
-              <LogOut className="w-4 h-4 text-pink-600" />
+              <LogOut className="w-4 h-4 text-pink-500" />
               <span className="hidden sm:inline">Sign Out</span>
             </button>
           </div>
         </header>
 
-        {/* Dynamic Metrics Grid - Pure White Surface Cards */}
+        {/* Dynamic Metrics Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="p-6 bg-white rounded-3xl border border-sky-200 flex items-center justify-between shadow-md">
+          <div className={`p-6 rounded-3xl border flex items-center justify-between shadow-md ${
+            isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-slate-900 border-slate-800 text-white'
+          }`}>
             <div>
-              <p className="text-xs font-black text-slate-900 uppercase tracking-wider">Total Projects</p>
-              <h3 className="text-4xl font-black text-slate-900 mt-1">{totalProjectsCount}</h3>
+              <p className="text-xs font-black uppercase tracking-wider opacity-70">Total Projects</p>
+              <h3 className="text-4xl font-black mt-1">{totalProjectsCount}</h3>
             </div>
-            <div className="p-3 rounded-2xl bg-cyan-50 text-cyan-600 border border-cyan-200">
+            <div className="p-3 rounded-2xl bg-cyan-50 text-cyan-600 dark:bg-cyan-950/60 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800">
               <Layers className="w-7 h-7" />
             </div>
           </div>
 
-          <div className="p-6 bg-white rounded-3xl border border-sky-200 flex items-center justify-between shadow-md">
+          <div className={`p-6 rounded-3xl border flex items-center justify-between shadow-md ${
+            isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-slate-900 border-slate-800 text-white'
+          }`}>
             <div>
-              <p className="text-xs font-black text-slate-900 uppercase tracking-wider">Live Co-Domains</p>
-              <h3 className="text-4xl font-black text-emerald-600 mt-1">{liveCoDomainsCount}</h3>
+              <p className="text-xs font-black uppercase tracking-wider opacity-70">Live Co-Domains</p>
+              <h3 className="text-4xl font-black text-emerald-500 mt-1">{liveCoDomainsCount}</h3>
             </div>
-            <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-200">
+            <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
               <Globe className="w-7 h-7" />
             </div>
           </div>
 
-          <div className="p-6 bg-white rounded-3xl border border-sky-200 flex items-center justify-between shadow-md">
+          <div className={`p-6 rounded-3xl border flex items-center justify-between shadow-md ${
+            isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-slate-900 border-slate-800 text-white'
+          }`}>
             <div>
-              <p className="text-xs font-black text-slate-900 uppercase tracking-wider">Active Categories</p>
-              <h3 className="text-4xl font-black text-pink-600 mt-1">{activeCategoriesCount}</h3>
+              <p className="text-xs font-black uppercase tracking-wider opacity-70">Active Categories</p>
+              <h3 className="text-4xl font-black text-pink-500 mt-1">{activeCategoriesCount}</h3>
             </div>
-            <div className="p-3 rounded-2xl bg-pink-50 text-pink-600 border border-pink-200">
+            <div className="p-3 rounded-2xl bg-pink-50 text-pink-600 dark:bg-pink-950/60 dark:text-pink-400 border border-pink-200 dark:border-pink-800">
               <Sparkles className="w-7 h-7" />
             </div>
           </div>
@@ -344,14 +370,16 @@ const Dashboard = () => {
 
         {/* Search & Actions Bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3 bg-white p-2 rounded-2xl border border-slate-300 w-full sm:max-w-md shadow-sm">
-            <Search className="w-5 h-5 text-slate-500 ml-3" />
+          <div className={`flex items-center gap-3 p-2 rounded-2xl border w-full sm:max-w-md shadow-sm ${
+            isLight ? 'bg-white border-slate-300 text-slate-900' : 'bg-slate-900 border-slate-800 text-white'
+          }`}>
+            <Search className="w-5 h-5 text-slate-400 ml-3" />
             <input
               type="text"
               placeholder="Search projects by title or category..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-transparent text-sm text-slate-900 focus:outline-none py-2 pr-4 placeholder:text-slate-400 font-bold"
+              className="w-full bg-transparent text-sm focus:outline-none py-2 pr-4 font-bold"
             />
           </div>
 
@@ -367,17 +395,19 @@ const Dashboard = () => {
           )}
         </div>
 
-        {/* Project Cards Grid - Pure White High-Contrast Cards */}
+        {/* Project Cards Grid */}
         {loading ? (
-          <div className="p-12 text-center text-slate-600">
+          <div className={`p-12 text-center ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
             <Loader2 className="w-8 h-8 text-sky-500 animate-spin mx-auto mb-3" />
             <p className="text-sm font-bold">Loading Website Projects...</p>
           </div>
         ) : filteredProjects.length === 0 ? (
-          <div className="p-12 text-center bg-white rounded-3xl border border-slate-200 shadow-md">
+          <div className={`p-12 text-center rounded-3xl border shadow-md ${
+            isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-slate-900 border-slate-800 text-white'
+          }`}>
             <Layers className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-            <h3 className="text-xl font-black text-slate-900 mb-2">No Website Projects Found</h3>
-            <p className="text-sm text-slate-600 max-w-md mx-auto mb-6 font-semibold">
+            <h3 className="text-xl font-black mb-2">No Website Projects Found</h3>
+            <p className={`text-sm max-w-md mx-auto mb-6 font-semibold ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
               Create your first website using the BuildMyWebsiteAI Creation Wizard.
             </p>
             <button
@@ -394,27 +424,33 @@ const Dashboard = () => {
                 key={project.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="group relative p-6 bg-white rounded-3xl border border-sky-200 hover:border-sky-400 transition-all shadow-md hover:shadow-xl flex flex-col justify-between"
+                className={`group relative p-6 rounded-3xl border transition-all shadow-md hover:shadow-xl flex flex-col justify-between ${
+                  isLight ? 'bg-white border-slate-200 text-slate-900 hover:border-sky-400' : 'bg-slate-900 border-slate-800 text-white hover:border-indigo-500'
+                }`}
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-xs font-black px-3 py-1 rounded-full bg-sky-100 text-sky-800 border border-sky-300">
+                    <span className={`text-xs font-black px-3 py-1 rounded-full border ${
+                      isLight ? 'bg-sky-100 text-sky-800 border-sky-300' : 'bg-indigo-950 text-indigo-300 border-indigo-800'
+                    }`}>
                       {project.category}
                     </span>
-                    <span className="text-xs text-slate-600 font-bold">
+                    <span className={`text-xs font-bold ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
                       {new Date(project.created_at).toLocaleDateString()}
                     </span>
                   </div>
 
-                  <h3 className="text-2xl font-black text-slate-900 mb-1 group-hover:text-sky-600 transition tracking-tight">
+                  <h3 className="text-2xl font-black mb-1 group-hover:text-sky-500 transition tracking-tight">
                     {project.title}
                   </h3>
-                  <p className="text-xs text-sky-700 font-mono font-bold mb-4">
+                  <p className="text-xs text-sky-500 font-mono font-bold mb-4">
                     {project.subdomain}.buildmywebsiteai.site
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-slate-200 flex items-center justify-between gap-2">
+                <div className={`pt-4 border-t flex items-center justify-between gap-2 ${
+                  isLight ? 'border-slate-200' : 'border-slate-800'
+                }`}>
                   <Link
                     to={`/preview/${project.id}`}
                     className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 via-sky-400 to-pink-500 text-white text-xs font-black flex items-center gap-1.5 shadow-md transition transform hover:scale-105"
