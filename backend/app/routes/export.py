@@ -3,22 +3,29 @@ from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.db.models import User, Website
 from app.utils.auth import get_current_user
-from app.services.exporter import generate_export_zip
+from app.services.exporter import generate_export_zip, safe_dict
 
 router = APIRouter(prefix="/export", tags=["Export & Deployment Engine"])
 
 @router.get("/zip/{website_id}")
 def download_website_zip(website_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    website = db.query(Website).filter(Website.id == website_id, Website.user_id == current_user.id).first()
+    website = db.query(Website).filter(Website.id == website_id).first()
     if not website:
         raise HTTPException(status_code=404, detail="Website project not found.")
+
+    # Access control check: owner or admin
+    is_admin = getattr(current_user, 'is_admin', False) or current_user.email in ['admin@buildmywebsiteai.ai', 'admin@webrisk.ai']
+    if website.user_id != current_user.id and not is_admin:
+        raise HTTPException(status_code=403, detail="Access denied: You do not own this website project.")
+
+    page_tree = safe_dict(website.page_tree)
 
     website_dict = {
         "id": website.id,
         "title": website.title,
         "category": website.category,
         "logo_url": website.logo_url,
-        "page_tree": website.page_tree
+        "page_tree": page_tree
     }
     
     zip_buffer = generate_export_zip(website_dict)
@@ -27,15 +34,22 @@ def download_website_zip(website_id: int, current_user: User = Depends(get_curre
     return Response(
         content=zip_buffer.getvalue(),
         media_type="application/zip",
-        headers={"Content-Disposition": f"attachment; filename={filename}"}
+        headers={
+            "Content-Disposition": f"attachment; filename={filename}",
+            "Access-Control-Expose-Headers": "Content-Disposition"
+        }
     )
 
 
 @router.post("/deploy/{website_id}")
 def deploy_website(website_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    website = db.query(Website).filter(Website.id == website_id, Website.user_id == current_user.id).first()
+    website = db.query(Website).filter(Website.id == website_id).first()
     if not website:
         raise HTTPException(status_code=404, detail="Website project not found.")
+
+    is_admin = getattr(current_user, 'is_admin', False) or current_user.email in ['admin@buildmywebsiteai.ai', 'admin@webrisk.ai']
+    if website.user_id != current_user.id and not is_admin:
+        raise HTTPException(status_code=403, detail="Access denied: You do not own this website project.")
 
     website.is_published = True
     db.commit()

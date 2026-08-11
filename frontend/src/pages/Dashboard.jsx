@@ -206,15 +206,36 @@ const Dashboard = () => {
     setDownloadingZipId(id);
     try {
       const response = await api.get(`/export/zip/${id}`, { responseType: 'blob' });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      if (response.data.type === 'application/json') {
+        const text = await response.data.text();
+        let msg = 'ZIP Export Failed';
+        try { msg = JSON.parse(text).detail || msg; } catch(e){}
+        alert('ZIP export failed: ' + msg);
+        return;
+      }
+
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/zip' }));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `${title.toLowerCase().replace(/\s+/g, '_')}_website.zip`);
+      const cleanTitle = (title || 'website').toLowerCase().replace(/\s+/g, '_');
+      link.setAttribute('download', `${cleanTitle}_website.zip`);
       document.body.appendChild(link);
       link.click();
       link.remove();
+      window.URL.revokeObjectURL(url);
     } catch (err) {
-      alert('ZIP export failed: ' + (err.response?.data?.detail || err.message));
+      let msg = 'Export failed. Please check network connection.';
+      if (err.response?.data instanceof Blob) {
+        try {
+          const text = await err.response.data.text();
+          const parsed = JSON.parse(text);
+          msg = parsed.detail || msg;
+        } catch (e) {}
+      } else if (err.response?.data?.detail) {
+        msg = err.response.data.detail;
+      }
+      alert('ZIP export failed: ' + msg);
     } finally {
       setDownloadingZipId(null);
     }
