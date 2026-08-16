@@ -383,13 +383,6 @@ const Preview = () => {
         </div>
       </main>
 
-      {/* Conversational AI Floating Edit Bar */}
-      <AIEditBar
-        onApplyEdit={handleApplyEdit}
-        histories={histories}
-        isUpdating={updating}
-      />
-
       {/* Publishing Modal */}
       <AnimatePresence>
         {deployModalOpen && (

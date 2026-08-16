@@ -10,7 +10,7 @@ from app.config.settings import settings
 from app.db.session import engine, Base, SessionLocal
 from app.db.models import User
 from app.utils.auth import get_password_hash
-from app.routes import auth_router, dashboard_router, generator_router, export_router, admin_router
+from app.routes import auth_router, dashboard_router, generator_router, export_router, admin_router, chatbot_router
 
 # Auto-create tables & sync DB on startup
 try:
@@ -66,6 +66,7 @@ app.include_router(dashboard_router, prefix=settings.API_V1_STR)
 app.include_router(generator_router, prefix=settings.API_V1_STR)
 app.include_router(export_router, prefix=settings.API_V1_STR)
 app.include_router(admin_router, prefix=settings.API_V1_STR)
+app.include_router(chatbot_router, prefix=settings.API_V1_STR)
 
 @app.get("/")
 def root():

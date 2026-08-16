@@ -15,6 +15,7 @@ import Dashboard from './pages/Dashboard';
 import Preview from './pages/Preview';
 import AdminDashboard from './pages/AdminDashboard';
 import CustomCursor from './components/CustomCursor';
+import AIChatbot from './components/AIChatbot';
 
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('buildmywebsiteai_token');
@@ -78,6 +79,7 @@ function App() {
   return (
     <ThemeProvider>
       <CustomCursor />
+      <AIChatbot />
       <Router>
         <AuthSyncListener>
           <Routes>

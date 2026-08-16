@@ -11,7 +11,7 @@ class Settings(BaseSettings):
         "mysql+pymysql://avnadmin:AVNS_26Qh9hSxitMP1Yp6Dwt@mysql-278572f1-nervestackers-0979.h.aivencloud.com:15060/defaultdb"
     )
     
-    # AI Engine Key
+    # Gemini API Key (read from environment variable)
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
     
     # Auth Secrets
