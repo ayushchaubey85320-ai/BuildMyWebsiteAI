@@ -80,13 +80,15 @@ const NavbarSection = ({ data, colors, viewport = 'desktop', onPageChange, logoU
 
       {/* Right Area CTA & Hamburger */}
       <div className="flex items-center gap-2 sm:gap-3">
-        <button
-          onClick={(e) => handleNavClick(e, { label: "Contact Us", href: "#contact" })}
-          className="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full font-bold text-xs sm:text-sm shadow-md transition transform hover:scale-105"
-          style={{ backgroundColor: colors.primary, color: '#ffffff' }}
-        >
-          {cta}
-        </button>
+        {!isMobile && (
+          <button
+            onClick={(e) => handleNavClick(e, { label: "Contact Us", href: "#contact" })}
+            className="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full font-bold text-xs sm:text-sm shadow-md transition transform hover:scale-105"
+            style={{ backgroundColor: colors.primary, color: '#ffffff' }}
+          >
+            {cta}
+          </button>
+        )}
 
         {isMobile && (
           <button 
@@ -117,6 +119,13 @@ const NavbarSection = ({ data, colors, viewport = 'desktop', onPageChange, logoU
               <span className="text-xs text-cyan-400 font-mono">→</span>
             </a>
           ))}
+          <button
+            onClick={(e) => { setMobileOpen(false); handleNavClick(e, { label: "Contact Us", href: "#contact" }); }}
+            className="w-full mt-2 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-center shadow-md"
+            style={{ backgroundColor: colors.primary, color: '#ffffff' }}
+          >
+            {cta}
+          </button>
         </div>
       )}
     </nav>

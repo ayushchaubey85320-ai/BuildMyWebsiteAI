@@ -34,7 +34,7 @@ def generate_export_zip(website_data: Dict[str, Any]) -> io.BytesIO:
 
     bg = colors.get("bg", "#f8fafc")
     surface = colors.get("surface", "#ffffff")
-    primary = colors.get("primary", "#06b6d4")
+    primary = colors.get("primary", "#6366f1")
     secondary = colors.get("secondary", "#ec4899")
     text_color = colors.get("text", "#0f172a")
     accent = colors.get("accent", "#38bdf8")
@@ -57,57 +57,73 @@ def generate_export_zip(website_data: Dict[str, Any]) -> io.BytesIO:
   --secondary-color: {secondary};
   --text-color: {text_color};
   --accent-color: {accent};
-  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
 }}
 
 * {{ box-sizing: border-box; margin: 0; padding: 0; }}
 html {{ scroll-behavior: smooth; }}
 body {{ background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-family); line-height: 1.6; overflow-x: hidden; }}
 a {{ color: inherit; text-decoration: none; }}
-.container {{ max-width: 1200px; margin: 0 auto; padding: 0 20px; width: 100%; }}
+.container {{ max-width: 1200px; margin: 0 auto; padding: 0 24px; width: 100%; }}
 
-header {{ position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(0, 0, 0, 0.08); padding: 14px 0; }}
+header {{ position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(0, 0, 0, 0.05); padding: 16px 0; }}
 .nav-wrap {{ display: flex; justify-content: space-between; align-items: center; position: relative; }}
 .logo-wrap {{ display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; color: var(--primary-color); }}
 .logo-img {{ height: 34px; width: 34px; object-fit: contain; border-radius: 8px; }}
 .nav-links {{ display: flex; gap: 24px; list-style: none; align-items: center; }}
 .nav-links a:hover {{ color: var(--accent-color); transition: color 0.2s ease; }}
-.btn-primary {{ background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: #fff; padding: 10px 24px; border-radius: 9999px; font-weight: 600; display: inline-block; border: none; cursor: pointer; box-shadow: 0 10px 25px -5px rgba(6, 182, 212, 0.4); transition: transform 0.2s ease; text-align: center; }}
+.btn-primary {{ background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: #fff; padding: 10px 24px; border-radius: 9999px; font-weight: 600; display: inline-block; border: none; cursor: pointer; box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.3); transition: transform 0.2s ease; text-align: center; }}
 .btn-primary:hover {{ transform: scale(1.04); }}
 
-.mobile-toggle {{ display: none; background: transparent; border: 1px solid rgba(0, 0, 0, 0.15); border-radius: 8px; padding: 6px 10px; font-size: 18px; cursor: pointer; color: var(--text-color); }}
+.mobile-toggle {{ display: none; background: transparent; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px; padding: 6px 12px; font-size: 18px; cursor: pointer; color: var(--text-color); }}
 
-.hero-section {{ padding: 120px 0 60px; text-align: center; scroll-margin-top: 80px; }}
-.badge {{ display: inline-block; background: rgba(6, 182, 212, 0.1); border: 1px solid var(--primary-color); color: var(--primary-color); padding: 6px 16px; border-radius: 9999px; font-size: 13px; font-weight: 600; margin-bottom: 20px; max-width: 100%; word-break: break-word; }}
-.hero-title {{ font-size: 42px; font-weight: 900; margin-bottom: 20px; line-height: 1.2; color: var(--text-color); }}
-.hero-subtitle {{ font-size: 17px; color: rgba(15, 23, 42, 0.75); max-width: 700px; margin: 0 auto 30px; line-height: 1.6; }}
-.hero-img {{ width: 100%; max-width: 900px; height: auto; max-height: 480px; object-fit: cover; border-radius: 16px; margin-top: 30px; border: 1px solid rgba(0, 0, 0, 0.1); box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15); }}
+/* Asymmetric Hero Layout */
+.hero-section {{ padding: 160px 0 80px; scroll-margin-top: 80px; position: relative; }}
+.hero-grid {{ display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 48px; align-items: center; text-align: left; }}
+.hero-left {{ display: flex; flex-direction: column; align-items: flex-start; gap: 20px; }}
+.hero-right {{ position: relative; display: flex; justify-content: center; }}
+.badge {{ display: inline-block; background: rgba(99, 102, 241, 0.08); border: 1px solid var(--primary-color); color: var(--primary-color); padding: 6px 16px; border-radius: 9999px; font-size: 12px; font-weight: 700; margin-bottom: 12px; max-width: 100%; word-break: break-word; }}
+.hero-title {{ font-size: 48px; font-weight: 900; line-height: 1.1; color: var(--text-color); margin-bottom: 0; }}
+.hero-subtitle {{ font-size: 16px; color: rgba(15, 23, 42, 0.7); max-width: 600px; line-height: 1.6; margin-bottom: 0; }}
+.hero-img {{ width: 100%; max-width: 900px; height: auto; max-height: 480px; object-fit: cover; border-radius: 20px; border: 1px solid rgba(0, 0, 0, 0.05); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }}
 
-.section {{ padding: 60px 0; scroll-margin-top: 80px; }}
-.section-alt {{ padding: 60px 0; background: var(--surface-color); scroll-margin-top: 80px; }}
-.section-header {{ text-align: center; margin-bottom: 40px; }}
-.section-title {{ font-size: 32px; font-weight: 800; margin-bottom: 12px; }}
+.section {{ padding: 80px 0; scroll-margin-top: 80px; }}
+.section-alt {{ padding: 80px 0; background: var(--surface-color); scroll-margin-top: 80px; }}
+.section-header {{ text-align: center; margin-bottom: 48px; }}
+.section-title {{ font-size: 32px; font-weight: 900; margin-bottom: 12px; }}
 .section-subtitle {{ font-size: 15px; color: rgba(15, 23, 42, 0.7); max-width: 600px; margin: 0 auto; }}
 
-.grid-3 {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }}
-.grid-4 {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }}
-.card {{ background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 16px; padding: 24px; transition: transform 0.3s ease, box-shadow 0.3s ease; }}
-.card:hover {{ transform: translateY(-4px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); }}
+.grid-3 {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 28px; }}
+.grid-4 {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }}
 
-footer {{ background: #090d16; color: #94a3b8; padding: 40px 0 20px; text-align: center; font-size: 14px; margin-top: 40px; }}
+/* Premium Hover Cards */
+.card {{ background: var(--surface-color); border: 1px solid rgba(0, 0, 0, 0.06); border-radius: 16px; padding: 32px; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }}
+.card::before {{ content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: var(--primary-color); transform: scaleX(0); transition: transform 0.3s ease; transform-origin: left; }}
+.card:hover::before {{ transform: scaleX(1); }}
+.card:hover {{ transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.06); }}
+
+/* Methodology Steps */
+.process-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; }}
+.process-step {{ display: flex; flex-direction: column; gap: 12px; }}
+.step-num {{ width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 900; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: #fff; }}
+.process-step h4 {{ font-size: 16px; font-weight: 700; }}
+.process-step p {{ font-size: 12px; color: rgba(15, 23, 42, 0.7); }}
+
+footer {{ background: #090d16; color: #94a3b8; padding: 50px 0 25px; text-align: center; font-size: 14px; margin-top: 60px; border-top: 1px solid rgba(255,255,255,0.05); }}
 footer a {{ color: var(--accent-color); }}
 
-/* Full Mobile Viewport Responsiveness */
+/* Full Responsiveness */
 @media (max-width: 768px) {{
   .container {{ padding: 0 16px; }}
   .mobile-toggle {{ display: block; }}
   .nav-links {{ display: none; position: absolute; top: 100%; left: 0; right: 0; background: #ffffff; flex-direction: column; padding: 20px; gap: 16px; border-bottom: 1px solid rgba(0,0,0,0.1); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); text-align: left; }}
   .nav-links.active {{ display: flex; }}
-  .hero-section {{ padding: 100px 0 40px; }}
-  .hero-title {{ font-size: 26px !important; line-height: 1.25; }}
-  .hero-subtitle {{ font-size: 14px !important; padding: 0 8px; }}
-  .hero-img {{ max-height: 260px !important; margin-top: 20px; }}
-  .section-title {{ font-size: 24px !important; }}
+  .hero-grid {{ grid-template-columns: 1fr !important; text-align: center; gap: 32px; }}
+  .hero-left {{ align-items: center; }}
+  .hero-title {{ font-size: 32px !important; }}
+  .hero-subtitle {{ font-size: 14px !important; }}
+  .process-grid {{ grid-template-columns: 1fr !important; gap: 32px !important; }}
+  .about-grid {{ grid-template-columns: 1fr !important; }}
   .grid-3, .grid-4 {{ grid-template-columns: 1fr !important; gap: 16px !important; }}
   .btn-primary {{ width: 100%; text-align: center; display: block; }}
 }}
@@ -133,19 +149,25 @@ footer a {{ color: var(--accent-color); }}
         hero_html = f"""
   <section id="home" class="hero-section" data-aos="fade-down">
     <div class="container">
-      {f'<span class="badge">{p_hero.get("badge")}</span>' if p_hero.get("badge") else ''}
-      <h1 class="hero-title">{p_hero.get("headline", brand_name)}</h1>
-      <p class="hero-subtitle">{p_hero.get("subheadline", "")}</p>
-      <div>
-        <a href="#services" class="btn-primary">{p_hero.get("primary_cta", "Explore Services")}</a>
+      <div class="hero-grid">
+        <div class="hero-left">
+          {f'<span class="badge">{p_hero.get("badge")}</span>' if p_hero.get("badge") else ''}
+          <h1 class="hero-title">{p_hero.get("headline", brand_name)}</h1>
+          <p class="hero-subtitle">{p_hero.get("subheadline", "")}</p>
+          <div>
+            <a href="#services" class="btn-primary">{p_hero.get("primary_cta", "Explore Services")}</a>
+          </div>
+        </div>
+        <div class="hero-right">
+          {f'<img src="{p_hero.get("hero_image")}" alt="Hero" class="hero-img" data-aos="zoom-in" data-aos-delay="200">' if p_hero.get("hero_image") else ''}
+        </div>
       </div>
-      {f'<img src="{p_hero.get("hero_image")}" alt="Hero" class="hero-img" data-aos="zoom-in" data-aos-delay="200">' if p_hero.get("hero_image") else ''}
     </div>
   </section>"""
 
         about_html = ""
         if p_about and isinstance(p_about.get("paragraphs"), list):
-            paragraphs_html = "".join([f'<p style="margin-bottom: 12px; font-size: 14px; line-height: 1.7;">{p}</p>' for p in p_about.get("paragraphs", [])])
+            paragraphs_html = "".join([f'<p style="margin-bottom: 16px; font-size: 15px; line-height: 1.7;">{p}</p>' for p in p_about.get("paragraphs", [])])
             about_html = f"""
   <section id="about" class="section-alt" data-aos="fade-up">
     <div class="container">
@@ -153,8 +175,34 @@ footer a {{ color: var(--accent-color); }}
         <span class="badge">{p_about.get("section_badge", "About Us")}</span>
         <h2 class="section-title">{p_about.get("section_title", f"About {brand_name}")}</h2>
       </div>
-      <div style="max-width: 800px; margin: 0 auto;">
-        {paragraphs_html}
+      <div class="about-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; margin-bottom: 40px;">
+        <div class="about-story">
+          {paragraphs_html}
+        </div>
+        <div class="about-cards" style="display: flex; flex-direction: column; gap: 20px;">
+          {f'<div class="card" style="border-left: 4px solid var(--primary-color);"><h4 style="font-weight: 800; color: var(--primary-color); margin-bottom: 8px;">Our Mission</h4><p style="font-size: 13px; color: rgba(15, 23, 42, 0.7);">{p_about.get("mission")}</p></div>' if p_about.get("mission") else ''}
+          {f'<div class="card" style="border-left: 4px solid var(--secondary-color);"><h4 style="font-weight: 800; color: var(--secondary-color); margin-bottom: 8px;">Our Vision</h4><p style="font-size: 13px; color: rgba(15, 23, 42, 0.7);">{p_about.get("vision")}</p></div>' if p_about.get("vision") else ''}
+        </div>
+      </div>
+      
+      <!-- Statistics Grid -->
+      <div class="stats-row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 24px; padding: 40px 0; border-top: 1px solid rgba(0,0,0,0.06); border-bottom: 1px solid rgba(0,0,0,0.06); text-align: center; margin-top: 40px;">
+        <div>
+          <p style="font-size: 36px; font-weight: 900; color: var(--primary-color);">99.9%</p>
+          <p style="font-size: 12px; font-weight: 700;">Platform SLA Uptime</p>
+        </div>
+        <div>
+          <p style="font-size: 36px; font-weight: 900; color: var(--secondary-color);">10k+</p>
+          <p style="font-size: 12px; font-weight: 700;">Websites Crafted</p>
+        </div>
+        <div>
+          <p style="font-size: 36px; font-weight: 900; color: var(--primary-color);">18+</p>
+          <p style="font-size: 12px; font-weight: 700;">Design Verticals</p>
+        </div>
+        <div>
+          <p style="font-size: 36px; font-weight: 900; color: var(--secondary-color);">&lt; 10s</p>
+          <p style="font-size: 12px; font-weight: 700;">Synthesis Rate</p>
+        </div>
       </div>
     </div>
   </section>"""
@@ -163,7 +211,8 @@ footer a {{ color: var(--accent-color); }}
         if p_services and isinstance(p_services.get("items"), list):
             s_cards = "".join([f"""
         <div class="card" data-aos="fade-up">
-          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 10px; color: var(--primary-color);">{item.get("title")}</h3>
+          <div class="icon-circle" style="width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: rgba(99, 102, 241, 0.08); color: var(--primary-color); margin-bottom: 16px; font-weight: bold;">✓</div>
+          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 10px; color: var(--text-color);">{item.get("title")}</h3>
           <p style="font-size: 13px; color: rgba(15, 23, 42, 0.7);">{item.get("description")}</p>
         </div>""" for item in p_services.get("items", []) if isinstance(item, dict)])
             services_html = f"""
@@ -174,8 +223,38 @@ footer a {{ color: var(--accent-color); }}
         <h2 class="section-title">{p_services.get("section_title", "Our Services")}</h2>
         <p class="section-subtitle">{p_services.get("section_subtitle", "")}</p>
       </div>
-      <div class="grid-3">
+      <div class="grid-3" style="margin-bottom: 60px;">
         {s_cards}
+      </div>
+      
+      <!-- Methodology Process Workflow -->
+      <div class="process-wrap" style="margin-top: 60px; padding: 40px; border-radius: 24px; border: 1px solid rgba(0,0,0,0.06); background: rgba(255,255,255,0.55);">
+        <div class="section-header" style="margin-bottom: 40px;">
+          <span class="badge" style="background: rgba(244,114,182,0.08); border-color: rgba(244,114,182,0.15); color: #db2777;">Methodology</span>
+          <h3 style="font-size: 24px; font-weight: 900; margin-top: 8px;">How We Deliver Excellence</h3>
+        </div>
+        <div class="process-grid">
+          <div class="process-step">
+            <span class="step-num">01</span>
+            <h4>Discovery & Analysis</h4>
+            <p>We evaluate your core requirements and strategic objectives to build a customized roadmap.</p>
+          </div>
+          <div class="process-step">
+            <span class="step-num">02</span>
+            <h4>Custom Architecture</h4>
+            <p>Our team designs scalable, high-performance frameworks tailored to your operational workflow.</p>
+          </div>
+          <div class="process-step">
+            <span class="step-num">03</span>
+            <h4>Implementation & Testing</h4>
+            <p>Rigorous execution combined with quality assurance protocols ensuring seamless deployment.</p>
+          </div>
+          <div class="process-step">
+            <span class="step-num">04</span>
+            <h4>Continuous Optimization</h4>
+            <p>Ongoing monitoring and dedicated technical support to guarantee long-term success.</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>"""
@@ -264,7 +343,7 @@ footer a {{ color: var(--accent-color); }}
   <title>{brand_name} - {page_name}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <!-- AOS Animate On Scroll Library CDN -->
   <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
   <link rel="stylesheet" href="style.css">
