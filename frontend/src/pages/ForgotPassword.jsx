@@ -28,14 +28,25 @@ const ForgotPassword = () => {
   const handleRequestOTP = async (e) => {
     e.preventDefault();
     setError('');
+    setMsg('');
     setLoading(true);
 
     try {
-      await api.post('/auth/forgot-password', { email });
+      const res = await api.post('/auth/forgot-password', { email });
       setStep(2);
-      setMsg('Reset instructions and OTP sent to your email.');
+      setMsg(res.data?.message || 'Reset instructions and OTP sent to your email.');
+      if (res.data?.otp_code) {
+        setOtpCode(res.data.otp_code);
+      }
     } catch (err) {
-      setError(err.response?.data?.detail || 'Request failed.');
+      const detail =
+        err.response?.data?.detail ||
+        (err.code === 'ECONNABORTED'
+          ? 'Server connection timed out (backend is waking up). Please try once more.'
+          : null) ||
+        err.message ||
+        'Request failed. Please check your connection or try again.';
+      setError(detail);
     } finally {
       setLoading(false);
     }

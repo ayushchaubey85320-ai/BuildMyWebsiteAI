@@ -41,7 +41,7 @@ def create_db_engine():
         print(f"\n[NOTICE] Primary Database unreachable ({e}).")
         print("[FALLBACK] Switching to Resilient Local Database (SQLite)...")
         fallback_db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "buildmywebsiteai_fallback.db"))
-        fallback_url = f"sqlite:///{fallback_url}" if 'fallback_url' in locals() else f"sqlite:///{fallback_db_path}"
+        fallback_url = f"sqlite:///{fallback_db_path}"
         
         fallback_engine = create_engine(
             fallback_url,

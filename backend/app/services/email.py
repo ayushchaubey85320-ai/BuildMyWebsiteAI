@@ -14,7 +14,8 @@ def send_otp_email(to_email: str, otp_code: str) -> bool:
     print(f"============================================\n")
     
     if not settings.SMTP_USER or not settings.SMTP_PASSWORD:
-        return True
+        print("[BuildMyWebsiteAI Email Notice] SMTP_USER or SMTP_PASSWORD not set. Skipping email dispatch.")
+        return False
 
     try:
         msg = MIMEMultipart()
@@ -48,7 +49,7 @@ def send_otp_email(to_email: str, otp_code: str) -> bool:
         """
         msg.attach(MIMEText(body, 'html'))
 
-        server = smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT)
+        server = smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=10)
         server.starttls()
         server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
         server.send_message(msg)
@@ -66,7 +67,8 @@ def send_password_reset_email(to_email: str, otp_code: str, reset_link: str) -> 
     print(f"============================================\n")
 
     if not settings.SMTP_USER or not settings.SMTP_PASSWORD:
-        return True
+        print("[BuildMyWebsiteAI Email Notice] SMTP_USER or SMTP_PASSWORD not set. Skipping email dispatch.")
+        return False
 
     try:
         msg = MIMEMultipart()
@@ -120,7 +122,7 @@ def send_password_reset_email(to_email: str, otp_code: str, reset_link: str) -> 
         """
         msg.attach(MIMEText(body, 'html'))
 
-        server = smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT)
+        server = smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=10)
         server.starttls()
         server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
         server.send_message(msg)

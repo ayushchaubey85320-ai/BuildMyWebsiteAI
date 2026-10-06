@@ -157,9 +157,10 @@ def forgot_password(payload: ForgotPasswordPayload, db: Session = Depends(get_db
     user = db.query(User).filter(User.email == clean_email).first()
 
     if not user:
-        return {
-            "message": "If this email is registered, a password reset link has been dispatched."
-        }
+        raise HTTPException(
+            status_code=404,
+            detail="No account associated with this email address was found. Please check your spelling or sign up."
+        )
 
     otp = generate_otp()
     user.otp_code = otp
@@ -171,15 +172,21 @@ def forgot_password(payload: ForgotPasswordPayload, db: Session = Depends(get_db
         expires_delta=datetime.timedelta(minutes=15)
     )
 
-    reset_link = f"http://localhost:5173/reset-password?token={reset_token}"
+    frontend_base = os.getenv("FRONTEND_URL", "https://buildmywebsiteai-frontend.onrender.com")
+    reset_link = f"{frontend_base}/reset-password?token={reset_token}"
     print(f"\n[EMAIL DISPATCH] Dispatching to {user.email}:\nReset Link: {reset_link}\nOTP Code: {otp}\n")
 
     # Send real email via configured SMTP
-    send_password_reset_email(to_email=user.email, otp_code=otp, reset_link=reset_link)
+    email_sent = send_password_reset_email(to_email=user.email, otp_code=otp, reset_link=reset_link)
 
-    return {
-        "message": "If this email is registered, a password reset link and OTP have been dispatched to your email inbox."
+    response_payload = {
+        "message": "A 6-digit security OTP and password reset instructions have been dispatched to your email inbox."
     }
+    if not email_sent:
+        response_payload["message"] = f"OTP Code generated: {otp}. Enter it below along with your new password to proceed."
+        response_payload["otp_code"] = otp
+
+    return response_payload
 
 # 4. RESET PASSWORD (Verify token or OTP and update password)
 @router.post("/reset-password")
