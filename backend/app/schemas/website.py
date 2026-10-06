@@ -24,6 +24,15 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
     user: Dict[str, Any]
 
+class ForgotPasswordPayload(BaseModel):
+    email: str
+
+class ResetPasswordPayload(BaseModel):
+    token: Optional[str] = None
+    email: Optional[str] = None
+    otp_code: Optional[str] = None
+    new_password: str
+
 class WebsiteCreatePayload(BaseModel):
     title: str
     category: str

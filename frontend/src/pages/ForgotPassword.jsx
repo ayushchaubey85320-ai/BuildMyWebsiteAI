@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { KeyRound, Mail, Lock, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
 import api from '../api';
@@ -7,13 +7,23 @@ import AnimatedBackground from '../components/AnimatedBackground';
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1); // 1: Request OTP, 2: Reset Password
+  const [searchParams] = useSearchParams();
+  const tokenParam = searchParams.get('token');
+
+  const [step, setStep] = useState(tokenParam ? 2 : 1); // 1: Request OTP/Link, 2: Reset Password
   const [email, setEmail] = useState('');
   const [otpCode, setOtpCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [error, setError] = useState('');
   const [msg, setMsg] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (tokenParam) {
+      setStep(2);
+      setMsg('Reset token detected. Enter your new password below.');
+    }
+  }, [tokenParam]);
 
   const handleRequestOTP = async (e) => {
     e.preventDefault();
@@ -23,7 +33,7 @@ const ForgotPassword = () => {
     try {
       await api.post('/auth/forgot-password', { email });
       setStep(2);
-      setMsg('OTP code sent to your email.');
+      setMsg('Reset instructions and OTP sent to your email.');
     } catch (err) {
       setError(err.response?.data?.detail || 'Request failed.');
     } finally {
@@ -37,7 +47,11 @@ const ForgotPassword = () => {
     setLoading(true);
 
     try {
-      await api.post('/auth/reset-password', { email, otp_code: otpCode, new_password: newPassword });
+      const payload = tokenParam
+        ? { token: tokenParam, new_password: newPassword }
+        : { email, otp_code: otpCode, new_password: newPassword };
+
+      await api.post('/auth/reset-password', payload);
       setMsg('Password reset successfully! Redirecting to login...');
       setTimeout(() => navigate('/login'), 1500);
     } catch (err) {
@@ -108,20 +122,22 @@ const ForgotPassword = () => {
           </form>
         ) : (
           <form onSubmit={handleResetSubmit} className="space-y-5">
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-                6-Digit Security OTP
-              </label>
-              <input
-                type="text"
-                maxLength={6}
-                required
-                placeholder="123456"
-                value={otpCode}
-                onChange={(e) => setOtpCode(e.target.value)}
-                className="w-full text-center text-xl font-bold tracking-widest py-3 rounded-xl bg-slate-900/60 border border-slate-700 text-white focus:outline-none focus:border-indigo-500 transition"
-              />
-            </div>
+            {!tokenParam && (
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                  6-Digit Security OTP
+                </label>
+                <input
+                  type="text"
+                  maxLength={6}
+                  required
+                  placeholder="123456"
+                  value={otpCode}
+                  onChange={(e) => setOtpCode(e.target.value)}
+                  className="w-full text-center text-xl font-bold tracking-widest py-3 rounded-xl bg-slate-900/60 border border-slate-700 text-white focus:outline-none focus:border-indigo-500 transition"
+                />
+              </div>
+            )}
 
             <div>
               <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
