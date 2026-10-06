@@ -1,6 +1,7 @@
 import os
 import datetime
 import random
+import smtplib
 from typing import Optional
 import jwt
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -290,3 +291,34 @@ def google_auth(payload: GoogleAuthPayload, db: Session = Depends(get_db)):
         )
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Google authentication failed: {str(e)}")
+
+# 6. SMTP DIAGNOSTIC STATUS (Tests Gmail connection from server)
+@router.get("/smtp-status")
+def test_smtp_connectivity():
+    user_configured = bool(settings.SMTP_USER)
+    pass_configured = bool(settings.SMTP_PASSWORD)
+    
+    port_587_res = "untested"
+    port_465_res = "untested"
+    
+    try:
+        s587 = smtplib.SMTP(settings.SMTP_HOST, 587, timeout=6)
+        s587.quit()
+        port_587_res = "connected"
+    except Exception as e587:
+        port_587_res = f"error: {str(e587)}"
+        
+    try:
+        s465 = smtplib.SMTP_SSL(settings.SMTP_HOST, 465, timeout=6)
+        s465.quit()
+        port_465_res = "connected"
+    except Exception as e465:
+        port_465_res = f"error: {str(e465)}"
+
+    return {
+        "smtp_host": settings.SMTP_HOST,
+        "smtp_user_configured": user_configured,
+        "smtp_password_configured": pass_configured,
+        "port_587_connectivity": port_587_res,
+        "port_465_connectivity": port_465_res
+    }

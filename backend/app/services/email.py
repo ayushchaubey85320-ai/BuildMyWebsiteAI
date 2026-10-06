@@ -8,6 +8,36 @@ from app.config.settings import settings
 def generate_otp_code(length: int = 6) -> str:
     return "".join(random.choices(string.digits, k=length))
 
+def send_smtp_message(msg: MIMEMultipart, to_email: str) -> bool:
+    if not settings.SMTP_USER or not settings.SMTP_PASSWORD:
+        print("[BuildMyWebsiteAI Email Notice] SMTP credentials missing. Skipping email.")
+        return False
+
+    # Attempt 1: Port 587 (STARTTLS)
+    try:
+        server = smtplib.SMTP(settings.SMTP_HOST, 587, timeout=8)
+        server.starttls()
+        server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
+        server.send_message(msg)
+        server.quit()
+        print(f"[BuildMyWebsiteAI Email SUCCESS (Port 587)] OTP delivered to {to_email}")
+        return True
+    except Exception as err587:
+        print(f"[BuildMyWebsiteAI Email Port 587 Warning] {err587}. Retrying with SSL Port 465...")
+
+    # Attempt 2: Port 465 (SMTPS SSL fallback for cloud environments)
+    try:
+        server = smtplib.SMTP_SSL(settings.SMTP_HOST, 465, timeout=8)
+        server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
+        server.send_message(msg)
+        server.quit()
+        print(f"[BuildMyWebsiteAI Email SUCCESS (Port 465 SSL)] OTP delivered to {to_email}")
+        return True
+    except Exception as err465:
+        print(f"[BuildMyWebsiteAI Email Port 465 Error] Could not send via SSL: {err465}")
+
+    return False
+
 def send_otp_email(to_email: str, otp_code: str) -> bool:
     print(f"\n============================================")
     print(f"[BuildMyWebsiteAI OTP SYSTEM] Sending OTP: {otp_code} to {to_email}")
@@ -48,16 +78,9 @@ def send_otp_email(to_email: str, otp_code: str) -> bool:
         </html>
         """
         msg.attach(MIMEText(body, 'html'))
-
-        server = smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=10)
-        server.starttls()
-        server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
-        server.send_message(msg)
-        server.quit()
-        print(f"[BuildMyWebsiteAI Email SUCCESS] Verification OTP sent to {to_email}")
-        return True
+        return send_smtp_message(msg, to_email)
     except Exception as e:
-        print(f"[BuildMyWebsiteAI Email Error] Could not send OTP email: {e}")
+        print(f"[BuildMyWebsiteAI Email Error] Could not construct OTP email: {e}")
         return False
 
 def send_password_reset_email(to_email: str, otp_code: str, reset_link: str) -> bool:
@@ -121,14 +144,7 @@ def send_password_reset_email(to_email: str, otp_code: str, reset_link: str) -> 
         </html>
         """
         msg.attach(MIMEText(body, 'html'))
-
-        server = smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=10)
-        server.starttls()
-        server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
-        server.send_message(msg)
-        server.quit()
-        print(f"[BuildMyWebsiteAI Email SUCCESS] Reset email sent to {to_email}")
-        return True
+        return send_smtp_message(msg, to_email)
     except Exception as e:
-        print(f"[BuildMyWebsiteAI Email Error] Could not send password reset email: {e}")
+        print(f"[BuildMyWebsiteAI Email Error] Could not construct password reset email: {e}")
         return False
