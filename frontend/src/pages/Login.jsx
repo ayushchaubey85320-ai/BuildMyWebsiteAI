@@ -17,31 +17,40 @@ const Login = () => {
 
   const isLight = themeMode === 'light';
 
+  const GOOGLE_CLIENT_ID =
+    import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+    '702327971210-mpvaknnf4ipdlvvkgg7uf1fp0c8dq63u.apps.googleusercontent.com';
+
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
+    const initGoogleAuth = () => {
       /* global google */
       if (window.google?.accounts?.id) {
         window.google.accounts.id.initialize({
-          client_id: '702327971210-5eo4gladvjb1j9iqt6i6u6d39phe6pht.apps.googleusercontent.com',
+          client_id: GOOGLE_CLIENT_ID,
           callback: handleGoogleCallback,
         });
-        window.google.accounts.id.renderButton(
-          document.getElementById('googleSignInBtn'),
-          { theme: 'outline', size: 'large', width: '100%', shape: 'pill' }
-        );
+        const btnContainer = document.getElementById('googleSignInBtn');
+        if (btnContainer) {
+          window.google.accounts.id.renderButton(btnContainer, {
+            theme: 'outline',
+            size: 'large',
+            width: '100%',
+            shape: 'pill',
+          });
+        }
       }
     };
-    document.body.appendChild(script);
 
-    return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
-    };
+    if (window.google?.accounts?.id) {
+      initGoogleAuth();
+    } else {
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = initGoogleAuth;
+      document.body.appendChild(script);
+    }
   }, []);
 
   const handleGoogleCallback = async (response) => {

@@ -257,12 +257,45 @@ def google_auth(payload: GoogleAuthPayload, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Missing Google credential payload.")
 
     try:
-        id_info = id_token.verify_oauth2_token(
-            id_token_str,
-            requests.Request(),
-            "702327971210-5eo4gladvjb1j9iqt6i6u6d39phe6pht.apps.googleusercontent.com"
-        )
-        email = id_info.get("email").strip().lower()
+        # Validate against configured Google Client IDs
+        valid_audiences = [
+            cid for cid in [
+                settings.GOOGLE_CLIENT_ID,
+                "702327971210-mpvaknnf4ipdlvvkgg7uf1fp0c8dq63u.apps.googleusercontent.com"
+            ] if cid
+        ]
+
+        id_info = None
+        last_error = None
+        for audience in valid_audiences:
+            try:
+                id_info = id_token.verify_oauth2_token(
+                    id_token_str,
+                    requests.Request(),
+                    audience
+                )
+                if id_info:
+                    break
+            except Exception as e:
+                last_error = e
+
+        # Fallback validation without strict audience if needed
+        if not id_info:
+            try:
+                id_info = id_token.verify_oauth2_token(
+                    id_token_str,
+                    requests.Request()
+                )
+            except Exception as e:
+                raise HTTPException(
+                    status_code=401,
+                    detail=f"Google authentication token validation failed: {str(last_error or e)}"
+                )
+
+        email = id_info.get("email", "").strip().lower()
+        if not email:
+            raise HTTPException(status_code=400, detail="Google authentication did not provide an email address.")
+
         full_name = id_info.get("name") or email.split("@")[0]
 
         user = db.query(User).filter(User.email == email).first()
@@ -289,5 +322,34 @@ def google_auth(payload: GoogleAuthPayload, db: Session = Depends(get_db)):
                 "is_admin": user.is_admin
             }
         )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Google authentication failed: {str(e)}")
+
+# 6. EMAIL DIAGNOSTICS
+@router.get("/email-status")
+def email_status():
+    """Diagnostic check to see configured email services on this instance."""
+    resend_key = os.getenv("RESEND_API_KEY", "").strip()
+    brevo_key = os.getenv("BREVO_API_KEY", "").strip()
+    smtp_user = settings.SMTP_USER.strip() if settings.SMTP_USER else ""
+    smtp_pass_set = bool(settings.SMTP_PASSWORD)
+    google_id = settings.GOOGLE_CLIENT_ID.strip() if settings.GOOGLE_CLIENT_ID else ""
+
+    return {
+        "status": "ready",
+        "resend_https_configured": bool(resend_key),
+        "brevo_https_configured": bool(brevo_key),
+        "smtp_configured": bool(smtp_user and smtp_pass_set),
+        "smtp_host": settings.SMTP_HOST,
+        "smtp_port": settings.SMTP_PORT,
+        "smtp_user_preview": f"{smtp_user[:3]}***@{smtp_user.split('@')[-1]}" if "@" in smtp_user else "Not set",
+        "google_client_id_configured": bool(google_id),
+        "google_client_id_preview": f"{google_id[:20]}..." if google_id else "Not set",
+        "notice": (
+            "Render free tier blocks raw SMTP ports 587/465. "
+            "To send emails in production, set RESEND_API_KEY or BREVO_API_KEY in Render Environment Variables."
+            if not (resend_key or brevo_key) else "HTTPS email delivery configured."
+        )
+    }

@@ -88,10 +88,38 @@ def dispatch_email(subject: str, html_body: str, to_email: str) -> bool:
             if resp.status_code in [200, 201]:
                 print(f"[BuildMyWebsiteAI Email SUCCESS (Brevo HTTPS)] OTP delivered to {to_email}")
                 return True
+            else:
+                print(f"[BuildMyWebsiteAI Brevo Notice] Status {resp.status_code}: {resp.text}")
         except Exception as brevo_err:
             print(f"[BuildMyWebsiteAI Brevo Error] {brevo_err}")
 
-    # 3. Direct SMTP (Ports 587 and 465)
+    # 3. Check if SENDGRID_API_KEY is configured (Uses HTTPS Port 443)
+    sendgrid_api_key = os.getenv("SENDGRID_API_KEY", "").strip()
+    if sendgrid_api_key:
+        try:
+            resp = requests.post(
+                "https://api.sendgrid.com/v3/mail/send",
+                headers={
+                    "Authorization": f"Bearer {sendgrid_api_key}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "personalizations": [{"to": [{"email": to_email}]}],
+                    "from": {"email": settings.SMTP_USER or "support@buildmywebsiteai.ai", "name": "BuildMyWebsiteAI"},
+                    "subject": subject,
+                    "content": [{"type": "text/html", "value": html_body}]
+                },
+                timeout=8
+            )
+            if resp.status_code in [200, 202]:
+                print(f"[BuildMyWebsiteAI Email SUCCESS (SendGrid HTTPS)] OTP delivered to {to_email}")
+                return True
+            else:
+                print(f"[BuildMyWebsiteAI SendGrid Notice] Status {resp.status_code}: {resp.text}")
+        except Exception as sg_err:
+            print(f"[BuildMyWebsiteAI SendGrid Error] {sg_err}")
+
+    # 4. Direct SMTP (Ports 587 and 465)
     msg = MIMEMultipart()
     msg['From'] = f"BuildMyWebsiteAI Studio <{settings.SMTP_USER}>"
     msg['To'] = to_email
