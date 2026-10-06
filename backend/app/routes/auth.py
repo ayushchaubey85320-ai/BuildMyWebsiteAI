@@ -174,13 +174,11 @@ def forgot_password(payload: ForgotPasswordPayload, db: Session = Depends(get_db
     reset_link = f"http://localhost:5173/reset-password?token={reset_token}"
     print(f"\n[EMAIL DISPATCH] Dispatching to {user.email}:\nReset Link: {reset_link}\nOTP Code: {otp}\n")
 
-    # Send real email via Gmail SMTP (nervestackers@gmail.com)
+    # Send real email via configured SMTP
     send_password_reset_email(to_email=user.email, otp_code=otp, reset_link=reset_link)
 
     return {
-        "message": "If this email is registered, a password reset link and OTP have been dispatched to your email inbox.",
-        "debug_reset_token": reset_token,
-        "debug_otp": otp
+        "message": "If this email is registered, a password reset link and OTP have been dispatched to your email inbox."
     }
 
 # 4. RESET PASSWORD (Verify token or OTP and update password)

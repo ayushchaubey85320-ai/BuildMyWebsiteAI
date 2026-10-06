@@ -8,8 +8,6 @@ from app.config.settings import settings
 
 router = APIRouter(prefix="/chatbot", tags=["AI Chatbot Engine"])
 
-DEFAULT_FALLBACK_KEY_B64 = "QVEuQWI4Uk42S29xQkVfNklBTXVfQVA3azV0Y3NQVWc4d053QUFNV2pJNWZLUU93T2l1Zw=="
-
 class ChatMessage(BaseModel):
     sender: str
     text: str
@@ -38,11 +36,6 @@ def chat_with_gemini(req: ChatQueryRequest):
 
     # Determine Gemini API key (from request payload or server settings)
     effective_api_key = req.api_key.strip() if req.api_key and req.api_key.strip() else settings.GEMINI_API_KEY.strip()
-    if not effective_api_key:
-        try:
-            effective_api_key = base64.b64decode(DEFAULT_FALLBACK_KEY_B64).decode('utf-8')
-        except Exception:
-            effective_api_key = ""
 
     # System instruction context for BuildMyWebsiteAI Assistant
     system_instruction = (
