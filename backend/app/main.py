@@ -22,8 +22,9 @@ try:
     # Auto-seed Super Admin user if missing
     db = SessionLocal()
     try:
+        import secrets
         admin_email = os.getenv("ADMIN_EMAIL", "admin@buildmywebsiteai.ai")
-        admin_pass = os.getenv("ADMIN_DEFAULT_PASSWORD", "adminpassword123")
+        admin_pass = os.getenv("ADMIN_DEFAULT_PASSWORD", "") or secrets.token_urlsafe(16)
         admin_user = db.query(User).filter(User.email == admin_email).first()
         if not admin_user:
             admin_user = User(
