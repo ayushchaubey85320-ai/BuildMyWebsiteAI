@@ -41,12 +41,9 @@ const VerifyOTP = () => {
     if (!email) return;
     try {
       const res = await api.post('/auth/forgot-password', { email });
-      setInfoMsg(res.data?.message || 'New 6-digit OTP code dispatched!');
-      if (res.data?.otp_code) {
-        setOtpCode(res.data.otp_code);
-      }
+      setInfoMsg(res.data?.message || 'New 6-digit OTP code dispatched to your email!');
     } catch (err) {
-      setError('Could not resend OTP code.');
+      setError('Could not resend OTP code. Please check your connection.');
     }
   };
 

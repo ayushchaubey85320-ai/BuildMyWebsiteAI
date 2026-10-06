@@ -34,10 +34,7 @@ const ForgotPassword = () => {
     try {
       const res = await api.post('/auth/forgot-password', { email });
       setStep(2);
-      setMsg(res.data?.message || 'Reset instructions and OTP sent to your email.');
-      if (res.data?.otp_code) {
-        setOtpCode(res.data.otp_code);
-      }
+      setMsg(res.data?.message || 'Verification code has been sent to your email inbox.');
     } catch (err) {
       const detail =
         err.response?.data?.detail ||

@@ -178,17 +178,17 @@ def forgot_password(payload: ForgotPasswordPayload, db: Session = Depends(get_db
     reset_link = f"{frontend_base}/reset-password?token={reset_token}"
     print(f"\n[EMAIL DISPATCH] Dispatching to {user.email}:\nReset Link: {reset_link}\nOTP Code: {otp}\n")
 
-    # Send real email via configured SMTP
+    # Send real email via configured SMTP / HTTPS API
     email_sent = send_password_reset_email(to_email=user.email, otp_code=otp, reset_link=reset_link)
+    if not email_sent:
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to dispatch verification email. Please check that email service/SMTP is configured on the server."
+        )
 
-    response_payload = {
+    return {
         "message": "A 6-digit security OTP and password reset instructions have been dispatched to your email inbox."
     }
-    if not email_sent:
-        response_payload["message"] = f"OTP Code generated: {otp}. Enter it below along with your new password to proceed."
-        response_payload["otp_code"] = otp
-
-    return response_payload
 
 # 4. RESET PASSWORD (Verify token or OTP and update password)
 @router.post("/reset-password")
@@ -291,34 +291,3 @@ def google_auth(payload: GoogleAuthPayload, db: Session = Depends(get_db)):
         )
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Google authentication failed: {str(e)}")
-
-# 6. SMTP DIAGNOSTIC STATUS (Tests Gmail connection from server)
-@router.get("/smtp-status")
-def test_smtp_connectivity():
-    user_configured = bool(settings.SMTP_USER)
-    pass_configured = bool(settings.SMTP_PASSWORD)
-    
-    port_587_res = "untested"
-    port_465_res = "untested"
-    
-    try:
-        s587 = smtplib.SMTP(settings.SMTP_HOST, 587, timeout=6)
-        s587.quit()
-        port_587_res = "connected"
-    except Exception as e587:
-        port_587_res = f"error: {str(e587)}"
-        
-    try:
-        s465 = smtplib.SMTP_SSL(settings.SMTP_HOST, 465, timeout=6)
-        s465.quit()
-        port_465_res = "connected"
-    except Exception as e465:
-        port_465_res = f"error: {str(e465)}"
-
-    return {
-        "smtp_host": settings.SMTP_HOST,
-        "smtp_user_configured": user_configured,
-        "smtp_password_configured": pass_configured,
-        "port_587_connectivity": port_587_res,
-        "port_465_connectivity": port_465_res
-    }
