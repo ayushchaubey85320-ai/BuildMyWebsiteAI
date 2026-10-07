@@ -52,6 +52,28 @@ const ForgotPassword = () => {
   const handleResetSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (newPassword.length < 8) {
+      setError('Password must be at least 8 characters long.');
+      return;
+    }
+    if (!/[a-z]/.test(newPassword)) {
+      setError('Password must contain at least 1 lowercase letter (a-z).');
+      return;
+    }
+    if (!/[A-Z]/.test(newPassword)) {
+      setError('Password must contain at least 1 uppercase letter (A-Z).');
+      return;
+    }
+    if (!/[0-9]/.test(newPassword)) {
+      setError('Password must contain at least 1 number (0-9).');
+      return;
+    }
+    if (!/[^a-zA-Z0-9]/.test(newPassword)) {
+      setError('Password must contain at least 1 special character (e.g. !@#$%^&*).');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -156,7 +178,7 @@ const ForgotPassword = () => {
                 <input
                   type="password"
                   required
-                  placeholder="Minimum 6 characters"
+                  placeholder="Min 8 chars, Aa1@"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   className="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-900/60 border border-slate-700 text-white focus:outline-none focus:border-indigo-500 transition text-sm"

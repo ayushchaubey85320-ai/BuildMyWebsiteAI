@@ -55,3 +55,60 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     if user is None:
         raise credentials_exception
     return user
+
+import re
+
+def validate_full_name(full_name: str) -> str:
+    """Validates that full_name contains only letters, numbers, and spaces, max 50 chars."""
+    if not full_name or not full_name.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Full name is required."
+        )
+    cleaned = full_name.strip()
+    if len(cleaned) > 50:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Full name cannot exceed 50 characters."
+        )
+    if not re.match(r"^[a-zA-Z0-9 ]+$", cleaned):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Full name can only contain letters, numbers, and spaces."
+        )
+    return cleaned
+
+def validate_password_strength(password: str) -> None:
+    """
+    Validates that password:
+    - Minimum 8 characters
+    - At least 1 lowercase letter
+    - At least 1 uppercase letter
+    - At least 1 number
+    - At least 1 special character
+    """
+    if not password or len(password) < 8:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must be at least 8 characters long."
+        )
+    if not re.search(r"[a-z]", password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must contain at least 1 lowercase letter (a-z)."
+        )
+    if not re.search(r"[A-Z]", password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must contain at least 1 uppercase letter (A-Z)."
+        )
+    if not re.search(r"[0-9]", password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must contain at least 1 number (0-9)."
+        )
+    if not re.search(r"[^a-zA-Z0-9]", password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must contain at least 1 special character (e.g. !@#$%^&*)."
+        )

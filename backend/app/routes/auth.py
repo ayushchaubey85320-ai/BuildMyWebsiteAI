@@ -17,7 +17,8 @@ from app.schemas.website import (
     ForgotPasswordPayload, ResetPasswordPayload
 )
 from app.utils.auth import (
-    get_password_hash, verify_password, create_access_token, get_current_user
+    get_password_hash, verify_password, create_access_token, get_current_user,
+    validate_full_name, validate_password_strength
 )
 from app.services.email import send_password_reset_email
 
@@ -52,8 +53,7 @@ def update_password(
     if not verify_password(current_password, current_user.hashed_password):
         raise HTTPException(status_code=400, detail="Current password is incorrect.")
 
-    if len(new_password) < 6:
-        raise HTTPException(status_code=400, detail="New password must be at least 6 characters long.")
+    validate_password_strength(new_password)
 
     current_user.hashed_password = get_password_hash(new_password)
     db.commit()
@@ -63,7 +63,10 @@ def update_password(
 @router.post("/register", response_model=TokenResponse)
 @router.post("/signup", response_model=TokenResponse)
 def register_user(payload: RegisterPayload, db: Session = Depends(get_db)):
+    clean_full_name = validate_full_name(payload.full_name)
     clean_email = payload.email.strip().lower()
+    validate_password_strength(payload.password)
+
     existing = db.query(User).filter(User.email == clean_email).first()
     if existing:
         raise HTTPException(status_code=400, detail="An account with this email already exists.")
@@ -73,7 +76,7 @@ def register_user(payload: RegisterPayload, db: Session = Depends(get_db)):
     expires_at = datetime.datetime.utcnow() + datetime.timedelta(minutes=15)
 
     user = User(
-        full_name=payload.full_name.strip() if payload.full_name else clean_email.split("@")[0],
+        full_name=clean_full_name,
         email=clean_email,
         hashed_password=hashed_pw,
         is_verified=True,
@@ -193,11 +196,7 @@ def forgot_password(payload: ForgotPasswordPayload, db: Session = Depends(get_db
 # 4. RESET PASSWORD (Verify token or OTP and update password)
 @router.post("/reset-password")
 def reset_password(payload: ResetPasswordPayload, db: Session = Depends(get_db)):
-    if len(payload.new_password) < 6:
-        raise HTTPException(
-            status_code=400,
-            detail="Password must be at least 6 characters."
-        )
+    validate_password_strength(payload.new_password)
 
     user = None
 
