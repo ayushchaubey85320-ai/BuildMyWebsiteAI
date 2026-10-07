@@ -38,7 +38,8 @@ def create_website(payload: WebsiteCreatePayload, current_user: User = Depends(g
         business_hours=payload.business_hours,
         address=payload.address,
         cta_text=payload.cta_text,
-        business_spec_json=payload.business_spec_json
+        business_spec_json=payload.business_spec_json,
+        custom_pages=payload.custom_pages
     )
 
     website = Website(

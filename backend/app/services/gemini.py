@@ -134,6 +134,86 @@ def get_theme_colors(theme_name: str, theme_mode: str = "light") -> Dict[str, st
         }
     return themes.get(theme_name, themes["MODERN_DARK"])
 
+def get_page_slug(p_name: str) -> str:
+    """Returns a clean, valid .html filename slug for any page name."""
+    if p_name == "Home":
+        return "index.html"
+    import re
+    clean = re.sub(r'[^a-zA-Z0-9]+', '_', p_name.strip().lower()).strip('_')
+    return f"{clean or 'page'}.html"
+
+def synthesize_custom_page_content(
+    page_name: str,
+    custom_prompt: str,
+    safe_title: str,
+    cat: str,
+    safe_cta: str,
+    seed: int = 10
+) -> Dict[str, Any]:
+    """Generates authentic, rich content tailored specifically to a user's custom page and prompt."""
+    prompt_desc = custom_prompt.strip() if custom_prompt else f"Comprehensive insights and dedicated offerings for {page_name}."
+
+    paragraphs = [
+        f"Welcome to the {page_name} section of {safe_title}. {prompt_desc}",
+        f"At {safe_title}, we believe that transparency, professional expertise, and dedicated attention form the cornerstone of every service we deliver in {cat}.",
+        f"Explore our specialized offerings below or connect directly with our specialists to learn more about how {safe_title} can assist you."
+    ]
+
+    cards = [
+        {"title": f"{page_name} Highlights", "description": prompt_desc[:140] if len(prompt_desc) > 30 else f"Expertly managed {page_name.lower()} designed to meet your specific standards.", "price": "Featured"},
+        {"title": "Professional Standards", "description": f"Every aspect of our {page_name.lower()} is delivered by trained specialists with proven industry experience.", "price": "Certified"},
+        {"title": "Personalized Guidance", "description": f"Tailored consultation and responsive support to ensure total satisfaction with {safe_title}.", "price": "Dedicated"},
+        {"title": "Quality Assurance", "description": f"All services are backed by our commitment to reliability, excellence, and transparent communication.", "price": "Guaranteed"}
+    ]
+
+    faqs = [
+        {"question": f"What should I know about {page_name} at {safe_title}?", "answer": f"Our {page_name.lower()} is tailored specifically to provide the highest quality results. {prompt_desc}"},
+        {"question": f"How can I inquire or get started with {page_name}?", "answer": f"You can reach out using our online booking modal or contact form for an immediate consultation with our team."},
+        {"question": f"Are customized options available for {page_name}?", "answer": f"Yes, we provide flexible options tailored to individual client requirements and preferences."}
+    ]
+
+    return {
+        "hero": {
+            "badge": f"✨ {page_name}",
+            "headline": f"{page_name} at {safe_title}",
+            "subheadline": prompt_desc,
+            "primary_cta": safe_cta,
+            "secondary_cta": "Contact Us",
+            "hero_image": get_unique_category_image(cat, seed_offset=seed)
+        },
+        "about": {
+            "section_badge": f"{page_name} Overview",
+            "section_title": f"About Our {page_name}",
+            "paragraphs": paragraphs,
+            "mission_title": f"Our Standard for {page_name}",
+            "mission": f"To deliver outstanding {page_name.lower()} with integrity and passion.",
+            "vision_title": f"Our Vision",
+            "vision": f"To be the benchmark for excellence in {page_name.lower()}.",
+            "image": get_unique_category_image(cat, seed_offset=seed + 1)
+        },
+        "services": {
+            "section_badge": f"Key Offerings",
+            "section_title": f"{page_name} Offerings & Details",
+            "section_subtitle": f"Carefully curated options tailored to your needs.",
+            "items": cards
+        },
+        "features": {
+            "section_badge": "Key Advantages",
+            "section_title": f"Why Choose Our {page_name}",
+            "section_subtitle": f"Setting the highest standards in {cat}.",
+            "items": [
+                {"title": "Dedicated Specialists", "description": f"Experienced professionals handling every detail of {page_name.lower()}."},
+                {"title": "Transparent Communication", "description": "Honest guidance and clear expectations from start to finish."},
+                {"title": "Proven Track Record", "description": f"Trusted by clients and students across the community."}
+            ]
+        },
+        "faq": {
+            "section_title": f"Frequently Asked Questions about {page_name}",
+            "section_subtitle": f"Helpful answers to guide your decision.",
+            "items": faqs
+        }
+    }
+
 def synthesize_master_prompt_from_json(business_spec: Dict[str, Any]) -> str:
     """
     Synthesizes all business input fields into an expert architectural prompt
@@ -155,6 +235,16 @@ def synthesize_master_prompt_from_json(business_spec: Dict[str, Any]) -> str:
     pages = business_spec.get("selected_pages", [])
     custom = business_spec.get("prompt", "")
 
+    custom_pages = business_spec.get("custom_pages", [])
+    custom_pages_summary = ""
+    if custom_pages and isinstance(custom_pages, list):
+        items = []
+        for cp in custom_pages:
+            if isinstance(cp, dict) and cp.get("name"):
+                items.append(f"{cp['name']} (Prompt: {cp.get('prompt', 'Dedicated custom page')})")
+        if items:
+            custom_pages_summary = f"- Custom User-Created Pages: {'; '.join(items)}\n"
+
     return f"""You are a master Web Designer & Lead Copywriter for {category}.
 Synthesize an authentic, high-converting real-life website specification for:
 - Business Name: {biz_name}
@@ -168,7 +258,7 @@ Synthesize an authentic, high-converting real-life website specification for:
 - Contact Info: Phone: {phone}, Email: {email}, Address: {address}
 - Call to Action: {cta or "Book An Appointment Now"}
 - Architecture: {arch.upper()} (Pages: {', '.join(pages) if arch == 'multi' else 'Single Page Landing'})
-- Custom Instructions: {custom or "Emphasize friendly customer service, credibility, transparent pricing, and instant booking."}
+{custom_pages_summary}- Custom Instructions: {custom or "Emphasize friendly customer service, credibility, transparent pricing, and instant booking."}
 """
 
 def call_gemini_ai_content(master_prompt: str, category: str, title: str) -> Dict[str, Any]:
@@ -796,18 +886,30 @@ def generate_website_tree(
     business_hours: str = None,
     address: str = None,
     cta_text: str = None,
-    business_spec_json: Dict[str, Any] = None
+    business_spec_json: Dict[str, Any] = None,
+    custom_pages: List[Dict[str, str]] = None
 ) -> Dict[str, Any]:
     """
     Main website tree generation engine.
     1. Converts inputs into structured JSON.
-    2. Synthesizes an expert master prompt.
+    2. Synthesizes an expert master prompt with custom pages and prompts.
     3. Calls Gemini AI (if available) or uses customized category presets.
-    4. Separates Single-Page and Multi-Page architectures with distinct HTML routes.
+    4. Generates rich multi-page structures with user-defined custom pages and prompts.
     """
     safe_title = title.strip() if title else "Studio Brand"
     cat = category.strip() if category else "Salon, Spa & Beauty Parlour"
     colors = get_theme_colors(theme, theme_mode)
+
+    # Extract user-defined custom pages
+    custom_page_prompts = {}
+    if custom_pages and isinstance(custom_pages, list):
+        for cp in custom_pages:
+            if isinstance(cp, dict) and cp.get("name"):
+                custom_page_prompts[cp["name"].strip()] = cp.get("prompt", "").strip()
+    elif business_spec_json and isinstance(business_spec_json.get("custom_pages"), list):
+        for cp in business_spec_json.get("custom_pages"):
+            if isinstance(cp, dict) and cp.get("name"):
+                custom_page_prompts[cp["name"].strip()] = cp.get("prompt", "").strip()
 
     # 1. Package Business Specification JSON
     business_spec = business_spec_json or {
@@ -825,6 +927,7 @@ def generate_website_tree(
         "cta_text": cta_text or "Book An Appointment",
         "website_type": website_type,
         "selected_pages": selected_pages or ["Home", "About Us", "Services", "Contact Us"],
+        "custom_pages": [{"name": k, "prompt": v} for k, v in custom_page_prompts.items()],
         "theme": theme,
         "theme_mode": theme_mode,
         "background_style": background_style,
@@ -863,15 +966,20 @@ def generate_website_tree(
     safe_hours = business_hours or "Mon - Sat: 9:00 AM - 7:00 PM | Sun: Closed"
     safe_cta = cta_text or "Book An Appointment"
 
-    pages_list = selected_pages if isinstance(selected_pages, list) and selected_pages else ["Home", "About Us", "Services", "Contact Us"]
+    pages_list = list(selected_pages) if isinstance(selected_pages, list) and selected_pages else ["Home", "About Us", "Services", "Contact Us"]
     if "Home" not in pages_list:
         pages_list.insert(0, "Home")
+
+    # Add any custom pages to pages_list if not present
+    for cp_name in custom_page_prompts:
+        if cp_name not in pages_list:
+            pages_list.append(cp_name)
 
     # 4. Construct Navigation Links based on Architecture (Single vs Multi)
     if website_type == "multi":
         nav_links = []
         for p in pages_list:
-            slug = "index.html" if p == "Home" else f"{p.lower().replace(' ', '_')}.html"
+            slug = get_page_slug(p)
             nav_links.append({"label": p, "href": slug})
     else:
         nav_links = [
@@ -950,6 +1058,7 @@ def generate_website_tree(
         "website_type": website_type,
         "background_style": background_style,
         "selected_pages": pages_list,
+        "custom_pages": [{"name": k, "prompt": v} for k, v in custom_page_prompts.items()],
         "business_spec": business_spec,
         "synthesized_prompt": master_prompt,
         "navbar": {
@@ -984,7 +1093,7 @@ def generate_website_tree(
     # 5. Build Dedicated Multi-Page Structures If Selected
     if website_type == "multi":
         pages_dict = {}
-        for p in pages_list:
+        for idx, p in enumerate(pages_list):
             if p == "Home":
                 pages_dict["Home"] = {
                     "hero": hero_section,
@@ -1005,7 +1114,8 @@ def generate_website_tree(
                     },
                     "about": about_section,
                     "features": features_section,
-                    "testimonials": testimonials_section
+                    "testimonials": testimonials_section,
+                    "contact": contact_section
                 }
             elif p == "Services" or p == "Services / Features":
                 pages_dict["Services"] = {
@@ -1017,7 +1127,8 @@ def generate_website_tree(
                         "hero_image": get_unique_category_image(cat, seed_offset=4)
                     },
                     "services": services_section,
-                    "faq": faq_section
+                    "faq": faq_section,
+                    "contact": contact_section
                 }
             elif p == "Contact Us":
                 pages_dict["Contact Us"] = {
@@ -1040,7 +1151,9 @@ def generate_website_tree(
                         "primary_cta": safe_cta,
                         "hero_image": get_unique_category_image(cat, seed_offset=6)
                     },
-                    "services": services_section
+                    "services": services_section,
+                    "faq": faq_section,
+                    "contact": contact_section
                 }
             elif p == "FAQ" or p == "FAQ Page":
                 pages_dict[p] = {
@@ -1055,15 +1168,17 @@ def generate_website_tree(
                     "contact": contact_section
                 }
             else:
-                pages_dict[p] = {
-                    "hero": {
-                        "badge": f"✨ {p}",
-                        "headline": f"{p} - {safe_title}",
-                        "subheadline": f"Learn more about {p.lower()} with {safe_title}.",
-                        "primary_cta": safe_cta,
-                        "hero_image": get_unique_category_image(cat, seed_offset=8)
-                    }
-                }
+                # Custom User-Created Page with its specific prompt!
+                custom_prompt_text = custom_page_prompts.get(p, "")
+                pages_dict[p] = synthesize_custom_page_content(
+                    page_name=p,
+                    custom_prompt=custom_prompt_text,
+                    safe_title=safe_title,
+                    cat=cat,
+                    safe_cta=safe_cta,
+                    seed=idx + 10
+                )
+                pages_dict[p]["contact"] = contact_section
         home_sections["pages"] = pages_dict
 
     return home_sections

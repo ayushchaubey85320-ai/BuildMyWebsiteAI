@@ -414,6 +414,31 @@ const Preview = () => {
                     <FAQSection data={pageTree.faq} colors={colors} viewport={viewport} />
                   </>
                 )}
+                {!['Home', 'About Us', 'Services', 'Pricing', 'FAQ', 'Contact Us'].includes(activePage) && (
+                  <>
+                    {activePageData.about && (
+                      <AboutSection data={activePageData.about} colors={colors} viewport={viewport} />
+                    )}
+                    {activePageData.services && (
+                      <ServicesSection data={activePageData.services} colors={colors} viewport={viewport} />
+                    )}
+                    {activePageData.features && (
+                      <FeaturesSection data={activePageData.features} colors={colors} viewport={viewport} />
+                    )}
+                    {activePageData.faq && (
+                      <FAQSection data={activePageData.faq} colors={colors} viewport={viewport} />
+                    )}
+                    {activePageData.testimonials && (
+                      <TestimonialsSection data={activePageData.testimonials} colors={colors} viewport={viewport} />
+                    )}
+                    <CTASection
+                      data={activePageData.contact || activePageData.cta || pageTree.cta}
+                      colors={colors}
+                      viewport={viewport}
+                      contactEmail={website.contact_email || pageTree.footer?.contact_email}
+                    />
+                  </>
+                )}
               </>
             )}
             <FooterSection data={pageTree.footer} colors={colors} viewport={viewport} />

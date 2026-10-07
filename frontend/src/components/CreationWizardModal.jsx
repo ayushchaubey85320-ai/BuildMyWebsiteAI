@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, Sparkles, Upload, Mail, Phone, Palette, Layout, 
   ArrowRight, Layers, CheckSquare, Square, MonitorPlay, Sun, Moon,
-  MapPin, Clock, Tag, Target, Award, Code, Eye, ChevronDown, ChevronUp, Check
+  MapPin, Clock, Tag, Target, Award, Code, Eye, ChevronDown, ChevronUp, Check,
+  Plus, Trash2, FilePlus
 } from 'lucide-react';
 
 export const NON_TECH_CATEGORIES = [
@@ -172,11 +173,39 @@ const CreationWizardModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
   const [websiteType, setWebsiteType] = useState('single');
   const [backgroundStyle, setBackgroundStyle] = useState('live');
   const [selectedPages, setSelectedPages] = useState(["Home", "About Us", "Services", "Pricing", "Contact Us"]);
+  const [customPages, setCustomPages] = useState([]); // [{ name: "Faculty & Mentors", prompt: "..." }]
+  const [newCustomTitle, setNewCustomTitle] = useState('');
+  const [newCustomPrompt, setNewCustomPrompt] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
   const [logoFileName, setLogoFileName] = useState('');
   const [prompt, setPrompt] = useState('');
 
   const [showJsonPromptPreview, setShowJsonPromptPreview] = useState(false);
+
+  const handleAddCustomPage = () => {
+    const trimmedTitle = newCustomTitle.trim();
+    if (!trimmedTitle) {
+      alert("Please enter a custom page title (e.g. 'Faculty & Mentors', 'Admissions', 'Gallery').");
+      return;
+    }
+    if (selectedPages.some(p => p.toLowerCase() === trimmedTitle.toLowerCase())) {
+      alert("A page with this name already exists in your website.");
+      return;
+    }
+    const newPageObj = {
+      name: trimmedTitle,
+      prompt: newCustomPrompt.trim()
+    };
+    setCustomPages([...customPages, newPageObj]);
+    setSelectedPages([...selectedPages, trimmedTitle]);
+    setNewCustomTitle('');
+    setNewCustomPrompt('');
+  };
+
+  const handleRemoveCustomPage = (pageName) => {
+    setCustomPages(customPages.filter(cp => cp.name !== pageName));
+    setSelectedPages(selectedPages.filter(p => p !== pageName));
+  };
 
   const validatePhoneDigits = (digits, code = countryCode) => {
     const cleanDigits = (digits || '').replace(/\D/g, '');
@@ -267,6 +296,7 @@ const CreationWizardModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
       cta_text: ctaText.trim() || "Book An Appointment",
       website_architecture: websiteType === 'multi' ? 'multi-page' : 'single-page',
       selected_pages: websiteType === 'multi' ? selectedPages : ["Home"],
+      custom_pages: websiteType === 'multi' ? customPages : [],
       theme_palette: theme,
       theme_mode: themeMode,
       canvas_background: backgroundStyle,
@@ -276,7 +306,7 @@ const CreationWizardModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
     title, category, tagline, primaryServices, targetAudience,
     serviceArea, keyHighlights, businessHours, address,
     effectivePhone, contactEmail, ctaText, websiteType,
-    selectedPages, theme, themeMode, backgroundStyle, prompt
+    selectedPages, customPages, theme, themeMode, backgroundStyle, prompt
   ]);
 
   // Synthesize best AI master prompt from JSON
@@ -284,6 +314,10 @@ const CreationWizardModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
     const pagesInfo = websiteType === 'multi' 
       ? `Dedicated HTML files: ${selectedPages.join(', ')} with relative inter-page navigation.`
       : `Single-Page landing page with section anchors (#home, #about, #services, #faq, #contact).`;
+
+    const customPagesText = (websiteType === 'multi' && customPages.length > 0)
+      ? `\nCustom Defined Pages:\n` + customPages.map(cp => `- ${cp.name}: "${cp.prompt || 'Dedicated custom page'}"`).join('\n')
+      : '';
 
     return `Act as a world-class principal web designer and developer. Generate a production-grade, highly-converting live website for "${title || 'Business'}" in the "${category}" industry.
 Architecture: ${websiteType.toUpperCase()} (${pagesInfo}).
@@ -296,12 +330,12 @@ Physical Address: "${address || '120 Main Street'}".
 Phone: "${effectivePhone}" | Email: "${contactEmail || 'contact@example.com'}".
 Operating Hours: "${businessHours || 'Mon-Sat 9AM-7PM'}".
 Call-To-Action: "${ctaText || 'Get In Touch'}".
-Visual Aesthetic: ${theme} in ${themeMode.toUpperCase()} mode with curated, industry-relevant photography.
+Visual Aesthetic: ${theme} in ${themeMode.toUpperCase()} mode with curated, industry-relevant photography.${customPagesText}
 Generate realistic persuasive copywriting, pricing tiers, client testimonials, FAQ accordions, and responsive layout.`;
   }, [
     title, category, tagline, primaryServices, targetAudience,
     serviceArea, keyHighlights, address, effectivePhone, contactEmail,
-    businessHours, ctaText, websiteType, selectedPages, theme, themeMode
+    businessHours, ctaText, websiteType, selectedPages, customPages, theme, themeMode
   ]);
 
   const handleSubmit = (e) => {
@@ -324,6 +358,7 @@ Generate realistic persuasive copywriting, pricing tiers, client testimonials, F
       website_type: websiteType,
       background_style: backgroundStyle,
       selected_pages: websiteType === 'multi' ? selectedPages : ["Home"],
+      custom_pages: websiteType === 'multi' ? customPages : [],
       logo_url: logoUrl,
       contact_email: contactEmail.trim(),
       contact_phone: effectivePhone,
@@ -666,39 +701,123 @@ Generate realistic persuasive copywriting, pricing tiers, client testimonials, F
                 </div>
               </div>
 
-              {/* Sub-Pages Selection for Multi-Page */}
+              {/* Sub-Pages Selection & Custom Page Creator for Multi-Page */}
               {websiteType === 'multi' && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
-                  className="p-3.5 rounded-2xl bg-white border border-sky-200 space-y-2.5"
+                  className="p-4 rounded-2xl bg-white border border-sky-200 space-y-4 shadow-sm"
                 >
-                  <label className="block text-xs font-bold text-sky-700 uppercase tracking-wider">
-                    Select HTML Pages To Output
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                    {AVAILABLE_PAGES.map((page) => {
-                      const isChecked = selectedPages.includes(page.id);
-                      return (
-                        <button
-                          key={page.id}
-                          type="button"
-                          onClick={() => togglePage(page.id)}
-                          className={`p-2.5 rounded-xl border text-left text-xs font-bold flex items-center gap-2 transition ${
-                            isChecked
-                              ? 'border-sky-300 bg-sky-50 text-sky-700'
-                              : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-                          }`}
-                        >
-                          {isChecked ? (
-                            <CheckSquare className="w-4 h-4 text-sky-600 shrink-0" />
-                          ) : (
-                            <Square className="w-4 h-4 text-slate-400 shrink-0" />
-                          )}
-                          <span className="truncate">{page.label}</span>
-                        </button>
-                      );
-                    })}
+                  <div>
+                    <label className="block text-xs font-bold text-sky-700 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                      <span>1. Choose Standard HTML Pages</span>
+                      <span className="text-[10px] text-slate-500 font-normal">Click to toggle pages</span>
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                      {AVAILABLE_PAGES.map((page) => {
+                        const isChecked = selectedPages.includes(page.id);
+                        return (
+                          <button
+                            key={page.id}
+                            type="button"
+                            onClick={() => togglePage(page.id)}
+                            className={`p-2.5 rounded-xl border text-left text-xs font-bold flex items-center gap-2 transition ${
+                              isChecked
+                                ? 'border-sky-300 bg-sky-50 text-sky-700 ring-1 ring-sky-300/50'
+                                : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                            }`}
+                          >
+                            {isChecked ? (
+                              <CheckSquare className="w-4 h-4 text-sky-600 shrink-0" />
+                            ) : (
+                              <Square className="w-4 h-4 text-slate-400 shrink-0" />
+                            )}
+                            <span className="truncate">{page.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* 2. Add Custom Pages with AI Prompt */}
+                  <div className="p-3.5 rounded-xl bg-purple-50/70 border border-purple-200 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <FilePlus className="w-4 h-4 text-purple-700" />
+                      <h4 className="text-xs font-bold text-purple-900 uppercase tracking-wider">
+                        2. Add Custom Page (With Custom AI Prompt)
+                      </h4>
+                    </div>
+                    <p className="text-[11px] text-purple-700/80 leading-relaxed">
+                      Need a specialized page like <strong>Faculty & Mentors</strong>, <strong>Admission Process</strong>, <strong>Results & Toppers</strong>, <strong>Photo Gallery</strong>, or <strong>Restaurant Menu</strong>? Define the page name and tell AI what should be inside it!
+                    </p>
+
+                    <div className="space-y-2">
+                      <input
+                        type="text"
+                        placeholder="Page Name (e.g. Faculty & Mentors, Admissions, Gallery)"
+                        value={newCustomTitle}
+                        onChange={(e) => setNewCustomTitle(e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg bg-white border border-purple-200 text-slate-900 text-xs font-semibold focus:outline-none focus:border-purple-500 shadow-sm"
+                      />
+                      <textarea
+                        rows="2"
+                        placeholder="What should be on this page? (e.g. 'Showcase our senior IITian faculty with qualifications, subject specializations, previous rank holders, and batch schedules...')"
+                        value={newCustomPrompt}
+                        onChange={(e) => setNewCustomPrompt(e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg bg-white border border-purple-200 text-slate-900 text-xs focus:outline-none focus:border-purple-500 shadow-sm resize-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddCustomPage}
+                        className="w-full py-2 px-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Add Custom Page to Website</span>
+                      </button>
+                    </div>
+
+                    {/* Display Added Custom Pages */}
+                    {customPages.length > 0 && (
+                      <div className="space-y-2 pt-2 border-t border-purple-200/80">
+                        <span className="text-[11px] font-bold text-purple-800 uppercase tracking-wider block">
+                          Custom Pages Added ({customPages.length}):
+                        </span>
+                        <div className="space-y-1.5">
+                          {customPages.map((cp) => (
+                            <div
+                              key={cp.name}
+                              className="p-2.5 rounded-lg bg-white border border-purple-200 flex items-start justify-between gap-2 shadow-sm"
+                            >
+                              <div className="min-w-0">
+                                <div className="font-bold text-xs text-purple-950 flex items-center gap-1.5">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-purple-600"></span>
+                                  <span>{cp.name}</span>
+                                </div>
+                                <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                                  {cp.prompt || "Dedicated custom page generated by AI"}
+                                </p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveCustomPage(cp.name)}
+                                className="p-1 rounded-md text-slate-400 hover:text-red-600 hover:bg-red-50 transition shrink-0"
+                                title="Remove this page"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Summary of Total Pages */}
+                  <div className="text-[11px] text-slate-500 font-medium flex items-center justify-between px-1">
+                    <span>Total Pages to Generate: <strong className="text-slate-800">{selectedPages.length}</strong></span>
+                    <span className="text-sky-600 font-semibold truncate max-w-[280px]">
+                      {selectedPages.join(', ')}
+                    </span>
                   </div>
                 </motion.div>
               )}

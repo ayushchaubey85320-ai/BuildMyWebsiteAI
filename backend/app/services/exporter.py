@@ -1,6 +1,7 @@
 import io
 import zipfile
 import json
+import re
 from typing import Dict, Any
 
 def safe_dict(val: Any) -> Dict[str, Any]:
@@ -15,6 +16,13 @@ def safe_dict(val: Any) -> Dict[str, Any]:
         except Exception:
             pass
     return {}
+
+def get_page_slug(p_name: str) -> str:
+    """Returns a clean, valid .html filename slug for any page name."""
+    if p_name == "Home":
+        return "index.html"
+    clean = re.sub(r'[^a-zA-Z0-9]+', '_', p_name.strip().lower()).strip('_')
+    return f"{clean or 'page'}.html"
 
 def generate_export_zip(website_data: Dict[str, Any]) -> io.BytesIO:
     page_tree = safe_dict(website_data.get("page_tree"))
@@ -220,9 +228,12 @@ footer a {{ color: var(--accent-color); }}
         p_contact = safe_dict(p_data.get("contact")) if (is_subpage and "contact" in p_data) else (None if is_subpage else contact)
         p_footer = safe_dict(p_data.get("footer")) if (is_subpage and "footer" in p_data) else footer
 
-        nav_links = navbar.get("links", [])
-        if not isinstance(nav_links, list): nav_links = []
-        nav_items_html = "".join([f'<li><a href="{link.get("href")}" class="{"active" if link.get("label") == page_name else ""}">{link.get("label")}</a></li>' for link in nav_links if isinstance(link, dict)])
+        if is_multi:
+            nav_items_html = "".join([f'<li><a href="{get_page_slug(p)}" class="{"active" if p == page_name else ""}">{p}</a></li>' for p in selected_pages])
+        else:
+            nav_links = navbar.get("links", [])
+            if not isinstance(nav_links, list): nav_links = []
+            nav_items_html = "".join([f'<li><a href="{link.get("href")}" class="{"active" if link.get("label") == page_name else ""}">{link.get("label")}</a></li>' for link in nav_links if isinstance(link, dict)])
         logo_img_html = f'<img src="{logo_url}" alt="Logo" class="logo-img">' if logo_url else ''
 
         # Build Section HTML snippets
@@ -692,7 +703,7 @@ footer a {{ color: var(--accent-color); }}
 
         if website_type == "multi":
             for p_name in selected_pages:
-                file_name = "index.html" if p_name == "Home" else f"{p_name.lower().replace(' ', '_')}.html"
+                file_name = get_page_slug(p_name)
                 p_data = pages_dict.get(p_name, {})
                 zip_file.writestr(file_name, build_page_html(p_name, p_data))
         else:

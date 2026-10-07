@@ -41,6 +41,7 @@ class WebsiteCreatePayload(BaseModel):
     website_type: str = "single"  # "single" or "multi"
     background_style: str = "live"  # "live" or "static"
     selected_pages: List[str] = ["Home", "About Us", "Services", "Contact Us"]
+    custom_pages: Optional[List[Dict[str, str]]] = None  # e.g. [{"name": "Faculty & Mentors", "prompt": "..."}]
     logo_url: Optional[str] = None
     contact_email: Optional[str] = None
     contact_phone: Optional[str] = None
