@@ -93,15 +93,12 @@ FallbackSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=fall
 def get_db():
     try:
         db = SessionLocal()
-        yield db
     except Exception as e:
-        # Runtime failover to local SQLite if primary engine dies mid-execution
-        print(f"[DB FAILOVER] Primary session failed ({e}), switching to fallback SQLite session...")
-        fallback_db = FallbackSessionLocal()
-        try:
-            yield fallback_db
-        finally:
-            fallback_db.close()
+        print(f"[DB FAILOVER] Primary session instantiation failed ({e}), switching to fallback SQLite session...")
+        db = FallbackSessionLocal()
+
+    try:
+        yield db
     finally:
         try:
             db.close()
