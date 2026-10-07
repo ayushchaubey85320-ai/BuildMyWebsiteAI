@@ -29,7 +29,16 @@ def create_website(payload: WebsiteCreatePayload, current_user: User = Depends(g
         contact_phone=payload.contact_phone,
         background_style=payload.background_style,
         theme_mode=payload.theme_mode,
-        user_prompt=payload.prompt
+        user_prompt=payload.prompt,
+        tagline=payload.tagline,
+        primary_services=payload.primary_services,
+        service_area=payload.service_area,
+        target_audience=payload.target_audience,
+        key_highlights=payload.key_highlights,
+        business_hours=payload.business_hours,
+        address=payload.address,
+        cta_text=payload.cta_text,
+        business_spec_json=payload.business_spec_json
     )
 
     website = Website(

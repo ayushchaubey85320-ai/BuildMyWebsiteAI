@@ -11,24 +11,18 @@ import AnimatedBackground from '../components/AnimatedBackground';
 import { useTheme } from '../context/ThemeContext';
 
 const CATEGORIES = [
-  { name: "AI Startup", icon: Sparkles, desc: "Neural workflows & ML-Ops platforms", badge: "Hot" },
-  { name: "Education", icon: Laptop, desc: "Interactive academies & skill courses", badge: "Popular" },
-  { name: "Fashion", icon: Flame, desc: "Artisan apparel & luxury lookbooks", badge: "Trending" },
-  { name: "SaaS", icon: Zap, desc: "Cloud telemetry & enterprise software", badge: "Featured" },
-  { name: "E-Commerce", icon: Download, desc: "Digital storefronts & product lines", badge: "Essential" },
-  { name: "Healthcare", icon: ShieldCheck, desc: "Medical clinics & diagnostic labs", badge: "Trusted" },
-  { name: "Real Estate", icon: Globe, desc: "Luxury property listings & estates", badge: "High ROI" },
-  { name: "Restaurant", icon: Flame, desc: "Culinary dining & artisan cafes", badge: "Popular" },
-  { name: "Fitness", icon: Rocket, desc: "Gym memberships & personal training", badge: "Active" },
-  { name: "Law Firm", icon: ShieldCheck, desc: "Legal consultation & corporate practice", badge: "Corporate" },
-  { name: "Event", icon: Star, desc: "Conferences, galas & festival expos", badge: "Live" },
-  { name: "Non-Profit", icon: Heart, desc: "Charity initiatives & community causes", badge: "Impact" },
-  { name: "Photography", icon: Eye, desc: "Visual portfolios & studio galleries", badge: "Creative" },
-  { name: "Car Rental", icon: Rocket, desc: "Vehicle fleets & reservation systems", badge: "Speed" },
-  { name: "Travel", icon: Globe, desc: "Exotic expeditions & booking tours", badge: "Global" },
-  { name: "Gaming", icon: Zap, desc: "Esports leagues & streaming hubs", badge: "NextGen" },
-  { name: "Portfolio", icon: Layers, desc: "Designer showcases & resume sites", badge: "Personal" },
-  { name: "Agency", icon: Wand2, desc: "Digital marketing & creative studios", badge: "Agency" }
+  { name: "Salon, Spa & Beauty Parlour", icon: Sparkles, desc: "Hair stylists, nail spas, facial skin care & bridal makeup", badge: "High Demand" },
+  { name: "Dentist & Medical Healthcare Clinic", icon: ShieldCheck, desc: "Family dentists, pediatricians & local healthcare clinics", badge: "Essential" },
+  { name: "Plumbing, Electrician & Home Handyman", icon: Rocket, desc: "24/7 emergency plumbers, electricians & home repair contractors", badge: "Emergency" },
+  { name: "Restaurant, Café & Bakery", icon: Flame, desc: "Local eateries, bakeries, cafes & fine dining spots", badge: "Popular" },
+  { name: "Real Estate Broker & Property Dealer", icon: Globe, desc: "Property dealers, home listing brokers & buyer advisory", badge: "High Value" },
+  { name: "Lawyer, Advocate & Legal Consultancy", icon: ShieldCheck, desc: "Advocates, estate planning, and legal consultants", badge: "Trusted" },
+  { name: "Auto Repair, Garage & Car Detailing", icon: Zap, desc: "Mechanical garages, tire services, and auto detailing", badge: "Essential" },
+  { name: "Fitness Gym, Yoga & Personal Training", icon: Rocket, desc: "Local fitness gyms, personal trainers & yoga studios", badge: "Active" },
+  { name: "Event Management & Wedding Planner", icon: Star, desc: "Wedding planners, banquet organizers & milestone events", badge: "Creative" },
+  { name: "Pet Care, Veterinary & Dog Grooming", icon: Heart, desc: "Pet grooming parlours, veterinary clinics & dog daycares", badge: "Loving" },
+  { name: "Cleaning & Janitorial Services", icon: Sparkles, desc: "Residential maid services & commercial office janitorial", badge: "In Demand" },
+  { name: "Coaching Classes, Tuition & Preschool", icon: Laptop, desc: "Private tutoring centers, daycares & STEM academies", badge: "Education" }
 ];
 
 const LandingPage = () => {

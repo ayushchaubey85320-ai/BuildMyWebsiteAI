@@ -37,7 +37,7 @@ class WebsiteCreatePayload(BaseModel):
     title: str
     category: str
     theme: str = "MODERN_DARK"
-    theme_mode: str = "dark"  # "dark" or "light"
+    theme_mode: str = "light"  # "dark" or "light"
     website_type: str = "single"  # "single" or "multi"
     background_style: str = "live"  # "live" or "static"
     selected_pages: List[str] = ["Home", "About Us", "Services", "Contact Us"]
@@ -45,6 +45,17 @@ class WebsiteCreatePayload(BaseModel):
     contact_email: Optional[str] = None
     contact_phone: Optional[str] = None
     prompt: Optional[str] = None
+
+    # Rich business inputs
+    tagline: Optional[str] = None
+    primary_services: Optional[str] = None
+    service_area: Optional[str] = None
+    target_audience: Optional[str] = None
+    key_highlights: Optional[str] = None
+    business_hours: Optional[str] = None
+    address: Optional[str] = None
+    cta_text: Optional[str] = None
+    business_spec_json: Optional[Dict[str, Any]] = None
 
 class WebsiteEditPayload(BaseModel):
     prompt_instruction: str

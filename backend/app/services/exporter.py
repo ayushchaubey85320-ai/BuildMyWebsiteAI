@@ -131,14 +131,18 @@ footer a {{ color: var(--accent-color); }}
 
     def build_page_html(page_name: str, p_data: Dict[str, Any]) -> str:
         p_data = safe_dict(p_data)
-        p_hero = safe_dict(p_data.get("hero")) if website_type == "multi" and p_data.get("hero") else hero
-        p_about = safe_dict(p_data.get("about")) if website_type == "multi" and p_data.get("about") else about
-        p_services = safe_dict(p_data.get("services")) if website_type == "multi" and p_data.get("services") else services
-        p_features = safe_dict(p_data.get("features")) if website_type == "multi" and p_data.get("features") else features
-        p_faq = safe_dict(p_data.get("faq")) if website_type == "multi" and p_data.get("faq") else faq
-        p_testimonials = safe_dict(p_data.get("testimonials")) if website_type == "multi" and p_data.get("testimonials") else testimonials
-        p_cta = safe_dict(p_data.get("cta")) if website_type == "multi" and p_data.get("cta") else cta
-        p_footer = safe_dict(p_data.get("footer")) if website_type == "multi" and p_data.get("footer") else footer
+        is_multi = website_type == "multi"
+        is_subpage = is_multi and page_name != "Home"
+
+        p_hero = safe_dict(p_data.get("hero")) if (is_subpage and "hero" in p_data) else hero
+        p_about = safe_dict(p_data.get("about")) if (is_subpage and "about" in p_data) else (None if is_subpage else about)
+        p_services = safe_dict(p_data.get("services")) if (is_subpage and "services" in p_data) else (None if is_subpage else services)
+        p_features = safe_dict(p_data.get("features")) if (is_subpage and "features" in p_data) else (None if is_subpage else features)
+        p_faq = safe_dict(p_data.get("faq")) if (is_subpage and "faq" in p_data) else (None if is_subpage else faq)
+        p_testimonials = safe_dict(p_data.get("testimonials")) if (is_subpage and "testimonials" in p_data) else (None if is_subpage else testimonials)
+        p_cta = safe_dict(p_data.get("cta")) if (is_subpage and "cta" in p_data) else (None if is_subpage else cta)
+        p_contact = safe_dict(p_data.get("contact")) if (is_subpage and "contact" in p_data) else (None if is_subpage else contact)
+        p_footer = safe_dict(p_data.get("footer")) if (is_subpage and "footer" in p_data) else footer
 
         nav_links = navbar.get("links", [])
         if not isinstance(nav_links, list): nav_links = []
@@ -317,23 +321,86 @@ footer a {{ color: var(--accent-color); }}
     </div>
   </section>"""
 
-        cta_html = f"""
-  <section id="contact" class="section" style="background: linear-gradient(135deg, var(--surface-color), var(--bg-color)); text-align: center;" data-aos="zoom-in">
+        contact_html = ""
+        if p_contact and isinstance(p_contact, dict):
+            phone_val = p_contact.get("contact_phone") or (p_footer.get("contact_phone") if p_footer else "") or "+1 (800) 555-0199"
+            email_val = p_contact.get("contact_email") or (p_footer.get("contact_email") if p_footer else "") or "contact@example.com"
+            address_val = p_contact.get("address") or (p_footer.get("address") if p_footer else "") or f"120 Main Street, Suite 200"
+            hours_val = p_contact.get("business_hours") or (p_footer.get("business_hours") if p_footer else "") or "Mon - Sat: 9:00 AM - 7:00 PM"
+            contact_html = f"""
+  <section id="contact" class="section-alt" data-aos="fade-up">
+    <div class="container">
+      <div class="section-header">
+        <span class="badge">{p_contact.get("section_badge", "Get In Touch")}</span>
+        <h2 class="section-title">{p_contact.get("section_title", f"Contact {brand_name}")}</h2>
+        <p class="section-subtitle">{p_contact.get("section_subtitle", "Reach out directly or send us an inquiry below.")}</p>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px;">
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div class="card" style="padding: 20px;">
+            <div style="font-size: 24px; margin-bottom: 8px;">📞</div>
+            <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px;">Phone Support</div>
+            <a href="tel:{phone_val}" style="color: var(--primary-color); font-weight: 600;">{phone_val}</a>
+          </div>
+          <div class="card" style="padding: 20px;">
+            <div style="font-size: 24px; margin-bottom: 8px;">✉️</div>
+            <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px;">Email Us</div>
+            <a href="mailto:{email_val}" style="color: var(--primary-color); font-weight: 600;">{email_val}</a>
+          </div>
+          <div class="card" style="padding: 20px;">
+            <div style="font-size: 24px; margin-bottom: 8px;">📍</div>
+            <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px;">Location</div>
+            <p style="font-size: 13px; color: rgba(15, 23, 42, 0.7);">{address_val}</p>
+          </div>
+          <div class="card" style="padding: 20px;">
+            <div style="font-size: 24px; margin-bottom: 8px;">⏰</div>
+            <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px;">Business Hours</div>
+            <p style="font-size: 13px; color: rgba(15, 23, 42, 0.7);">{hours_val}</p>
+          </div>
+        </div>
+        <div class="card" style="padding: 32px;">
+          <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 16px;">{p_contact.get("form_title", "Send a Direct Inquiry")}</h3>
+          <form onsubmit="event.preventDefault(); alert('Thank you! Your message has been sent to our team.'); this.reset();" style="display: flex; flex-direction: column; gap: 14px;">
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Your Name</label>
+              <input type="text" required placeholder="John Doe" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); font-size: 14px;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Your Contact (Email or Phone)</label>
+              <input type="text" required placeholder="name@domain.com or +1 234..." style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); font-size: 14px;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Message or Request</label>
+              <textarea rows="4" required placeholder="Describe what service or consultation you need..." style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); font-size: 14px;"></textarea>
+            </div>
+            <button type="submit" class="btn-primary" style="margin-top: 8px;">{p_contact.get("cta_text", "Send Message")}</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>"""
+
+        cta_html = ""
+        if p_cta and isinstance(p_cta, dict):
+            cta_html = f"""
+  <section class="section" style="background: linear-gradient(135deg, var(--surface-color), var(--bg-color)); text-align: center;" data-aos="zoom-in">
     <div class="container" style="max-width: 700px;">
       <h2 class="section-title">{p_cta.get("headline", f"Ready to Connect with {brand_name}?")}</h2>
       <p class="hero-subtitle">{p_cta.get("subheadline", "Reach out today and our dedicated team will respond promptly.")}</p>
-      <a href="mailto:{p_footer.get("contact_email", "info@example.com")}" class="btn-primary" style="margin-top: 10px;">{p_cta.get("button_text", "Contact Us Now")}</a>
+      <a href="mailto:{p_footer.get("contact_email", "info@example.com") if p_footer else "info@example.com"}" class="btn-primary" style="margin-top: 10px;">{p_cta.get("button_text", "Contact Us Now")}</a>
     </div>
   </section>"""
 
         footer_html = f"""
   <footer>
     <div class="container">
-      <p style="font-weight: 700; margin-bottom: 6px; color: #fff;">{p_footer.get("brand", brand_name)}</p>
-      <p style="margin-bottom: 16px;">{p_footer.get("copyright", f"© 2026 {brand_name}. All rights reserved.")}</p>
-      <p style="font-size: 12px; opacity: 0.6;">{p_footer.get("credit", "Website built by BuildMyWebsiteAI")}</p>
+      <p style="font-weight: 700; margin-bottom: 6px; color: #fff;">{p_footer.get("brand", brand_name) if p_footer else brand_name}</p>
+      <p style="margin-bottom: 16px;">{p_footer.get("copyright", f"© 2026 {brand_name}. All rights reserved.") if p_footer else f"© 2026 {brand_name}. All rights reserved."}</p>
+      <p style="font-size: 12px; opacity: 0.6;">{p_footer.get("credit", "Website built by BuildMyWebsiteAI") if p_footer else "Website built by BuildMyWebsiteAI"}</p>
     </div>
   </footer>"""
+
+        contact_btn_href = "contact_us.html" if website_type == "multi" and "Contact Us" in selected_pages else "#contact"
 
         return f"""<!DOCTYPE html>
 <html lang="en">
@@ -359,7 +426,7 @@ footer a {{ color: var(--accent-color); }}
         <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle Menu">☰</button>
         <ul class="nav-links" id="nav-links">
           {nav_items_html}
-          <li><a href="#contact" class="btn-primary" style="padding: 6px 18px; font-size: 13px;">Get In Touch</a></li>
+          <li><a href="{contact_btn_href}" class="btn-primary" style="padding: 6px 18px; font-size: 13px;">Get In Touch</a></li>
         </ul>
       </div>
     </div>
@@ -371,6 +438,7 @@ footer a {{ color: var(--accent-color); }}
   {features_html}
   {faq_html}
   {testimonials_html}
+  {contact_html}
   {cta_html}
   {footer_html}
 

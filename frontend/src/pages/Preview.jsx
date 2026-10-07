@@ -363,18 +363,56 @@ const Preview = () => {
                   </>
                 )}
                 {activePage === 'About Us' && (
-                  <AboutSection data={activePageData.about || pageTree.about} colors={colors} viewport={viewport} />
+                  <>
+                    <AboutSection data={activePageData.about || pageTree.about} colors={colors} viewport={viewport} />
+                    <FeaturesSection data={activePageData.features || pageTree.features} colors={colors} viewport={viewport} />
+                    <TestimonialsSection data={activePageData.testimonials || pageTree.testimonials} colors={colors} viewport={viewport} />
+                  </>
                 )}
                 {activePage === 'Services' && (
-                  <ServicesSection data={activePageData.services || pageTree.services} colors={colors} viewport={viewport} />
+                  <>
+                    <ServicesSection data={activePageData.services || pageTree.services} colors={colors} viewport={viewport} />
+                    <FAQSection data={activePageData.faq || pageTree.faq} colors={colors} viewport={viewport} />
+                    <CTASection
+                      data={activePageData.cta || pageTree.cta}
+                      colors={colors}
+                      viewport={viewport}
+                      contactEmail={website.contact_email || pageTree.footer?.contact_email}
+                    />
+                  </>
+                )}
+                {activePage === 'Pricing' && (
+                  <>
+                    <ServicesSection data={activePageData.services || pageTree.services} colors={colors} viewport={viewport} />
+                    <CTASection
+                      data={activePageData.cta || pageTree.cta}
+                      colors={colors}
+                      viewport={viewport}
+                      contactEmail={website.contact_email || pageTree.footer?.contact_email}
+                    />
+                  </>
+                )}
+                {activePage === 'FAQ' && (
+                  <>
+                    <FAQSection data={activePageData.faq || pageTree.faq} colors={colors} viewport={viewport} />
+                    <CTASection
+                      data={activePageData.cta || pageTree.cta}
+                      colors={colors}
+                      viewport={viewport}
+                      contactEmail={website.contact_email || pageTree.footer?.contact_email}
+                    />
+                  </>
                 )}
                 {activePage === 'Contact Us' && (
-                  <CTASection
-                    data={pageTree.cta}
-                    colors={colors}
-                    viewport={viewport}
-                    contactEmail={website.contact_email || pageTree.footer?.contact_email}
-                  />
+                  <>
+                    <CTASection
+                      data={activePageData.contact || activePageData.cta || pageTree.cta}
+                      colors={colors}
+                      viewport={viewport}
+                      contactEmail={website.contact_email || pageTree.footer?.contact_email}
+                    />
+                    <FAQSection data={pageTree.faq} colors={colors} viewport={viewport} />
+                  </>
                 )}
               </>
             )}

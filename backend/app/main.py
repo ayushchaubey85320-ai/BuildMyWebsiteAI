@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config.settings import settings
-from app.db.session import engine, Base, SessionLocal
+from app.db.session import engine, fallback_engine, Base, SessionLocal
 from app.db.models import User
 from app.utils.auth import get_password_hash
 from app.routes import auth_router, dashboard_router, generator_router, export_router, admin_router, chatbot_router
@@ -15,6 +15,8 @@ from app.routes import auth_router, dashboard_router, generator_router, export_r
 # Auto-create tables & sync DB on startup
 try:
     Base.metadata.create_all(bind=engine)
+    if fallback_engine != engine:
+        Base.metadata.create_all(bind=fallback_engine)
     print("==================================================")
     print("Successfully initialized & synced Database tables.")
     print("==================================================")
