@@ -15,13 +15,6 @@ export default function ServicesSection({ data, colors, viewport }) {
   const cardBorder = isLight ? '#e2e8f0' : (colors.card_border || 'rgba(255,255,255,0.06)');
   const accentColor = colors.primary || '#6366f1';
 
-  const processSteps = [
-    { step: "01", title: "Discovery & Analysis", desc: "We evaluate your core requirements, target audience, and strategic objectives to build a customized roadmap." },
-    { step: "02", title: "Custom Architecture", desc: "Our team designs scalable, high-performance frameworks tailored specifically to your operational workflow." },
-    { step: "03", title: "Implementation & Testing", desc: "Rigorous execution combined with quality assurance protocols ensuring seamless, zero-downtime deployment." },
-    { step: "04", title: "Continuous Optimization", desc: "Ongoing monitoring, proactive updates, and dedicated technical support to guarantee long-term success." }
-  ];
-
   return (
     <motion.section 
       id="services" 
@@ -109,103 +102,27 @@ export default function ServicesSection({ data, colors, viewport }) {
               </div>
 
               <div 
-                className="pt-5 border-t mt-5 flex items-center justify-between text-xs font-bold transition-colors duration-200 group-hover:opacity-80" 
-                style={{ borderColor: isLight ? '#e2e8f0' : 'rgba(255,255,255,0.08)', color: accentColor }}
+                className="pt-4 border-t mt-5 flex items-center justify-between" 
+                style={{ borderColor: isLight ? '#e2e8f0' : 'rgba(255,255,255,0.08)' }}
               >
-                <span>Learn More</span>
-                <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-200" />
+                <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ backgroundColor: isLight ? '#eff6ff' : 'rgba(99,102,241,0.15)', color: accentColor }}>
+                  {item.price || "Available"}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const contactEl = document.getElementById('contact');
+                    if (contactEl) contactEl.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="px-3.5 py-1.5 rounded-lg text-xs font-bold text-white transition transform hover:scale-105"
+                  style={{ backgroundColor: accentColor }}
+                >
+                  Book Service
+                </button>
               </div>
             </motion.div>
           ))}
         </div>
-
-        {/* Premium Execution Workflow Timeline Section */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.98 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className={`rounded-3xl border shadow-2xl space-y-12 relative overflow-hidden ${
-            isMobile ? 'p-6' : 'p-10 lg:p-14'
-          }`}
-          style={{ 
-            backgroundColor: isLight ? '#ffffff' : 'rgba(18, 24, 36, 0.25)', 
-            borderColor: cardBorder 
-          }}
-        >
-          {/* Subtle Grid Backdrop for human-made SaaS theme */}
-          <div className="absolute inset-0 bg-grid-pattern opacity-[0.02] pointer-events-none" />
-
-          <div className="text-center space-y-2 max-w-2xl mx-auto relative z-10">
-            <span 
-              className="font-extrabold uppercase tracking-widest text-[10px] sm:text-xs px-3 py-1 rounded-full border inline-block"
-              style={{ 
-                backgroundColor: isLight ? '#fdf2f8' : 'rgba(244,114,182,0.03)', 
-                color: '#db2777', 
-                borderColor: isLight ? '#fbcfe8' : 'rgba(244,114,182,0.08)' 
-              }}
-            >
-              Our Methodology
-            </span>
-            <h3 className={`font-black tracking-tight ${isMobile ? 'text-xl' : 'text-2xl sm:text-3xl'}`} style={{ color: textColor }}>
-              How We Deliver Excellence
-            </h3>
-            <p className="text-xs leading-relaxed font-medium" style={{ color: subtextColor }}>
-              A systematic, transparent 4-step execution model engineered to guarantee measurable results.
-            </p>
-          </div>
-
-          {/* Workflow Steps with connected tracker lines */}
-          <div className="relative">
-            {/* Desktop timeline track connector line */}
-            {!isMobile && (
-              <div 
-                className="absolute top-8 left-6 right-6 h-[1.5px] border-t border-dashed -z-10" 
-                style={{ borderColor: isLight ? '#e2e8f0' : 'rgba(255,255,255,0.08)' }}
-              />
-            )}
-
-            <div className={`grid gap-8 relative z-10 ${
-              isMobile ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
-            }`}>
-              {processSteps.map((p, idx) => (
-                <motion.div 
-                  key={idx} 
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: idx * 0.1 }}
-                  className="space-y-3 relative group"
-                >
-                  {/* Step bubble */}
-                  <div 
-                    className="w-14 h-14 rounded-full border flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-105"
-                    style={{ 
-                      backgroundColor: isLight ? '#ffffff' : '#0f172a',
-                      borderColor: isLight ? '#bfdbfe' : 'rgba(255,255,255,0.1)',
-                    }}
-                  >
-                    <span 
-                      className="text-lg font-black bg-gradient-to-tr from-indigo-500 to-pink-500 bg-clip-text text-transparent"
-                    >
-                      {p.step}
-                    </span>
-                  </div>
-
-                  <div className="space-y-1">
-                    <h4 className="text-sm sm:text-base font-bold" style={{ color: textColor }}>
-                      {p.title}
-                    </h4>
-                    <p className="text-xs leading-relaxed font-medium" style={{ color: subtextColor }}>
-                      {p.desc}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-
       </div>
     </motion.section>
   );

@@ -177,11 +177,10 @@ def call_gemini_ai_content(master_prompt: str, category: str, title: str) -> Dic
     if not api_key:
         return None
 
+    # Supported and recommended Google Gemini models (fastest first)
     models_to_try = [
-        "gemini-1.5-flash-latest",
-        "gemini-1.5-flash",
-        "gemini-2.0-flash-exp",
-        "gemini-pro"
+        "gemini-3.8-flash",
+        "gemini-flash-latest"
     ]
     for model_name in models_to_try:
         try:
@@ -213,11 +212,10 @@ def call_gemini_ai_content(master_prompt: str, category: str, title: str) -> Dic
                     "responseMimeType": "application/json"
                 }
             }
-            resp = requests.post(url, headers=headers, json=req_payload, timeout=10)
+            resp = requests.post(url, headers=headers, json=req_payload, timeout=5)
             if resp.status_code == 200:
                 data = resp.json()
                 text_body = data['candidates'][0]['content']['parts'][0]['text']
-                # Strip markdown fences if present
                 clean_text = text_body.strip()
                 if clean_text.startswith("```json"):
                     clean_text = clean_text[7:]
@@ -248,7 +246,7 @@ def get_category_preset(
     # Defaults customized for all 12 non-tech categories
     presets = {
         "Salon, Spa & Beauty Parlour": {
-            "badge": "✨ Luxury Styling, Hair & Wellness Experience",
+            "badge": "✨ Luxury Styling, Hair & Wellness Sanctuary",
             "headline": f"Reveal Your Best Self at {safe_title}",
             "subheadline": f"Experience award-winning hair styling, rejuvenating skin treatments, bridal makeup, and relaxation in our modern sanctuary{' serving ' + service_area if service_area else ''}.",
             "about_story": [
@@ -259,12 +257,12 @@ def get_category_preset(
             "mission": "To celebrate individual beauty with artistic craftsmanship, organic care, and unhurried personal attention.",
             "vision": "To be the most trusted salon and wellness destination known for transformational styling and genuine client care.",
             "services": [
-                {"title": "Master Haircut & Styling", "description": "Personalized consultation, luxury wash, precision cut, and salon blow-dry.", "price": "From $45"},
-                {"title": "Custom Balayage & Hair Color", "description": "Hand-painted highlights and dimensional shades with zero-ammonia organic color.", "price": "From $120"},
-                {"title": "Rejuvenating Glow Facial", "description": "Deep pore cleansing, botanical exfoliation, and lymphatic hydration massage.", "price": "$85"},
-                {"title": "Luxury Spa Pedicure & Manicure", "description": "Gentle cuticle care, organic sugar scrub, hot towel wrap, and gel polish.", "price": "$65"},
-                {"title": "Keratin Smoothing Therapy", "description": "Frizz-free, sleek, mirror-shine treatment lasting up to 4 months.", "price": "$150"},
-                {"title": "Bridal & Glam Event Makeup", "description": "HD airbrush makeup and elegant hair design for weddings and special occasions.", "price": "Custom Quote"}
+                {"title": "Master Haircut & Styling", "description": "Personalized consultation, luxury wash, precision cut, and salon blow-dry.", "price": "From ₹499"},
+                {"title": "Custom Balayage & Hair Color", "description": "Hand-painted highlights and dimensional shades with zero-ammonia organic color.", "price": "From ₹2,499"},
+                {"title": "Rejuvenating Glow Facial", "description": "Deep pore cleansing, botanical exfoliation, and lymphatic hydration massage.", "price": "₹1,299"},
+                {"title": "Luxury Spa Pedicure & Manicure", "description": "Gentle cuticle care, organic sugar scrub, hot towel wrap, and gel polish.", "price": "₹899"},
+                {"title": "Keratin Smoothing Therapy", "description": "Frizz-free, sleek, mirror-shine treatment lasting up to 4 months.", "price": "From ₹3,999"},
+                {"title": "Bridal & Glam Event Makeup", "description": "HD airbrush makeup and elegant hair design for weddings and special occasions.", "price": "Custom Package"}
             ],
             "features": [
                 {"title": "Certified Master Stylists", "description": "Internationally trained artists with 10+ years of trendsetting experience."},
@@ -280,11 +278,91 @@ def get_category_preset(
                 {"name": "Emily Carter", "role": "Spa Enthusiast", "quote": "Their Glow Facial took years off my skin. The calm environment and skilled staff make this my monthly sanctuary."}
             ],
             "faqs": [
-                {"question": "How do I book an appointment?", "answer": "You can book directly through our online button, call us, or send an email. Walk-ins are also welcome subject to availability."},
-                {"question": "What hair color brands do you use?", "answer": "We use premium organic, low-ammonia Italian and French salon formulas that preserve hair strength and shine."},
+                {"question": "How do I book an appointment?", "answer": "You can book directly through our online booking button, call us, or send an inquiry. Walk-ins are also welcome subject to availability."},
+                {"question": "What hair color brands do you use?", "answer": "We use premium organic, low-ammonia formulas that preserve hair strength and natural shine."},
                 {"question": "What is your cancellation policy?", "answer": "We kindly request at least 24 hours notice for cancellations so we can accommodate other guests."},
                 {"question": "Do you offer consultations before major treatments?", "answer": "Yes! We offer complimentary 15-minute consultations to discuss color, extensions, or bridal styling."},
                 {"question": "Is parking available at the salon?", "answer": "Yes, we provide convenient guest parking right outside our entrance."}
+            ]
+        },
+        "Coaching Classes, Tuition & Preschool": {
+            "badge": "📚 Trusted Academic Mentorship & Exam Excellence",
+            "headline": f"Empowering Students to Achieve Top Academic Ranks at {safe_title}",
+            "subheadline": f"Comprehensive coaching for School Boards, IIT-JEE, NEET, Foundation, and competitive exams with personalized mentoring and proven results{' in ' + service_area if service_area else ''}.",
+            "about_story": [
+                f"Welcome to {safe_title}, where academic potential transforms into proven success. Founded by passionate educators, our mission is to make learning engaging, structured, and result-oriented.",
+                "We provide concept-first classroom coaching, comprehensive study modules, daily doubt-clearing sessions, and regular mock tests tailored for CBSE, ICSE, State Boards, IIT-JEE, and NEET aspirants.",
+                "Our small batch sizes ensure that every student receives individual attention, continuous encouragement, and the analytical problem-solving skills needed to excel in competitive environments."
+            ],
+            "mission": "To inspire intellectual curiosity and empower every student with conceptual clarity, confidence, and discipline to achieve their dream academic careers.",
+            "vision": "To be the most reputable and outcome-driven coaching institute celebrated for student success, ethical education, and top academic ranks.",
+            "services": [
+                {"title": "Class 9th & 10th Foundation & Board Prep", "description": "Core concepts in Science, Mathematics, and English with rigorous board exam practice.", "price": "Annual & Monthly Plans"},
+                {"title": "IIT-JEE (Mains & Advanced) Intensive Batch", "description": "High-yield problem solving in Physics, Chemistry, and Mathematics with All-India test series.", "price": "Structured Batches"},
+                {"title": "NEET-UG Medical Entrance Program", "description": "NCERT line-by-line Biology, advanced Physics & Chemistry numericals with simulated mock exams.", "price": "Comprehensive Program"},
+                {"title": "Class 11th & 12th Senior Secondary Boards", "description": "Thorough coverage of board syllabus, practical lab guidance, and previous 10-year question solving.", "price": "Subject & Combo Batches"},
+                {"title": "Daily Doubt Solving & One-on-One Mentoring", "description": "Dedicated doubt-clearing counters where students get personal guidance from faculty.", "price": "Included Free"},
+                {"title": "Weekly Mock Tests & Performance Analytics", "description": "Regular computerized assessments with detailed performance insights shared with parents.", "price": "Weekly Schedule"}
+            ],
+            "features": [
+                {"title": "Top Ranker Faculty & Mentors", "description": "Experienced educators from premier universities with a 10+ year track record of producing top scores."},
+                {"title": "Small Batch Sizes (Max 25 Students)", "description": "Every student gets personalized attention, seating comfort, and active teacher interaction."},
+                {"title": "Comprehensive Printed Study Modules", "description": "Curated theory books, practice question banks, formula sheets, and solved previous papers."},
+                {"title": "Regular Parent-Teacher Reviews", "description": "Monthly performance reports, attendance tracking, and parent consultations."},
+                {"title": "Air-Conditioned Modern Classrooms", "description": "Ergonomic seating, smart interactive display boards, and peaceful study library."},
+                {"title": "Scholarship & Merit Rewards", "description": "Merit-based fee concessions for hardworking and deserving students based on admission tests."}
+            ],
+            "testimonials": [
+                {"name": "Aman Sharma", "role": "Scored 98.4% in 12th Board", "quote": f"The faculty at {safe_title} helped me build solid conceptual foundations in Physics and Math. Their test series was a complete game-changer!"},
+                {"name": "Dr. Sunita Verma", "role": "Parent of NEET Aspirant", "quote": f"Enrolling my daughter in {safe_title} was the best decision. The teachers are approachable, caring, and constantly monitor every student's progress."},
+                {"name": "Rohan Deshmukh", "role": "JEE Mains Qualified", "quote": f"The daily doubt counters and disciplined study material at {safe_title} gave me the confidence to crack competitive questions easily."}
+            ],
+            "faqs": [
+                {"question": "What curriculum and boards do you cover?", "answer": "We provide coaching for CBSE, ICSE, and State Boards from Classes 8 to 12, along with specialized batches for IIT-JEE and NEET."},
+                {"question": "How are doubt-clearing sessions conducted?", "answer": "We hold dedicated doubt classes after regular lectures where students can sit with faculty one-on-one until concepts are crystal clear."},
+                {"question": "Do you offer demo classes for new students?", "answer": "Yes! We provide 2 complimentary trial/demo classes so students and parents can experience our teaching quality before enrolling."},
+                {"question": "What is the fee payment structure?", "answer": "We offer flexible fee options including monthly installments, quarterly plans, and scholarships based on admission assessments."},
+                {"question": "Are mock tests and study materials included in the fee?", "answer": "Yes, all printed modules, assignment sheets, and weekly mock test series are completely included with no hidden fees."}
+            ]
+        },
+        "Fitness Gym, Yoga & Personal Training": {
+            "badge": "💪 Premier Fitness, Strength & Holistic Wellness",
+            "headline": f"Transform Your Strength & Health at {safe_title}",
+            "subheadline": f"State-of-the-art gym equipment, certified personal training, yoga sessions, and custom nutrition plans{' in ' + service_area if service_area else ''}.",
+            "about_story": [
+                f"Welcome to {safe_title}, your premier fitness and training destination designed to help you unlock your peak physical and mental potential.",
+                "Whether your goal is fat loss, muscle building, athletic endurance, or mindful yoga flexibility, our certified trainers provide personalized coaching in a supportive, energizing atmosphere.",
+                "Equipped with world-class imported gym equipment, dedicated functional cross-training zones, and clean locker amenities, we make fitness an enjoyable lifestyle habit."
+            ],
+            "mission": "To empower individuals of all fitness levels to build strength, vitality, and lifelong wellness through science-backed training.",
+            "vision": "To be the most motivating and result-oriented fitness hub in the community.",
+            "services": [
+                {"title": "Strength & Hypertrophy Training", "description": "Free weights, Olympic lifting platforms, and pin-loaded selectorized machines.", "price": "Monthly & Annual"},
+                {"title": "One-on-One Certified Personal Coaching", "description": "Customized workout regimens and bi-weekly body composition tracking.", "price": "From ₹3,500/mo"},
+                {"title": "High-Intensity HIIT & Functional Cardio", "description": "High-energy calorie-burning group classes designed to boost metabolic endurance.", "price": "Group Pass"},
+                {"title": "Mindful Yoga & Flexibility Sessions", "description": "Hatha and Vinyasa yoga flows for posture correction, mobility, and stress reduction.", "price": "Morning & Evening"},
+                {"title": "Personalized Nutrition & Diet Planning", "description": "Macro-nutrient balanced meal charts designed for fat loss and muscle gain.", "price": "Included with PT"},
+                {"title": "Post-Workout Recovery & Steam Bath", "description": "Relaxation zone with clean steam showers, lockers, and recovery stretching areas.", "price": "All Members"}
+            ],
+            "features": [
+                {"title": "Certified Fitness Coaches", "description": "ACE, ISSA, and ACSM accredited trainers dedicated to proper form and safety."},
+                {"title": "Top-Tier Modern Equipment", "description": "Biomechanical machinery, dumbbells up to 50kg, and specialized cardio decks."},
+                {"title": "Hygienic & Sanitized Environment", "description": "Spotless workout floors, air purification, and continuous sanitization protocols."},
+                {"title": "Flexible Workout Hours", "description": "Open 7 days a week from 6:00 AM to 10:00 PM to fit your busy lifestyle."},
+                {"title": "Custom Diet & Macro Tracking", "description": "Tailored nutritional counseling to ensure your hard work translates to results."},
+                {"title": "Friendly Welcoming Community", "description": "An encouraging zero-intimidation environment for beginners and athletes alike."}
+            ],
+            "testimonials": [
+                {"name": "Vikram Malhotra", "role": "Member (Lost 14 kg)", "quote": f"The trainers at {safe_title} completely altered my lifestyle. The personalized workout routines and nutrition guidance delivered real, sustainable results."},
+                {"name": "Pooja Reddy", "role": "Yoga & Fitness Member", "quote": f"Best gym in the area! Super clean facilities, friendly coaches, and the morning yoga classes give me unmatched energy for the entire day."},
+                {"name": "Arjun Nair", "role": "Strength Athlete", "quote": f"{safe_title} has the best heavy lifting gear and power racks in town. The community is supportive and motivating."}
+            ],
+            "faqs": [
+                {"question": "What are your gym operating hours?", "answer": "We are open Monday through Saturday from 6:00 AM to 10:00 PM, and Sundays from 7:00 AM to 8:00 PM."},
+                {"question": "Do you provide a free trial workout session?", "answer": "Yes! We offer a 1-day complimentary guest workout pass so you can experience our facility and meet our coaches."},
+                {"question": "Are personal trainers available for beginners?", "answer": "Absolutely. All new members receive an initial fitness assessment, machine orientation, and workout blueprint."},
+                {"question": "Are shower and locker facilities provided?", "answer": "Yes, we have clean, modern locker rooms with secure storage and hot water showers."},
+                {"question": "Can I freeze my membership if I travel?", "answer": "Yes, quarterly and annual memberships come with flexible membership freezing privileges."}
             ]
         },
         "Dentist & Medical Healthcare Clinic": {
@@ -299,11 +377,11 @@ def get_category_preset(
             "mission": "To provide gentle, accessible, world-class dental and medical care that fosters lifelong health and beautiful smiles.",
             "vision": "To be the community's most recommended clinic recognized for clinical excellence and compassionate patient comfort.",
             "services": [
-                {"title": "Comprehensive Dental Exam & Cleaning", "description": "Gentle plaque removal, digital dental imaging, and oral cancer screening.", "price": "$90"},
-                {"title": "Pain-Free Root Canal & Restoration", "description": "Gentle, microscopic root therapy to save your natural tooth in one visit.", "price": "From $250"},
-                {"title": "Teeth Whitening & Veneers", "description": "In-office LED whitening up to 8 shades brighter and custom ceramic veneers.", "price": "From $180"},
+                {"title": "Comprehensive Dental Exam & Cleaning", "description": "Gentle plaque removal, digital dental imaging, and oral cancer screening.", "price": "From ₹799"},
+                {"title": "Pain-Free Root Canal & Restoration", "description": "Gentle, microscopic root therapy to save your natural tooth in one visit.", "price": "From ₹2,499"},
+                {"title": "Teeth Whitening & Veneers", "description": "In-office LED whitening up to 8 shades brighter and custom ceramic veneers.", "price": "From ₹4,500"},
                 {"title": "Dental Implants & Crowns", "description": "Permanent titanium implants and natural-looking porcelain tooth crowns.", "price": "Custom Quote"},
-                {"title": "Pediatric & Family Dentistry", "description": "Fun, friendly dental visits designed to build healthy oral habits in children.", "price": "$75"},
+                {"title": "Pediatric & Family Dentistry", "description": "Fun, friendly dental visits designed to build healthy oral habits in children.", "price": "₹699"},
                 {"title": "Same-Day Emergency Dental Care", "description": "Immediate relief for toothaches, chipped teeth, and dental trauma.", "price": "Walk-ins Welcome"}
             ],
             "features": [
@@ -320,7 +398,7 @@ def get_category_preset(
                 {"name": "Robert Chen", "role": "Dental Implant Patient", "quote": f"Got two dental crowns done at {safe_title}. The fit is perfect, looks totally natural, and saved my bite."}
             ],
             "faqs": [
-                {"question": "Do you accept dental insurance?", "answer": "Yes, we accept most major dental insurance plans and handle direct billing on your behalf."},
+                {"question": "Do you accept dental insurance?", "answer": "Yes, we accept major health insurance and mediclaim policies and assist with direct claims."},
                 {"question": "What should I do in a dental emergency?", "answer": "Call us immediately. We reserve daily emergency appointments for fast same-day pain relief."},
                 {"question": "Are dental X-rays safe?", "answer": "Our digital X-rays emit up to 90% less radiation than conventional film and provide instant diagnostic clarity."},
                 {"question": "How often should I have my teeth cleaned?", "answer": "We recommend a professional cleaning and checkup every 6 months to prevent decay and gum disease."},
@@ -339,12 +417,12 @@ def get_category_preset(
             "mission": "To keep homes and businesses safe, comfortable, and running smoothly with dependable repair craftsmanship.",
             "vision": "To be the #1 trusted local contractor known for honesty, speed, and lasting repairs.",
             "services": [
-                {"title": "Emergency Leak & Pipe Repair", "description": "Rapid detection and permanent repair of burst pipes, slab leaks, and drips.", "price": "From $85"},
-                {"title": "Water Heater Installation & Repair", "description": "Tankless and traditional water heater maintenance, flush, and replacements.", "price": "From $150"},
-                {"title": "Drain Cleaning & Hydro-Jetting", "description": "Clearing stubborn clogs in sinks, showers, main sewer lines, and toilets.", "price": "$95"},
-                {"title": "Electrical Panel & Circuit Upgrades", "description": "Breaker repairs, 200A panel upgrades, surge protection, and safety inspections.", "price": "From $120"},
-                {"title": "Lighting & Ceiling Fan Installation", "description": "Modern recessed LED lighting, chandelier mounting, and outdoor security fixtures.", "price": "$75/fixture"},
-                {"title": "Full Bathroom & Kitchen Handyman Work", "description": "Faucet replacements, garbage disposal repair, caulking, and fixture mounting.", "price": "Free Estimate"}
+                {"title": "Emergency Leak & Pipe Repair", "description": "Rapid detection and permanent repair of burst pipes, slab leaks, and drips.", "price": "From ₹499"},
+                {"title": "Water Heater Installation & Repair", "description": "Tankless and traditional water heater maintenance, flush, and replacements.", "price": "From ₹799"},
+                {"title": "Drain Cleaning & Unclogging", "description": "Clearing stubborn clogs in sinks, showers, main lines, and toilets.", "price": "From ₹599"},
+                {"title": "Electrical Panel & Circuit Upgrades", "description": "Breaker repairs, panel upgrades, surge protection, and safety inspections.", "price": "From ₹699"},
+                {"title": "Lighting & Ceiling Fan Installation", "description": "Modern recessed LED lighting, chandelier mounting, and outdoor security fixtures.", "price": "From ₹299/point"},
+                {"title": "Full Bathroom & Kitchen Handyman Work", "description": "Faucet replacements, sanitary fitting repair, caulking, and fixture mounting.", "price": "Free Estimate"}
             ],
             "features": [
                 {"title": "Licensed & Fully Insured", "description": "Certified master plumbers and electricians protecting your home."},
@@ -357,7 +435,7 @@ def get_category_preset(
             "testimonials": [
                 {"name": "Mark Stevens", "role": "Homeowner", "quote": f"Our main pipe burst on a Sunday night. {safe_title} arrived in 35 minutes and fixed it cleanly. Lifesavers!"},
                 {"name": "Karen Wilson", "role": "Property Manager", "quote": f"{safe_title} manages all plumbing and electrical for our 12 rental units. Honest, punctual, and highly skilled."},
-                {"name": "Brian Taylor", "role": "Resident", "quote": "They replaced our old electrical panel and installed tankless water heating. Clean work, great price, and super friendly."}
+                {"name": "Brian Taylor", "role": "Resident", "quote": "They replaced our old electrical panel and installed water heating. Clean work, great price, and super friendly."}
             ],
             "faqs": [
                 {"question": "How quickly can you arrive for an emergency?", "answer": "For urgent plumbing or electrical emergencies, our local technicians typically arrive within 45 to 60 minutes."},
@@ -366,67 +444,321 @@ def get_category_preset(
                 {"question": "Can I get an estimate before the work starts?", "answer": "Absolutely! We inspect the issue and give you a written upfront quote before starting any work."},
                 {"question": "What areas do you service?", "answer": f"We proudly serve the entire local metropolitan area and surrounding neighborhoods."}
             ]
+        },
+        "Restaurant, Café & Bakery": {
+            "badge": "🍽️ Artisanal Cuisine, Fresh Bakes & Warm Hospitality",
+            "headline": f"Savor Handcrafted Flavors & Memories at {safe_title}",
+            "subheadline": f"Farm-fresh ingredients, wood-fired specialties, specialty coffee, and decadent pastries created with love{' in ' + service_area if service_area else ''}.",
+            "about_story": [
+                f"Welcome to {safe_title}, where culinary passion meets warm community hospitality. Every dish on our menu tells a story of fresh flavors, time-honored recipes, and modern flair.",
+                "From our morning bakery ovens serving sourdough bread and buttery croissants to our lively dinner kitchen crafting gourmet plates, we source ingredients from local organic producers.",
+                "Whether you are dropping by for a peaceful morning espresso, celebrating a family dinner, or hosting a gathering, our cozy atmosphere and attentive team make every visit memorable."
+            ],
+            "mission": "To craft heartwarming, delicious meals that bring people together around authentic hospitality.",
+            "vision": "To be the beloved neighborhood culinary haven known for quality, freshness, and memorable dining experiences.",
+            "services": [
+                {"title": "Artisanal Wood-Fired & Specialty Cuisine", "description": "Chef-curated gourmet entrees made with locally sourced organic produce.", "price": "A La Carte"},
+                {"title": "Specialty Espresso & Hand-Brewed Coffee", "description": "Single-origin beans roasted to perfection, cold brews, and botanical teas.", "price": "From ₹180"},
+                {"title": "Fresh Daily Sourdough & Pastries", "description": "Flaky croissants, sourdough boules, cinnamon brioche, and tea cakes.", "price": "From ₹120"},
+                {"title": "Private Dining & Celebration Banquets", "description": "Dedicated indoor and outdoor event spaces for birthdays, anniversaries, and parties.", "price": "Custom Menus"},
+                {"title": "Custom Designer Cakes & Patisserie", "description": "Handcrafted celebration cakes, Belgian chocolate ganache, and dessert platters.", "price": "By Order"},
+                {"title": "Doorstep Delivery & Gourmet Takeout", "description": "Eco-friendly insulated packaging ensuring restaurant-quality taste at home.", "price": "Available Daily"}
+            ],
+            "features": [
+                {"title": "Farm-to-Table Freshness", "description": "Ingredients sourced daily from trusted local organic farmers."},
+                {"title": "Master Chefs & Bakers", "description": "Trained culinary artists with decades of passion for gastronomy."},
+                {"title": "Cozy Ambiance & Free Wi-Fi", "description": "Warm interior design, soft lighting, and comfortable seating for work or leisure."},
+                {"title": "Hygienic Open Kitchen", "description": "Stringent hygiene protocols and food safety certified operations."},
+                {"title": "Vegetarian & Vegan Choices", "description": "Extensive menu options catering to gluten-free, vegan, and healthy diets."},
+                {"title": "Instant Online Reservations", "description": "Reserve your favorite table online with instant SMS confirmation."}
+            ],
+            "testimonials": [
+                {"name": "Ananya Sen", "role": "Food Critic & Blogger", "quote": f"The flavors at {safe_title} are exquisite! From the sourdough to the main course, every bite is pure perfection."},
+                {"name": "Sameer Joshi", "role": "Regular Guest", "quote": "My favorite weekend spot. The coffee is unmatched, the staff is welcoming, and the atmosphere is so relaxing."},
+                {"name": "Kavita Rao", "role": "Celebrated Birthday Party", "quote": f"Hosted our family anniversary at {safe_title}. The custom menu and service were beyond our expectations!"}
+            ],
+            "faqs": [
+                {"question": "Do I need a reservation to dine in?", "answer": "Walk-ins are always warmly welcomed, though we recommend online table reservations for Friday and weekend dinners."},
+                {"question": "Do you offer vegan and gluten-free options?", "answer": "Yes! Our menu features clearly marked plant-based, dairy-free, and gluten-sensitive selections."},
+                {"question": "How far in advance should I order custom celebration cakes?", "answer": "We kindly ask for at least 24 to 48 hours notice for custom theme cakes and large bakery orders."},
+                {"question": "Is outdoor patio seating available?", "answer": "Yes, we offer both air-conditioned indoor dining and a scenic open-air garden seating area."},
+                {"question": "Do you cater for corporate and private events?", "answer": "Yes, we provide full-service catering and custom finger food platters for events of all sizes."}
+            ]
+        },
+        "Real Estate Broker & Property Dealer": {
+            "badge": "🏡 Verified Properties, Strategic Investments & Prime Real Estate",
+            "headline": f"Discover Your Dream Home & Prime Investments with {safe_title}",
+            "subheadline": f"Trusted residential and commercial real estate advisory with 100% verified legal titles and zero hidden brokerage stress{' across ' + service_area if service_area else ''}.",
+            "about_story": [
+                f"{safe_title} is your trusted real estate advisory partner. We believe that buying, selling, or leasing property is one of life's most meaningful financial milestones.",
+                "With comprehensive knowledge of prime residential developments, commercial high-streets, and emerging suburban growth corridors, we guide buyers and investors with total transparency.",
+                "We conduct thorough 30-year legal title checks, negotiate fair market values, assist with home loans, and handle registration paperwork from start to finish."
+            ],
+            "mission": "To empower clients with honest real estate intelligence, verified properties, and seamless property acquisition.",
+            "vision": "To be the most reliable and customer-centric property consultancy in the region.",
+            "services": [
+                {"title": "Luxury Residential Apartments & Villas", "description": "Modern gated communities, penthouses, and independent luxury villas.", "price": "Verified Listings"},
+                {"title": "Commercial Retail & Office Spaces", "description": "High-footfall retail outlets, corporate suites, and pre-leased income assets.", "price": "High ROI"},
+                {"title": "Residential Plots & Land Investment", "description": "Gated plotted developments with clear approvals and high capital appreciation.", "price": "Prime Locations"},
+                {"title": "Legal Title Verification & Due Diligence", "description": "Complete 30-year encumbrance search, municipal approvals, and title reports.", "price": "Advisory"},
+                {"title": "Home Loan & Financial Assistance", "description": "Tie-ups with leading banks for swift loan sanctions at lowest interest rates.", "price": "Free Assistance"},
+                {"title": "Property Valuation & Resale Management", "description": "Accurate comparative market analysis to help sellers close at highest value.", "price": "Fast Closures"}
+            ],
+            "features": [
+                {"title": "100% Verified Legal Documents", "description": "Every property is vetted by legal experts to ensure zero litigation risk."},
+                {"title": "Direct Developer Pricing", "description": "Exclusive builder discounts and inaugural launch offers with zero extra markup."},
+                {"title": "End-to-End Paperwork Support", "description": "From agreement drafting to stamp duty payment and registry execution."},
+                {"title": "Personalized Site Visits", "description": "Complimentary pickup and guided property tours with dedicated advisors."},
+                {"title": "High Rental Yield Analysis", "description": "Data-driven investment reports to maximize rental returns and capital growth."},
+                {"title": "Post-Purchase Handholding", "description": "Assistance with utility transfers, interior fit-outs, and tenant leasing."}
+            ],
+            "testimonials": [
+                {"name": "Rajesh Singhania", "role": "Apartment Buyer", "quote": f"Found our dream 3BHK through {safe_title}. Their team showed extreme patience, checked all legal documents, and got us an incredible deal."},
+                {"name": "Deepak Mehta", "role": "Commercial Investor", "quote": f"Investing in retail property with {safe_title} gave me 9% annual rental yield. Honest guidance with zero fluff."},
+                {"name": "Sneha Kulkarni", "role": "First-Time Homeowner", "quote": "As a first-time buyer, the paperwork was daunting. {safe_title} managed everything from loan approval to registration smoothly."}
+            ],
+            "faqs": [
+                {"question": "How do you verify the legality of listed properties?", "answer": "Our legal team verifies the mother deed, land title records, RERA registration, and municipal building sanctions before listing any property."},
+                {"question": "Do you charge fees for initial consultations and site visits?", "answer": "No, our initial property consultations and guided site visits are completely complimentary."},
+                {"question": "Can you help me secure a bank home loan?", "answer": "Yes, we partner with top public and private banks to ensure quick processing, paper collection, and competitive interest rates."},
+                {"question": "Are resale and rental properties also handled?", "answer": "Yes, we have dedicated wings for residential resale, tenant leasing, and commercial retail licensing."},
+                {"question": "What is the typical timeline to complete a property purchase?", "answer": "Typically, from site selection to agreement and registration takes between 2 to 4 weeks depending on loan sanction."}
+            ]
+        },
+        "Lawyer, Advocate & Legal Consultancy": {
+            "badge": "⚖️ Trusted Legal Counsel, Litigation & Corporate Advisory",
+            "headline": f"Defending Your Rights & Protecting Your Interests at {safe_title}",
+            "subheadline": f"Strategic legal representation in Civil Litigation, Criminal Defense, Property Disputes, and Corporate Compliance{' in ' + service_area if service_area else ''}.",
+            "about_story": [
+                f"{safe_title} is a dedicated legal practice built upon unwavering integrity, deep statutory expertise, and steadfast commitment to our clients' justice.",
+                "Whether navigating complex commercial contracts, resolving property disputes, or defending rights in trial courts and tribunals, our advocates provide thorough preparation and aggressive representation.",
+                "We maintain strict client confidentiality, provide pragmatic legal opinions without confusing jargon, and work tirelessly toward the most favorable legal outcome."
+            ],
+            "mission": "To provide ethical, fearless, and effective legal advocacy that safeguards our clients' legal and commercial interests.",
+            "vision": "To be the most respected law chamber recognized for courtroom excellence and client-first counsel.",
+            "services": [
+                {"title": "Civil Litigation & Dispute Resolution", "description": "Representation in recovery suits, injunctions, consumer disputes, and contract breaches.", "price": "Consultation"},
+                {"title": "Property, Real Estate & Land Disputes", "description": "Title scrutiny, partition suits, tenant-landlord disputes, and boundary conflicts.", "price": "Case Evaluation"},
+                {"title": "Corporate Law & Commercial Contracts", "description": "Drafting shareholder agreements, NDAs, employment terms, and regulatory compliance.", "price": "Retainer & Project"},
+                {"title": "Family, Matrimonial & Divorce Law", "description": "Compassionate counsel in mediation, mutual divorce, maintenance, and child custody.", "price": "Confidential"},
+                {"title": "Criminal Defense & Bail Matters", "description": "Urgent anticipatory bail, trial defense, FIR quashing, and white-collar fraud litigation.", "price": "Urgent Relief"},
+                {"title": "Legal Notice Drafting & Reply", "description": "Drafting authoritative legal notices and comprehensive statutory replies.", "price": "Fixed Fee"}
+            ],
+            "features": [
+                {"title": "Decades of Courtroom Experience", "description": "Seasoned advocates appearing before District Courts, High Courts, and Tribunals."},
+                {"title": "Strict Client Confidentiality", "description": "Privileged communication and ethical legal standards under Bar Council norms."},
+                {"title": "Clear Transparent Legal Fees", "description": "Straightforward fee structures with no unexpected billing or hidden expenses."},
+                {"title": "Pragmatic Legal Advice", "description": "Realistic case assessments focused on resolving matters swiftly rather than prolonged disputes."},
+                {"title": "Fast Emergency Drafting", "description": "Same-day legal notice dispatch and expedited interim stay applications."},
+                {"title": "Regular Case Status Updates", "description": "Proactive updates after every hearing date with certified orders."}
+            ],
+            "testimonials": [
+                {"name": "Vikram Sethi", "role": "Business Director", "quote": f"{safe_title} helped our company resolve an intricate vendor dispute out of court, saving us millions and months of litigation."},
+                {"name": "Sunita Agarwal", "role": "Property Owner", "quote": f"Our ancestral land had title complications for a decade. The advocates at {safe_title} cleared the title and secured our rights decisively."},
+                {"name": "Gaurav Roy", "role": "Client", "quote": "Honest, reliable, and sharp courtroom presence. They explained the legal nuances simply and stood by me through every hearing."}
+            ],
+            "faqs": [
+                {"question": "How do I schedule an initial consultation?", "answer": "You can book directly through our online form or call our chamber. We offer in-person and secure virtual consultations."},
+                {"question": "Is everything I share kept confidential?", "answer": "Yes, all consultations and case materials are protected by legal attorney-client privilege."},
+                {"question": "What documents should I bring to our first meeting?", "answer": "Please bring all relevant contracts, notices, email correspondence, court summons, or property deeds related to your issue."},
+                {"question": "How are legal fees structured?", "answer": "We offer upfront fixed-fee arrangements for notices and contract drafting, and transparent stage-wise hearing fees for litigation."},
+                {"question": "Can you represent clients in High Courts and Tribunals?", "answer": "Yes, our team is qualified and regularly appears before District Courts, High Courts, NCLT, and Consumer Commissions."}
+            ]
+        },
+        "Auto Repair, Garage & Car Detailing": {
+            "badge": "🚗 Certified Auto Mechanics & Precision Detailing Studio",
+            "headline": f"Complete Automotive Care & Peak Performance by {safe_title}",
+            "subheadline": f"Computerized diagnostics, periodic servicing, brake repairs, and ceramic coating by certified auto technicians{' serving ' + service_area if service_area else ''}.",
+            "about_story": [
+                f"{safe_title} was built by car enthusiasts for drivers who demand excellence. We understand that your vehicle is vital for your daily life and family safety.",
+                "Using modern computerized diagnostic scanners, OEM parts, and hydraulic lift bays, our certified technicians service all domestic and imported car models with precision.",
+                "Whether you need urgent brake servicing, air conditioning recharge, or showroom-grade ceramic paint protection, we get you safely back on the road with transparent estimates."
+            ],
+            "mission": "To deliver honest, dealership-grade automotive service with transparent pricing and uncompromised safety.",
+            "vision": "To be the most recommended independent auto repair and detailing facility in the city.",
+            "services": [
+                {"title": "Periodic Service & Multi-Point Inspection", "description": "Synthetic oil change, OEM oil filter, fluid top-ups, and 40-point safety check.", "price": "From ₹1,999"},
+                {"title": "Computerized Engine Diagnostics", "description": "Check-engine light scanning, sensor calibration, and electronic fault resolution.", "price": "From ₹799"},
+                {"title": "Brake System Repair & Pad Replacement", "description": "Rotor resurfacing, ceramic brake pad replacement, and brake line fluid bleed.", "price": "From ₹1,499"},
+                {"title": "Ceramic Coating & Paint Correction", "description": "9H nano-ceramic coating, swirl mark removal, and deep showroom gloss restoration.", "price": "From ₹6,999"},
+                {"title": "Car AC Servicing & Gas Recharge", "description": "Cooling coil cleaning, compressor check, cabin pollen filter, and refrigerant top-up.", "price": "From ₹1,299"},
+                {"title": "Wheel Alignment & High-Speed Balancing", "description": "Laser 3D alignment, tire rotation, and vibration elimination for smooth driving.", "price": "From ₹499"}
+            ],
+            "features": [
+                {"title": "OEM & Genuine Spares", "description": "We only fit manufacturer-certified authentic replacement parts and lubricants."},
+                {"title": "Certified Auto Technicians", "description": "Experienced mechanics trained on modern electronic and mechanical automotive systems."},
+                {"title": "Clear Digital Estimates", "description": "Receive detailed photos and cost estimates via SMS/WhatsApp before work starts."},
+                {"title": "Warranty on Labor & Parts", "description": "6-month / 10,000 km warranty on all major mechanical repairs."},
+                {"title": "Complimentary Pickup & Drop", "description": "Convenient doorstep vehicle pickup and delivery across the city."},
+                {"title": "Air-Conditioned Waiting Lounge", "description": "Comfortable lounge with high-speed Wi-Fi, coffee, and live bay viewing."}
+            ],
+            "testimonials": [
+                {"name": "Abhishek Roy", "role": "Car Enthusiast", "quote": f"Did a full periodic service and 9H ceramic coating at {safe_title}. The car looks better than when I bought it from the showroom!"},
+                {"name": "Priya Sharma", "role": "Daily Commuter", "quote": f"My car had a strange engine knocking noise that the dealer could not fix. {safe_title} diagnosed the bad sensor in 20 minutes. Honest and fast!"},
+                {"name": "Harish Patel", "role": "SUV Owner", "quote": "Transparent pricing, polite staff, and clean garage. They showed me the old parts before replacing them. Highly trusted."}
+            ],
+            "faqs": [
+                {"question": "How often should I service my vehicle?", "answer": "We recommend a periodic inspection and oil change every 10,000 kilometers or every 12 months, whichever comes first."},
+                {"question": "Do you offer doorstep pickup and drop off?", "answer": "Yes, we provide complimentary vehicle pickup and drop service within our local service radius."},
+                {"question": "Will servicing my car at an independent garage void my warranty?", "answer": "No, we use OEM parts and manufacturer-specified fluids which maintain your vehicle's warranty coverage."},
+                {"question": "How long does a full periodic service take?", "answer": "Most standard periodic services are completed within 3 to 4 hours with prior booking."},
+                {"question": "Do you provide roadside assistance for breakdowns?", "answer": "Yes, we offer emergency battery jump-starts, flat tire repair, and towing assistance across the city."}
+            ]
+        },
+        "Event Management & Wedding Planner": {
+            "badge": "🎉 Flawless Celebrations, Luxury Weddings & Corporate Galas",
+            "headline": f"Crafting Unforgettable Moments & Celebrations with {safe_title}",
+            "subheadline": f"Bespoke wedding planning, corporate events, milestone birthdays, and luxury decor production tailored to perfection{' in ' + service_area if service_area else ''}.",
+            "about_story": [
+                f"At {safe_title}, we transform your dream events into breathtaking realities. We believe every milestone celebration deserves impeccable elegance, emotion, and flawless execution.",
+                "From intimate beachside wedding vows and royal heritage palace ceremonies to high-profile corporate conferences and anniversary galas, our creative team curates every detail.",
+                "We orchestrate venue selection, exquisite floral themes, sound and lighting engineering, gourmet catering, and artist bookings so you can relax and cherish every moment."
+            ],
+            "mission": "To orchestrate stress-free, magical, and unforgettable celebrations with innovative design and hospitality.",
+            "vision": "To be the leading luxury event curation company renowned for creativity, precision, and heartfelt service.",
+            "services": [
+                {"title": "Full-Service Luxury Wedding Planning", "description": "Theme design, guest hospitality, Sangeet choreography, and bridal coordination.", "price": "Custom Package"},
+                {"title": "Bespoke Floral Decor & Stage Styling", "description": "Grand mandaps, fairy-light canopies, floral arches, and designer table centerpieces.", "price": "Custom Concepts"},
+                {"title": "Corporate Conferences & Product Launches", "description": "Audio-visual staging, LED backdrops, keynote setup, and corporate banquets.", "price": "Turnkey Packages"},
+                {"title": "Milestone Birthdays & Anniversary Galas", "description": "Creative themes, personalized props, DJ entertainment, and custom cocktail bars.", "price": "Curated Experiences"},
+                {"title": "Artist, Live Band & Celebrity Booking", "description": "Live musical bands, anchors, celebrity performers, and choreographers.", "price": "Direct Rates"},
+                {"title": "Gourmet Catering & Mixology Management", "description": "Live food stations, multi-cuisine banquets, and signature welcome drinks.", "price": "Per Plate Packages"}
+            ],
+            "features": [
+                {"title": "Dedicated On-Site Event Directors", "description": "Experienced managers handling ground coordination from dawn to midnight."},
+                {"title": "3D Visual Set Previews", "description": "View 3D digital renderings of your stage and venue before production begins."},
+                {"title": "Vendor Quality & Cost Guarantees", "description": "Negotiated rates with leading venues, caterers, and lighting vendors with zero markups."},
+                {"title": "Seamless Guest Hospitality", "description": "Airport transfers, luxury hotel check-in desks, and guest hampers."},
+                {"title": "Contingency & Weather Preparedness", "description": "Backup power, waterproof canopies, and emergency protocols for zero hiccups."},
+                {"title": "Sustainable Eco-Friendly Choices", "description": "Biodegradable decor, digital invites, and zero-food-waste community partnerships."}
+            ],
+            "testimonials": [
+                {"name": "Karan & Tanya Kapoor", "role": "Newlyweds", "quote": f"{safe_title} organized our 3-day destination wedding with over 400 guests. Not a single glitch! Our guests are still raving about the decor and warmth."},
+                {"name": "Ritu Singhal", "role": "Corporate VP", "quote": f"Our annual company global summit was planned by {safe_title}. The stage production, sound, and keynote execution were world-class."},
+                {"name": "Aditya Mehra", "role": "Host of 50th Anniversary", "quote": "The team took away all our stress and delivered pure magic. The lighting, music, and food were spectacular."}
+            ],
+            "faqs": [
+                {"question": "How early should we start planning our wedding?", "answer": "For large weddings and popular venue dates, we recommend engaging us 6 to 9 months in advance, though we also execute short-notice events."},
+                {"question": "Can you work within our pre-defined budget?", "answer": "Yes! We specialize in optimizing your budget to maximize visual impact and guest hospitality without unnecessary expenditures."},
+                {"question": "Do you travel for destination weddings?", "answer": "Yes, we plan destination weddings across prime palaces, beach resorts, and international celebration hubs."},
+                {"question": "Can we bring our own caterer or florist?", "answer": "Absolutely. We are flexible and can seamlessly coordinate with your preferred family vendors."},
+                {"question": "What is the process to get started?", "answer": "Contact us via the form or phone to set up a preliminary concept discussion and received a tailored mood board."}
+            ]
+        },
+        "Pet Care, Veterinary & Dog Grooming": {
+            "badge": "🐾 Compassionate Veterinary Care & Gentle Pet Grooming",
+            "headline": f"Loving Healthcare & Pampering for Your Pets at {safe_title}",
+            "subheadline": f"Gentle veterinary checkups, vaccination, luxury bath & haircut, and safe boarding for your furry family members{' in ' + service_area if service_area else ''}.",
+            "about_story": [
+                f"At {safe_title}, we love your pets as much as you do. We believe every dog, cat, and furry companion deserves gentle, compassionate, and stress-free care.",
+                "From preventive vaccines and wellness exams to warm hydro-bath grooming and organic coat styling, our certified veterinarians and groomers handle pets with patience and affection.",
+                "Our facility features fear-free examination rooms, sanitized grooming tubs, and a secure play lounge where pets feel calm, comfortable, and cherished."
+            ],
+            "mission": "To deliver affectionate, gentle, and modern pet healthcare that keeps your companions joyful and healthy.",
+            "vision": "To be the community's favorite pet wellness sanctuary where every pet feels at home.",
+            "services": [
+                {"title": "Comprehensive Veterinary Wellness Exams", "description": "Preventive checkups, weight management, vitals monitoring, and ear/eye health.", "price": "From ₹499"},
+                {"title": "Core Vaccinations & Deworming", "description": "Rabies, DHPP, feline vaccines, and seasonal flea/tick preventative treatments.", "price": "From ₹599"},
+                {"title": "Luxury Hydro-Bath & De-Shedding", "description": "Organic hypoallergenic shampoo, warm blow dry, deep de-shedding, and brush out.", "price": "From ₹799"},
+                {"title": "Breed-Specific Haircuts & Styling", "description": "Custom teddy cut, summer trims, sanitary hygiene trims, and paw-pad shaving.", "price": "From ₹999"},
+                {"title": "Pet Dental Care & Ultrasonic Scaling", "description": "Plaque removal, tartar control, gum health check, and fresh breath polish.", "price": "From ₹1,499"},
+                {"title": "Daycare & Cage-Free Boarding", "description": "Air-conditioned secure play rooms, supervised fun, and live camera updates.", "price": "Daily Rates"}
+            ],
+            "features": [
+                {"title": "Fear-Free Certified Staff", "description": "Gentle handling techniques designed to minimize stress and anxiety for anxious pets."},
+                {"title": "100% Organic Coat Care", "description": "Tearless, sulfate-free, and natural shampoos safe for sensitive pet skin."},
+                {"title": "Licensed Veterinary Doctors", "description": "Experienced clinicians available for health diagnoses and nutritional guidance."},
+                {"title": "Hospital-Grade Hygiene", "description": "Sanitized grooming tables, sterilized clippers, and fresh towels for each pet."},
+                {"title": "Live Video Updates for Boarding", "description": "Receive daily photos and videos of your pet playing happily while you are away."},
+                {"title": "Emergency First Aid Support", "description": "Equipped with diagnostic equipment and emergency wound care capabilities."}
+            ],
+            "testimonials": [
+                {"name": "Pooja Hegde", "role": "Golden Retriever Mom", "quote": f"My dog Bruno usually hates baths, but at {safe_title} he was wagging his tail the entire time! His coat is super soft and fresh."},
+                {"name": "Dr. Sandeep Nair", "role": "Pet Parent", "quote": f"The veterinarians at {safe_title} are genuinely caring. They accurately diagnosed my cat's allergy and explained the diet plan clearly."},
+                {"name": "Shalini Gupta", "role": "Shih Tzu Owner", "quote": "Best grooming salon in town! The teddy bear haircut was done so neatly without any stress. Highly recommended!"}
+            ],
+            "faqs": [
+                {"question": "How often should my dog be professionally groomed?", "answer": "For most breeds, professional grooming every 4 to 6 weeks maintains coat hygiene and prevents painful mats."},
+                {"question": "Do you accept aggressive or anxious pets?", "answer": "Yes, our groomers and vets use positive reinforcement and gentle pacing. We never use sedation for standard grooming."},
+                {"question": "What vaccinations are required before boarding?", "answer": "For the safety of all pets, we require up-to-date core vaccinations (Rabies, DHPP, and Bordetella kennel cough)."},
+                {"question": "Do I need an appointment for grooming?", "answer": "We recommend booking in advance to avoid waiting, though walk-in nail trims and basic baths are accommodated when available."},
+                {"question": "What products do you use for sensitive skin?", "answer": "We use aloe-vera, oatmeal, and hypoallergenic veterinary formulas that soothe itchy and sensitive skin."}
+            ]
+        },
+        "Cleaning & Janitorial Services": {
+            "badge": "✨ Deep Home Sanitization & Commercial Janitorial Specialists",
+            "headline": f"Spotless, Sanitized & Sparkling Spaces by {safe_title}",
+            "subheadline": f"Professional deep home cleaning, office janitorial services, sofa shampooing, and kitchen degreasing{' across ' + service_area if service_area else ''}.",
+            "about_story": [
+                f"{safe_title} delivers spotless perfection for homes, apartments, and corporate offices. We understand that a clean environment fosters health, peace of mind, and productivity.",
+                "Using hospital-grade disinfectants, German HEPA industrial vacuum cleaners, and eco-friendly cleaning agents, our uniformed, background-checked crews tackle stubborn grime with precision.",
+                "From move-in deep cleaning and post-construction scrubbing to daily commercial janitorial maintenance, we leave every corner gleaming with a fresh, sanitized fragrance."
+            ],
+            "mission": "To provide dependable, immaculate cleaning services that create healthy and uplifting living and working spaces.",
+            "vision": "To be the most trustworthy and efficient cleaning service provider known for attention to detail.",
+            "services": [
+                {"title": "Full House Deep Cleaning", "description": "Floor scrubbing, ceiling cobwebs, door/window glass, and thorough dust elimination.", "price": "From ₹2,499"},
+                {"title": "Modular Kitchen Deep Degreasing", "description": "Exhaust fan, chimney degreasing, tile scrubbing, cabinet interiors, and countertop shine.", "price": "From ₹1,199"},
+                {"title": "Bathroom Sanitization & Scale Removal", "description": "Hard water stain removal from tiles, glass partitions, taps, and sanitaryware disinfection.", "price": "From ₹699/bath"},
+                {"title": "Sofa, Carpet & Mattress Steam Cleaning", "description": "High-powered extraction, dust-mite removal, and stain shampooing.", "price": "From ₹899"},
+                {"title": "Corporate Office Janitorial Maintenance", "description": "Daily or scheduled cleaning of workstations, meeting rooms, pantry, and restrooms.", "price": "Monthly Contract"},
+                {"title": "Move-In & Post-Construction Cleanup", "description": "Paint splatter removal, cement residue scrubbing, and thorough polish before occupancy.", "price": "Custom Estimate"}
+            ],
+            "features": [
+                {"title": "Trained & Verified Cleaning Staff", "description": "Police-verified, insured, and thoroughly trained crew in uniform."},
+                {"title": "Eco-Friendly Safe Cleaners", "description": "Non-toxic, kid-friendly, and pet-safe botanical cleaning solutions."},
+                {"title": "Heavy-Duty Modern Equipment", "description": "Single-disc floor scrubbers, steam machines, and HEPA vacuums."},
+                {"title": "100% Re-Clean Guarantee", "description": "If you are not delighted with any area, we re-clean it immediately with no questions asked."},
+                {"title": "Transparent Upfront Rates", "description": "Standardized pricing based on room size and property layout—no surprises."},
+                {"title": "Flexible Scheduling", "description": "Available 7 days a week, including weekend and holiday time slots."}
+            ],
+            "testimonials": [
+                {"name": "Siddharth Jain", "role": "Apartment Resident", "quote": f"{safe_title} did a move-in deep cleaning for our 3BHK flat. The bathrooms and kitchen look brand new. Worth every rupee!"},
+                {"name": "Meera Nambiar", "role": "Office Admin Manager", "quote": f"Our corporate office has never been cleaner. {safe_title} provides daily janitorial maintenance with complete punctuality and discretion."},
+                {"name": "Anil Saxena", "role": "Homeowner", "quote": "Their sofa shampooing removed years of stains from our living room couch. Smells fresh and looks amazing!"}
+            ],
+            "faqs": [
+                {"question": "Do I need to provide any cleaning supplies or equipment?", "answer": "No! Our team arrives fully equipped with specialized machines, vacuum cleaners, microfiber mops, and cleaning chemicals."},
+                {"question": "How long does a deep house cleaning take?", "answer": "Depending on the apartment size, a comprehensive deep clean typically takes between 3 to 6 hours with a 3-4 person crew."},
+                {"question": "Are the chemicals safe for children and pets?", "answer": "Yes, we prioritize non-corrosive, eco-friendly, and odorless cleaning agents that are safe for everyone in your family."},
+                {"question": "Can I leave the cleaning team unattended?", "answer": "Yes, all our cleaners are background-checked and vetted. You can inspect the premises at the end of the service."},
+                {"question": "How soon can you schedule a service?", "answer": "We often offer next-day scheduling, and same-day slots are available for urgent requests."}
+            ]
         }
     }
 
-    # If category is one of the specific presets, use it; otherwise create tailored preset
-    if cat in presets:
-        base = presets[cat]
-    else:
-        # Fallback tailored preset for any non-tech category
-        base = {
-            "badge": f"⭐ Premier {cat} Services",
-            "headline": f"Excellence & Trusted Quality at {safe_title}",
-            "subheadline": f"Dedicated {cat} solutions built for reliability, outstanding customer care, and lasting results{' in ' + service_area if service_area else ''}.",
-            "about_story": [
-                f"Welcome to {safe_title}, your dependable neighborhood provider for professional {cat}.",
-                "Founded on principles of integrity, unmatched craftsmanship, and personal attention, we treat every client with the dedication they deserve.",
-                "Whether you require routine service or customized solutions, our experienced specialists deliver prompt, guaranteed results."
-            ],
-            "mission": f"To deliver outstanding {cat} that enriches the lives of our clients through dependable service.",
-            "vision": f"To be the most trusted and recommended {cat} provider in the community.",
-            "services": [
-                {"title": f"Signature {cat} Service", "description": "Comprehensive, professional care tailored to your specific requirements.", "price": "Standard Rate"},
-                {"title": "Custom Consultation & Assessment", "description": "In-depth review of your needs with transparent pricing options.", "price": "Free Estimate"},
-                {"title": "Express Care & Rapid Turnaround", "description": "Priority scheduling to address your urgent requests promptly.", "price": "Priority Rate"},
-                {"title": "Seasonal Maintenance Package", "description": "Preventive checkups and ongoing care for maximum peace of mind.", "price": "Save 15%"},
-                {"title": "Premium Deluxe Experience", "description": "All-inclusive service with dedicated specialist attention.", "price": "Best Value"},
-                {"title": "Emergency & On-Demand Support", "description": "Rapid response assistance whenever you need dependable help.", "price": "Available 24/7"}
-            ],
-            "features": [
-                {"title": "Certified Professionals", "description": f"Skilled experts with years of hands-on experience in {cat}."},
-                {"title": "Upfront Honest Pricing", "description": "Clear quotations with no hidden fees or surprise costs."},
-                {"title": "Client-First Care", "description": "Friendly, responsive communication from start to finish."},
-                {"title": "Quality Guarantee", "description": "All services backed by our 100% satisfaction commitment."},
-                {"title": "Convenient Scheduling", "description": "Easy online booking and flexible appointment slots."},
-                {"title": "Local Community Reputation", "description": "Proudly serving local families and businesses with stellar reviews."}
-            ],
-            "testimonials": [
-                {"name": "Sarah Jenkins", "role": "Verified Customer", "quote": f"Outstanding experience with {safe_title}! Professional, on time, and exceeded all expectations."},
-                {"name": "Michael Brown", "role": "Local Resident", "quote": f"I highly recommend {safe_title} to anyone looking for genuine quality and friendly service."},
-                {"name": "Amanda White", "role": "Satisfied Client", "quote": f"Top-tier service from start to finish. The team at {safe_title} went above and beyond!"}
-            ],
-            "faqs": [
-                {"question": f"What services does {safe_title} offer?", "answer": f"We provide a comprehensive range of {cat} services tailored to individual and business needs."},
-                {"question": "How can I book an appointment?", "answer": "You can book directly via our online form, call us, or send an email for an instant confirmation."},
-                {"question": "Do you provide free estimates?", "answer": "Yes, we are happy to provide free, no-obligation estimates before starting any service."},
-                {"question": "What payment methods do you accept?", "answer": "We accept all major credit cards, debit cards, cash, and digital mobile payments."},
-                {"question": "What are your business hours?", "answer": "Our team is available Monday through Saturday with flexible appointments and emergency support."}
-            ]
-        }
+    # Match category or fallback safely
+    matched_preset = None
+    for k, v in presets.items():
+        if k.lower() in cat.lower() or cat.lower() in k.lower():
+            matched_preset = v
+            break
+    
+    if not matched_preset:
+        matched_preset = presets.get("Salon, Spa & Beauty Parlour")
+
+    base = json.loads(json.dumps(matched_preset))
+
+    # Replace business title safely
+    base["headline"] = base["headline"].replace("{safe_title}", safe_title)
+    if "{safe_title}" in base["subheadline"]:
+        base["subheadline"] = base["subheadline"].replace("{safe_title}", safe_title)
+
+    # Dynamic service area insertion
+    if service_area and service_area not in base["subheadline"]:
+        base["subheadline"] = f"{base['subheadline']} Serving {service_area}."
 
     # Override with user's inputs if provided
     if tagline:
         base["subheadline"] = f"{tagline} — {base['subheadline']}"
     if primary_services:
-        # User specified custom services in form
         custom_items = [s.strip() for s in primary_services.split(",") if s.strip()]
         if custom_items:
             new_services = []
             for idx, item in enumerate(custom_items[:6]):
                 new_services.append({
                     "title": item,
-                    "description": f"Professional {item.lower()} provided with expert care and guaranteed satisfaction at {safe_title}.",
+                    "description": f"Professional {item.lower()} provided with expert care and guaranteed quality at {safe_title}.",
                     "price": "Custom Quote"
                 })
             base["services"] = new_services

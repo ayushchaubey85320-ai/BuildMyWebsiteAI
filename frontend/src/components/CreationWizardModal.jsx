@@ -161,6 +161,9 @@ const CreationWizardModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
   const [businessHours, setBusinessHours] = useState('');
   const [address, setAddress] = useState('');
   const [contactPhone, setContactPhone] = useState('');
+  const [countryCode, setCountryCode] = useState('+91');
+  const [mobileNumber, setMobileNumber] = useState('');
+  const [phoneError, setPhoneError] = useState('');
   const [contactEmail, setContactEmail] = useState('');
   const [ctaText, setCtaText] = useState('');
 
@@ -174,6 +177,40 @@ const CreationWizardModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
   const [prompt, setPrompt] = useState('');
 
   const [showJsonPromptPreview, setShowJsonPromptPreview] = useState(false);
+
+  const validatePhoneDigits = (digits, code = countryCode) => {
+    const cleanDigits = (digits || '').replace(/\D/g, '');
+    if (code === '+91') {
+      if (cleanDigits.length === 0) {
+        setPhoneError('');
+        return true;
+      }
+      if (cleanDigits.length !== 10 || !['6', '7', '8', '9'].includes(cleanDigits[0])) {
+        setPhoneError('Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9.');
+        return false;
+      }
+      setPhoneError('');
+      return true;
+    } else {
+      if (cleanDigits.length > 0 && cleanDigits.length < 7) {
+        setPhoneError('Please enter a valid phone number (at least 7 digits).');
+        return false;
+      }
+      setPhoneError('');
+      return true;
+    }
+  };
+
+  const handleCountryCodeChange = (newCode) => {
+    setCountryCode(newCode);
+    validatePhoneDigits(mobileNumber, newCode);
+  };
+
+  const handleMobileInput = (e) => {
+    const val = e.target.value.replace(/\D/g, '');
+    setMobileNumber(val);
+    validatePhoneDigits(val, countryCode);
+  };
 
   // Auto-fill defaults when category changes if fields are empty
   const handleCategoryChange = (newCat) => {
@@ -211,6 +248,8 @@ const CreationWizardModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
     }
   };
 
+  const effectivePhone = mobileNumber ? `${countryCode} ${mobileNumber}` : (contactPhone.trim() || `${countryCode} 9876543210`);
+
   // Convert inputs into clean Business Specification JSON
   const businessSpecJson = useMemo(() => {
     return {
@@ -223,7 +262,7 @@ const CreationWizardModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
       key_highlights: keyHighlights.trim(),
       business_hours: businessHours.trim(),
       address: address.trim(),
-      contact_phone: contactPhone.trim(),
+      contact_phone: effectivePhone,
       contact_email: contactEmail.trim(),
       cta_text: ctaText.trim() || "Book An Appointment",
       website_architecture: websiteType === 'multi' ? 'multi-page' : 'single-page',
@@ -236,7 +275,7 @@ const CreationWizardModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
   }, [
     title, category, tagline, primaryServices, targetAudience,
     serviceArea, keyHighlights, businessHours, address,
-    contactPhone, contactEmail, ctaText, websiteType,
+    effectivePhone, contactEmail, ctaText, websiteType,
     selectedPages, theme, themeMode, backgroundStyle, prompt
   ]);
 
@@ -254,14 +293,14 @@ Ideal Audience: "${targetAudience || 'Local community & clients'}".
 Service Radius / Location: "${serviceArea || 'Local area'}".
 USPs & Highlights: "${keyHighlights || 'Top rated, verified professionals'}".
 Physical Address: "${address || '120 Main Street'}".
-Phone: "${contactPhone || '+1 (800) 555-0199'}" | Email: "${contactEmail || 'contact@example.com'}".
+Phone: "${effectivePhone}" | Email: "${contactEmail || 'contact@example.com'}".
 Operating Hours: "${businessHours || 'Mon-Sat 9AM-7PM'}".
 Call-To-Action: "${ctaText || 'Get In Touch'}".
 Visual Aesthetic: ${theme} in ${themeMode.toUpperCase()} mode with curated, industry-relevant photography.
 Generate realistic persuasive copywriting, pricing tiers, client testimonials, FAQ accordions, and responsive layout.`;
   }, [
     title, category, tagline, primaryServices, targetAudience,
-    serviceArea, keyHighlights, address, contactPhone, contactEmail,
+    serviceArea, keyHighlights, address, effectivePhone, contactEmail,
     businessHours, ctaText, websiteType, selectedPages, theme, themeMode
   ]);
 
@@ -269,6 +308,11 @@ Generate realistic persuasive copywriting, pricing tiers, client testimonials, F
     e.preventDefault();
     if (!title.trim()) {
       alert("Please enter your business or brand name.");
+      return;
+    }
+
+    if (mobileNumber && !validatePhoneDigits(mobileNumber, countryCode)) {
+      alert(phoneError || "Please enter a valid mobile number.");
       return;
     }
 
@@ -282,7 +326,7 @@ Generate realistic persuasive copywriting, pricing tiers, client testimonials, F
       selected_pages: websiteType === 'multi' ? selectedPages : ["Home"],
       logo_url: logoUrl,
       contact_email: contactEmail.trim(),
-      contact_phone: contactPhone.trim(),
+      contact_phone: effectivePhone,
       prompt: synthesizedMasterPrompt,
       tagline: tagline.trim(),
       primary_services: primaryServices.trim(),
@@ -472,15 +516,45 @@ Generate realistic persuasive copywriting, pricing tiers, client testimonials, F
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                    <Phone className="w-3.5 h-3.5 text-cyan-500" /> Contact Phone
+                    <Phone className="w-3.5 h-3.5 text-cyan-500" /> Contact Mobile Number *
                   </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. +1 (555) 234-5678"
-                    value={contactPhone}
-                    onChange={(e) => setContactPhone(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 focus:outline-none focus:border-sky-400 text-xs sm:text-sm shadow-sm"
-                  />
+                  <div className="grid grid-cols-[130px_1fr] gap-2">
+                    <select
+                      value={countryCode}
+                      onChange={(e) => handleCountryCodeChange(e.target.value)}
+                      className="px-2.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 focus:outline-none focus:border-sky-400 font-bold text-xs sm:text-sm shadow-sm"
+                    >
+                      <option value="+91">🇮🇳 +91 (IN)</option>
+                      <option value="+1">🇺🇸 +1 (US)</option>
+                      <option value="+44">🇬🇧 +44 (UK)</option>
+                      <option value="+971">🇦🇪 +971 (UAE)</option>
+                      <option value="+1">🇨🇦 +1 (CA)</option>
+                      <option value="+61">🇦🇺 +61 (AU)</option>
+                      <option value="+65">🇸🇬 +65 (SG)</option>
+                      <option value="+49">🇩🇪 +49 (DE)</option>
+                      <option value="+966">🇸🇦 +966 (SA)</option>
+                    </select>
+                    <input
+                      type="tel"
+                      placeholder="10-digit mobile number"
+                      value={mobileNumber}
+                      onChange={handleMobileInput}
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 focus:outline-none focus:border-sky-400 text-xs sm:text-sm shadow-sm font-semibold"
+                    />
+                  </div>
+                  {phoneError ? (
+                    <p className="text-[11px] text-rose-500 font-semibold mt-1">
+                      ⚠️ {phoneError}
+                    </p>
+                  ) : mobileNumber && mobileNumber.length === 10 && countryCode === '+91' ? (
+                    <p className="text-[11px] text-emerald-600 font-semibold mt-1">
+                      ✓ Valid 10-digit Indian Mobile Number
+                    </p>
+                  ) : (
+                    <p className="text-[11px] text-slate-400 mt-1">
+                      Defaults to India (+91). Validated for booking alerts.
+                    </p>
+                  )}
                 </div>
 
                 <div>
