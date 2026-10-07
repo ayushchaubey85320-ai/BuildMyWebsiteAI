@@ -226,7 +226,7 @@ def call_gemini_ai_content(master_prompt: str, category: str, title: str) -> Dic
                 if clean_text.endswith("```"):
                     clean_text = clean_text[:-3]
                 parsed = json.loads(clean_text.strip())
-                print(f"[GEMINI AI SUCCESS] AI website copy generated using {model_name}!")
+                print(f"[SUCCESS] AI website copy generated using {model_name}!")
                 return parsed
         except Exception:
             continue

@@ -12,7 +12,7 @@ const getBaseURL = () => {
 
 const api = axios.create({
   baseURL: getBaseURL(),
-  timeout: 30000,
+  timeout: 120000, // 2 minutes to allow full AI multi-page synthesis
   headers: {
     'Content-Type': 'application/json',
   },

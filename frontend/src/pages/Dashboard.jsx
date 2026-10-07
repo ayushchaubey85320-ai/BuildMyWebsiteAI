@@ -124,17 +124,42 @@ const Dashboard = () => {
 
     const stepTimer = setInterval(() => {
       setGenerationStep((prev) => (prev < 3 ? prev + 1 : prev));
-    }, 1200);
+    }, 2800);
 
     try {
-      const resp = await api.post('/generator/create', payload);
+      // 3-minute timeout specifically for deep multi-page generation
+      const resp = await api.post('/generator/create', payload, { timeout: 180000 });
       clearInterval(stepTimer);
       setIsGenerating(false);
       navigate(`/preview/${resp.data.id}`);
     } catch (err) {
       clearInterval(stepTimer);
+
+      // Smart recovery: check if project was actually generated on the backend
+      try {
+        const checkResp = await api.get('/dashboard/projects');
+        const projectsList = checkResp.data || [];
+        const candidate = projectsList.find(
+          (p) => p.title?.toLowerCase() === payload.title?.toLowerCase()
+        ) || projectsList[0];
+
+        if (candidate) {
+          setIsGenerating(false);
+          navigate(`/preview/${candidate.id}`);
+          return;
+        }
+      } catch (checkErr) {
+        // Fallback to error alert if recovery check fails
+      }
+
       setIsGenerating(false);
-      alert('Website generation failed: ' + (err.response?.data?.detail || err.message));
+      const isTimeout = err.code === 'ECONNABORTED' || (err.message && err.message.toLowerCase().includes('timeout'));
+      if (isTimeout) {
+        alert('Website generation took longer than usual due to deep multi-page synthesis. Your project is being finalized on the server—please refresh your dashboard in a few moments!');
+        fetchDashboardData();
+      } else {
+        alert('Website generation failed: ' + (err.response?.data?.detail || err.message));
+      }
     }
   };
 
