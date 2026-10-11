@@ -35,7 +35,6 @@ const AVAILABLE_PAGES = [
   { id: "Home", label: "Home Page (index.html)", required: true },
   { id: "About Us", label: "About Us (about_us.html)", required: false },
   { id: "Services", label: "Services (services.html)", required: false },
-  { id: "Pricing", label: "Pricing / Plans (pricing.html)", required: false },
   { id: "FAQ", label: "FAQ Page (faq.html)", required: false },
   { id: "Contact Us", label: "Contact Us (contact_us.html)", required: false }
 ];
@@ -172,7 +171,7 @@ const CreationWizardModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
   const [themeMode, setThemeMode] = useState('light');
   const [websiteType, setWebsiteType] = useState('single');
   const [backgroundStyle, setBackgroundStyle] = useState('live');
-  const [selectedPages, setSelectedPages] = useState(["Home", "About Us", "Services", "Pricing", "Contact Us"]);
+  const [selectedPages, setSelectedPages] = useState(["Home", "About Us", "Services", "Contact Us"]);
   const [customPages, setCustomPages] = useState([]); // [{ name: "Faculty & Mentors", prompt: "..." }]
   const [newCustomTitle, setNewCustomTitle] = useState('');
   const [newCustomPrompt, setNewCustomPrompt] = useState('');

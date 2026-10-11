@@ -70,7 +70,7 @@ const LandingPage = () => {
           }`}
         >
           <Sparkles className="w-3.5 h-3.5 text-indigo-500 animate-pulse" />
-          <span>BUILDMYWEBSITEAI ENGINE 2.0 • 18 SPECIALIZED CATEGORIES</span>
+          <span>ENGINE 2.0 • HIGH-DEMAND LOCAL BUSINESSES • MULTI-PAGE & CUSTOM PROMPTS</span>
         </motion.div>
 
         <motion.h1 
@@ -81,7 +81,7 @@ const LandingPage = () => {
             isLight ? 'text-slate-900' : 'text-white'
           }`}
         >
-          Build & Deploy Production Websites in <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-cyan-500 to-pink-500">Seconds with AI</span>
+          Build & Deploy Real-Life Websites in <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-cyan-500 to-pink-500">Seconds with AI</span>
         </motion.h1>
 
         <motion.p 
@@ -92,7 +92,7 @@ const LandingPage = () => {
             isLight ? 'text-slate-600' : 'text-slate-400'
           }`}
         >
-          Enter your prompt, pick from 18 specialized industry categories, preview live Framer Motion scroll animations, and export 100% production-ready HTML/CSS code.
+          Select from high-demand categories (Salons, Gyms, Coaching, Clinics, Bakeries), customize pages with dedicated AI prompts, preview interactive layouts, and export 100% standalone HTML/CSS with functional booking modals.
         </motion.p>
 
         {/* Interactive Prompt Box */}
@@ -111,7 +111,7 @@ const LandingPage = () => {
             <Wand2 className="w-5 h-5 text-indigo-500 shrink-0" />
             <input
               type="text"
-              placeholder="Describe your website (e.g. Organic coffee shop with daily roasted espresso)..."
+              placeholder="Describe your business (e.g. Aura Unisex Salon with hair spa and bridal makeup)..."
               value={promptText}
               onChange={(e) => setPromptText(e.target.value)}
               className={`w-full bg-transparent text-xs sm:text-sm focus:outline-none py-2 ${
@@ -123,7 +123,7 @@ const LandingPage = () => {
             type="submit"
             className="w-full sm:w-auto px-6 py-3 rounded-xl sm:rounded-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/25 transition transform hover:scale-105 shrink-0"
           >
-            <span>Generate Free Now</span>
+            <span>Generate Website</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </motion.form>
@@ -137,15 +137,19 @@ const LandingPage = () => {
         >
           <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
             <CheckCircle2 className="w-4 h-4" />
-            <span>No Credit Card Required</span>
+            <span>Multi-Page + Custom Prompts</span>
           </div>
           <div className="flex items-center gap-1.5 text-cyan-600 dark:text-cyan-400">
             <CheckCircle2 className="w-4 h-4" />
-            <span>Instant HTML/CSS ZIP Export</span>
+            <span>Interactive Booking Modals</span>
           </div>
           <div className="flex items-center gap-1.5 text-pink-600 dark:text-pink-400">
             <CheckCircle2 className="w-4 h-4" />
-            <span>Live AOS Scroll Animations</span>
+            <span>+91 Indian Mobile Validation</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400">
+            <CheckCircle2 className="w-4 h-4" />
+            <span>Standalone ZIP Export (Offline Ready)</span>
           </div>
         </motion.div>
 
@@ -261,10 +265,10 @@ const LandingPage = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {[
-            { step: "01", title: "Enter Prompt & Category", desc: "Type your business title, select from 18 preset categories, and choose your color theme." },
-            { step: "02", title: "Instant AI Generation", desc: "Our engine crafts headlines, About story pools, 6 service cards, features, and FAQs in seconds." },
-            { step: "03", title: "Live Canvas Edit & Animate", desc: "Preview live Framer Motion scroll animations, toggle mobile viewports, and refine layout instructions." },
-            { step: "04", title: "1-Click Export or Deploy", desc: "Download production-ready static HTML/CSS with AOS animation scripts or publish instantly." }
+            { step: "01", title: "Select Category & Input Profile", desc: "Choose your high-demand local domain (Salon, Gym, Coaching, Clinic), input operating hours, address, and Indian mobile number with +91 validation." },
+            { step: "02", title: "Configure Multi-Page & Custom Prompts", desc: "Select default pages (About, Services, Contact) or create custom pages like 'Faculty & Mentors' or 'Admission Process' with your own AI prompts." },
+            { step: "03", title: "Live Interactive Preview Canvas", desc: "Inspect real domain-authentic copywriting without generic corporate jargon, switch pages via tabs, and toggle between Light and Dark themes." },
+            { step: "04", title: "1-Click Standalone ZIP Export", desc: "Download pure static HTML files, style.css, and interactive booking modal forms that run 100% offline via file:/// with zero server dependencies." }
           ].map((s, idx) => (
             <motion.div 
               key={idx} 
@@ -284,69 +288,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="relative z-10 py-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto scroll-mt-24">
-        <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
-          <span className="text-xs font-extrabold uppercase tracking-widest px-3.5 py-1.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 inline-block">
-            Simple Pricing
-          </span>
-          <h2 className={`text-3xl sm:text-5xl font-black tracking-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>
-            Start Building Free Today
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* Starter Plan */}
-          <div className={`p-8 rounded-3xl border flex flex-col justify-between space-y-6 ${
-            isLight ? 'bg-white border-slate-200 shadow-xl' : 'bg-slate-900/60 border-slate-800'
-          }`}>
-            <div className="space-y-4">
-              <h3 className={`text-xl font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>Starter Creator</h3>
-              <div className={`text-4xl font-black ${isLight ? 'text-slate-900' : 'text-white'}`}>$0 <span className={`text-xs font-normal ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>/ forever free</span></div>
-              <p className={`text-xs ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>Perfect for exploring AI website generation and previewing live layouts.</p>
-              <ul className={`space-y-2.5 text-xs pt-4 border-t ${isLight ? 'border-slate-200 text-slate-700' : 'border-slate-800 text-slate-300'}`}>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> All 18 Categories Supported</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Unlimited Live Canvas Previews</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Full Mobile Viewport Responsiveness</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-500" /> Export Static HTML/CSS Archive</li>
-              </ul>
-            </div>
-            <Link
-              to="/signup"
-              className={`w-full py-3.5 rounded-xl font-bold text-sm text-center transition ${
-                isLight ? 'bg-slate-900 text-white hover:bg-slate-800' : 'bg-slate-800 hover:bg-slate-700 text-white'
-              }`}
-            >
-              Sign Up Free
-            </Link>
-          </div>
-
-          {/* Pro AI Creator Plan */}
-          <div className="p-8 rounded-3xl bg-gradient-to-b from-indigo-900/90 to-purple-950 border-2 border-indigo-500 flex flex-col justify-between space-y-6 relative shadow-2xl text-white">
-            <span className="absolute -top-3.5 right-6 text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 to-pink-500 text-white shadow-md">
-              Most Popular
-            </span>
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold text-white flex items-center gap-2">Pro AI Architect <Sparkles className="w-4 h-4 text-indigo-300" /></h3>
-              <div className="text-4xl font-black text-white">$29 <span className="text-xs text-indigo-200 font-normal">/ month</span></div>
-              <p className="text-xs text-indigo-200">For agencies, freelancers, and businesses demanding high-speed publishing.</p>
-              <ul className="space-y-2.5 text-xs text-indigo-100 pt-4 border-t border-indigo-700/50">
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-cyan-300" /> Everything in Starter Tier</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-cyan-300" /> Unlimited Prompt AI Layout Edits</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-cyan-300" /> One-Click Custom Co-Domain Publishing</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-cyan-300" /> Priority 24/7 Support Desk</li>
-              </ul>
-            </div>
-            <Link
-              to="/signup"
-              className="w-full py-3.5 rounded-xl font-bold text-sm bg-gradient-to-r from-cyan-400 via-indigo-500 to-pink-500 hover:from-cyan-300 hover:to-pink-400 text-white text-center shadow-lg transition transform hover:scale-105"
-            >
-              Get Started Pro
-            </Link>
-          </div>
-        </div>
-      </section>
-
       {/* FAQ Section */}
       <section id="faq" className="relative z-10 py-20 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto scroll-mt-24">
         <h2 className={`text-3xl sm:text-4xl font-black text-center mb-12 tracking-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>
@@ -354,10 +295,30 @@ const LandingPage = () => {
         </h2>
         <div className="space-y-4">
           {[
-            { q: "How does BuildMyWebsiteAI generate websites?", a: "Our system combines intelligent category presets, Unsplash image pools, Framer Motion scroll animations, and Gemini AI parsing to generate comprehensive HTML/CSS website architectures." },
-            { q: "Are exported websites mobile responsive?", a: "Yes! Every generated website includes viewport meta tags, media queries, hamburger navigation toggles, and responsive column collapses." },
-            { q: "Can I download the code and host it anywhere?", a: "Absolutely. When you click 'Export ZIP', you get clean index.html, style.css, and JS files ready to host on Vercel, Netlify, Render, or any Web server." },
-            { q: "Can I edit the generated website?", a: "Yes. You can use the live AI Assistant prompt bar inside the Canvas Editor to tweak headlines, change colors, or adjust layout sections." }
+            { 
+              q: "Can I create multi-page websites and custom pages with custom prompts?", 
+              a: "Yes! In Multi-Page mode, you can select standard pages (Home, About Us, Services, Contact Us) and manually add custom pages (e.g. 'Faculty & Mentors', 'Admission Process', 'Signature Treatments'). When you provide an AI prompt, the engine crafts rich, domain-specific hero sections, narratives, and offering cards tailored to your instructions." 
+            },
+            { 
+              q: "Are the buttons on the generated and exported websites functional?", 
+              a: "Yes! Every Call-To-Action and booking button on the exported website is wired to an interactive modal popup. Customers can submit their Name, Email, Country Code, and Phone Number with instant feedback." 
+            },
+            { 
+              q: "How does phone number validation work?", 
+              a: "Both the creation wizard and the exported booking modal support international country codes with India (+91) as default, enforcing strict 10-digit Indian mobile validation (/^[6-9]\\d{9}$/) to prevent spam and invalid inquiries." 
+            },
+            { 
+              q: "Why is there zero corporate tech jargon in local business websites?", 
+              a: "We engineered our AI prompts to eliminate generic SaaS clichés like 'How We Deliver Excellence' or 'Agile transformation'. Salon websites get real beauty & grooming copy, gym websites get authentic fitness regimens, and coaching academies get academic syllabus details." 
+            },
+            { 
+              q: "Can I download the code and run it offline without Node.js or a backend?", 
+              a: "Absolutely. When you click 'Export ZIP', you receive a complete package containing index.html, style.css, and individual HTML files for every page. You can double-click index.html and run it directly in any browser offline or upload it to any static web host." 
+            },
+            { 
+              q: "How does the built-in AI Chatbot help me?", 
+              a: "Our floating assistant copilot is available 24/7 in the corner of your screen. You can ask it questions on how to customize colors, modify HTML files, connect custom domains, or optimize your site's SEO." 
+            }
           ].map((f, idx) => (
             <div key={idx} className={`rounded-2xl border overflow-hidden ${
               isLight ? 'bg-white border-slate-200 shadow-sm' : 'bg-slate-900 border-slate-800'
@@ -393,13 +354,15 @@ const LandingPage = () => {
             <span>BuildMyWebsiteAI Engine</span>
           </div>
           <p className={`max-w-md mx-auto ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
-            Next-generation AI website generation platform empowering creators to build, preview, and deploy stunning websites in seconds.
+            Next-generation AI website generation platform empowering local businesses, educators, and creators to build and export production-ready websites in seconds.
           </p>
           <div className={`flex items-center justify-center gap-6 font-semibold pt-2 ${isLight ? 'text-slate-700' : 'text-slate-400'}`}>
             <Link to="/login" className="hover:text-indigo-600">Log In</Link>
             <Link to="/signup" className="hover:text-indigo-600">Sign Up</Link>
             <Link to="/features" className="hover:text-indigo-600">Features</Link>
-            <Link to="/pricing" className="hover:text-indigo-600">Pricing</Link>
+            <Link to="/showcase" className="hover:text-indigo-600">18 Categories</Link>
+            <Link to="/how-it-works" className="hover:text-indigo-600">How It Works</Link>
+            <Link to="/faq" className="hover:text-indigo-600">FAQ</Link>
           </div>
           <div className={`pt-4 border-t ${isLight ? 'border-slate-200 text-slate-500' : 'border-slate-900 text-slate-600'}`}>
             © 2026 BuildMyWebsiteAI. All rights reserved. Powered by Antigravity Studio.

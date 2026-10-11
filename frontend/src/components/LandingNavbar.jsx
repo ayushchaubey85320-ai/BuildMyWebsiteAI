@@ -75,7 +75,6 @@ const LandingNavbar = () => {
           <NavLink to="/features" className={navItemClass}>Features</NavLink>
           <NavLink to="/showcase" className={navItemClass}>18 Categories</NavLink>
           <NavLink to="/how-it-works" className={navItemClass}>How It Works</NavLink>
-          <NavLink to="/pricing" className={navItemClass}>Pricing</NavLink>
           <NavLink to="/faq" className={navItemClass}>FAQ</NavLink>
         </nav>
 
@@ -162,7 +161,6 @@ const LandingNavbar = () => {
             <NavLink to="/features" onClick={() => setMobileMenuOpen(false)} className={navItemClass}>Features</NavLink>
             <NavLink to="/showcase" onClick={() => setMobileMenuOpen(false)} className={navItemClass}>18 Categories</NavLink>
             <NavLink to="/how-it-works" onClick={() => setMobileMenuOpen(false)} className={navItemClass}>How It Works</NavLink>
-            <NavLink to="/pricing" onClick={() => setMobileMenuOpen(false)} className={navItemClass}>Pricing</NavLink>
             <NavLink to="/faq" onClick={() => setMobileMenuOpen(false)} className={navItemClass}>FAQ</NavLink>
           </nav>
 

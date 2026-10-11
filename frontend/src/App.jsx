@@ -36,7 +36,7 @@ const AuthSyncListener = ({ children }) => {
         const token = localStorage.getItem('buildmywebsiteai_token');
         const userStr = localStorage.getItem('buildmywebsiteai_user');
 
-        const publicRoutes = ['/', '/features', '/showcase', '/how-it-works', '/pricing', '/faq', '/login', '/signup'];
+        const publicRoutes = ['/', '/features', '/showcase', '/how-it-works', '/faq', '/login', '/signup'];
 
         // Scenario 1: User signed out in another tab -> Automatically sign out this tab if on protected route
         if (!token || !userStr) {
@@ -88,7 +88,7 @@ function App() {
             <Route path="/features" element={<FeaturesPage />} />
             <Route path="/showcase" element={<ShowcasePage />} />
             <Route path="/how-it-works" element={<HowItWorksPage />} />
-            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/pricing" element={<Navigate to="/" replace />} />
             <Route path="/faq" element={<FAQPage />} />
 
             {/* Auth Routes */}
