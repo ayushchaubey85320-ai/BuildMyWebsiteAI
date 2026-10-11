@@ -73,7 +73,7 @@ const LandingNavbar = () => {
         }`}>
           <NavLink to="/" className={navItemClass} end>Home</NavLink>
           <NavLink to="/features" className={navItemClass}>Features</NavLink>
-          <NavLink to="/showcase" className={navItemClass}>18 Categories</NavLink>
+          <NavLink to="/showcase" className={navItemClass}>Categories</NavLink>
           <NavLink to="/how-it-works" className={navItemClass}>How It Works</NavLink>
           <NavLink to="/faq" className={navItemClass}>FAQ</NavLink>
         </nav>
@@ -159,7 +159,7 @@ const LandingNavbar = () => {
           <nav className="flex flex-col gap-2">
             <NavLink to="/" onClick={() => setMobileMenuOpen(false)} className={navItemClass} end>Home</NavLink>
             <NavLink to="/features" onClick={() => setMobileMenuOpen(false)} className={navItemClass}>Features</NavLink>
-            <NavLink to="/showcase" onClick={() => setMobileMenuOpen(false)} className={navItemClass}>18 Categories</NavLink>
+            <NavLink to="/showcase" onClick={() => setMobileMenuOpen(false)} className={navItemClass}>Categories</NavLink>
             <NavLink to="/how-it-works" onClick={() => setMobileMenuOpen(false)} className={navItemClass}>How It Works</NavLink>
             <NavLink to="/faq" onClick={() => setMobileMenuOpen(false)} className={navItemClass}>FAQ</NavLink>
           </nav>

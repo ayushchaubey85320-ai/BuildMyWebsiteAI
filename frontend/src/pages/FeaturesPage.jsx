@@ -119,7 +119,7 @@ export default function FeaturesPage() {
             <Link to="/login" className="hover:text-indigo-600">Log In</Link>
             <Link to="/signup" className="hover:text-indigo-600">Sign Up</Link>
             <Link to="/features" className="hover:text-indigo-600">Features</Link>
-            <Link to="/showcase" className="hover:text-indigo-600">18 Categories</Link>
+            <Link to="/showcase" className="hover:text-indigo-600">Categories</Link>
             <Link to="/how-it-works" className="hover:text-indigo-600">How It Works</Link>
             <Link to="/faq" className="hover:text-indigo-600">FAQ</Link>
           </div>

@@ -200,14 +200,14 @@ const LandingPage = () => {
         </motion.div>
       </section>
 
-      {/* 18 Categories Showcase Grid */}
+      {/* Categories Showcase Grid */}
       <section id="showcase" className="relative z-10 py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto scroll-mt-24">
         <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
           <span className="text-xs font-extrabold uppercase tracking-widest px-3.5 py-1.5 rounded-full bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 inline-block">
             Comprehensive Industry Support
           </span>
           <h2 className={`text-3xl sm:text-5xl font-black tracking-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>
-            18 Dedicated Website Categories
+            Dedicated Website Categories
           </h2>
           <p className={`text-sm sm:text-base ${isLight ? 'text-slate-600' : 'text-slate-400'}`}>
             Every category includes tailored Unsplash image pools, headlines, multi-paragraph company stories, 6 service cards, 6 features, and FAQ accordions.
@@ -360,7 +360,7 @@ const LandingPage = () => {
             <Link to="/login" className="hover:text-indigo-600">Log In</Link>
             <Link to="/signup" className="hover:text-indigo-600">Sign Up</Link>
             <Link to="/features" className="hover:text-indigo-600">Features</Link>
-            <Link to="/showcase" className="hover:text-indigo-600">18 Categories</Link>
+            <Link to="/showcase" className="hover:text-indigo-600">Categories</Link>
             <Link to="/how-it-works" className="hover:text-indigo-600">How It Works</Link>
             <Link to="/faq" className="hover:text-indigo-600">FAQ</Link>
           </div>

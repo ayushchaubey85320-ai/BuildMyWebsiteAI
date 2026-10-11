@@ -222,7 +222,7 @@ const AIChatbot = () => {
               {[
                 "Suggest prompt for Restaurant",
                 "How to export ZIP code?",
-                "What 18 categories are supported?"
+                "What categories are supported?"
               ].map((s, idx) => (
                 <button
                   key={idx}
