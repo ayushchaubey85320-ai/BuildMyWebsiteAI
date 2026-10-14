@@ -102,7 +102,7 @@ async def security_and_rate_limiting_middleware(request: Request, call_next):
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     return response
 
-# Enable Secure CORS for frontend
+# Enable Secure CORS for frontend (Local, Render, Vercel)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -111,7 +111,7 @@ app.add_middleware(
         "http://localhost:3000",
         "http://127.0.0.1:3000"
     ],
-    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
+    allow_origin_regex=r"^https?://([a-zA-Z0-9-]+\.)*(localhost|127\.0\.0\.1|onrender\.com|vercel\.app)(:\d+)?$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -4,8 +4,13 @@ const getBaseURL = () => {
   if (import.meta.env.VITE_API_URL) {
     return import.meta.env.VITE_API_URL;
   }
-  if (typeof window !== 'undefined' && window.location.hostname.includes('onrender.com')) {
-    return 'https://buildmywebsiteai-backend.onrender.com/api';
+  if (typeof window !== 'undefined') {
+    const customUrl = localStorage.getItem('buildmywebsiteai_api_url');
+    if (customUrl) return customUrl;
+
+    if (window.location.hostname.includes('onrender.com')) {
+      return 'https://buildmywebsiteai-backend.onrender.com/api';
+    }
   }
   return '/api';
 };
@@ -40,6 +45,13 @@ api.interceptors.response.use(
         window.location.href = '/login';
       }
     }
+
+    if (!error.response || error.response.status === 503) {
+      console.warn(
+        `[Network/Render Notice] Backend (${api.defaults.baseURL}) is unreachable or waking up from Render free-tier sleep. Please allow up to 60 seconds for cold start.`
+      );
+    }
+
     return Promise.reject(error);
   }
 );
