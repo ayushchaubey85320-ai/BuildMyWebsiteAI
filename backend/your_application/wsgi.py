@@ -11,7 +11,8 @@ try:
     from a2wsgi import ASGIMiddleware
     from app.main import app as asgi_app
     application = ASGIMiddleware(asgi_app)
-    app = application
+    app = asgi_app
 except Exception:
     from app.main import app as application
     app = application
+
