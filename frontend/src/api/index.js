@@ -9,7 +9,7 @@ const getBaseURL = () => {
     if (customUrl) return customUrl;
 
     if (window.location.hostname.includes('onrender.com')) {
-      return 'https://buildmywebsiteai-backend.onrender.com/api';
+      return 'https://buildmywebsiteai-backend-7iui.onrender.com/api';
     }
   }
   return '/api';
