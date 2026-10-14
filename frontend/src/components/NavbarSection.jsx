@@ -8,6 +8,8 @@ const NavbarSection = ({ data, colors, viewport = 'desktop', onPageChange, logoU
   const cta = data?.cta_button || "Get Started";
   const [mobileOpen, setMobileOpen] = useState(false);
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  const [lang, setLang] = useState('en');
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -40,10 +42,28 @@ const NavbarSection = ({ data, colors, viewport = 'desktop', onPageChange, logoU
   };
 
   return (
-    <nav className={`w-full border-b ${navBorder} px-4 sm:px-6 py-3.5 flex items-center justify-between backdrop-blur-md sticky top-0 z-40 transition-all`} style={{ backgroundColor: navBg }}>
+    <div className="w-full sticky top-0 z-40">
+      {/* Festive Promotional Ribbon Banner (IND-008) */}
+      <div className="festive-ribbon w-full py-1.5 px-4 bg-gradient-to-r from-red-600 via-orange-600 to-amber-600 text-white text-xs font-bold text-center flex items-center justify-between shadow-sm">
+        <div className="container mx-auto flex items-center justify-between flex-wrap gap-2 text-center w-full">
+          <span>🎉 <strong>Festival Dhamaka:</strong> Flat 15% OFF on all bookings & orders! Use Code: <span className="bg-yellow-200 text-amber-900 font-mono px-2 py-0.5 rounded font-black tracking-wider">FESTIVE15</span></span>
+          <button 
+            onClick={() => {
+              if (navigator.clipboard) navigator.clipboard.writeText('FESTIVE15');
+              setCopied(true);
+              setTimeout(() => setCopied(false), 2000);
+            }} 
+            className="px-2.5 py-0.5 rounded-full bg-white/20 hover:bg-white/40 text-[11px] font-bold transition shrink-0"
+          >
+            {copied ? '✓ Copied!' : '📋 Copy Code'}
+          </button>
+        </div>
+      </div>
+
+      <nav className={`navbar nav-wrap w-full border-b ${navBorder} px-4 sm:px-6 py-3.5 flex items-center justify-between backdrop-blur-md transition-all`} style={{ backgroundColor: navBg }}>
       {/* Left Brand Area */}
       <div 
-        className="text-lg sm:text-xl font-black tracking-tight cursor-pointer flex items-center gap-2.5 shrink-0" 
+        className="logo-wrap text-lg sm:text-xl font-black tracking-tight cursor-pointer flex items-center gap-2.5 shrink-0" 
         style={{ color: textColor }} 
         onClick={(e) => handleNavClick(e, { label: "Home", href: "#home" })}
       >
@@ -51,26 +71,26 @@ const NavbarSection = ({ data, colors, viewport = 'desktop', onPageChange, logoU
           <img 
             src={logo} 
             alt="Brand Logo" 
-            className="w-7 h-7 sm:w-9 sm:h-9 object-contain rounded-lg shrink-0 shadow-sm" 
+            className="logo-img w-7 h-7 sm:w-9 sm:h-9 object-contain rounded-lg shrink-0 shadow-sm" 
           />
         ) : (
           <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-tr from-cyan-400 via-sky-400 to-pink-500 text-white flex items-center justify-center font-black text-xs sm:text-sm shrink-0 shadow-sm">
             {brand.substring(0, 1).toUpperCase()}
           </div>
         )}
-        <span className="truncate max-w-[140px] sm:max-w-none" style={{ color: colors.primary }}>{brand}</span>
+        <span className="truncate max-w-[140px] sm:max-w-none" style={{ color: 'var(--primary-color, ' + colors.primary + ')' }}>{brand}</span>
       </div>
 
       {/* Desktop Links */}
       {!isMobile && (
-        <div className="hidden md:flex items-center gap-6">
+        <div className="nav-links hidden md:flex items-center gap-6">
           {links.map((link, idx) => (
             <a
               key={idx}
               href={link.href || '#'}
               onClick={(e) => handleNavClick(e, link)}
               className="text-sm font-semibold hover:opacity-75 transition cursor-pointer"
-              style={{ color: textColor }}
+              style={{ color: 'var(--text-color, ' + textColor + ')' }}
             >
               {link.label}
             </a>
@@ -78,13 +98,23 @@ const NavbarSection = ({ data, colors, viewport = 'desktop', onPageChange, logoU
         </div>
       )}
 
-      {/* Right Area CTA & Hamburger */}
+      {/* Right Area CTA, Language Switcher & Hamburger */}
       <div className="flex items-center gap-2 sm:gap-3">
+        {/* Desi Bilingual Switcher (IND-004) */}
+        <button
+          onClick={() => setLang(lang === 'en' ? 'hi' : 'en')}
+          className="px-2.5 py-1 rounded-full text-xs font-bold border transition flex items-center gap-1 shrink-0"
+          style={{ borderColor: colors.primary, color: 'var(--primary-color, ' + colors.primary + ')' }}
+          title="Bilingual Language Switcher"
+        >
+          {lang === 'en' ? '🇮🇳 हिन्दी' : '🇬🇧 English'}
+        </button>
+
         {!isMobile && (
           <button
             onClick={(e) => handleNavClick(e, { label: "Contact Us", href: "#contact" })}
-            className="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full font-bold text-xs sm:text-sm shadow-md transition transform hover:scale-105"
-            style={{ backgroundColor: colors.primary, color: '#ffffff' }}
+            className="btn-primary px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full font-bold text-xs sm:text-sm shadow-md transition transform hover:scale-105"
+            style={{ backgroundColor: 'var(--btn-primary-bg, ' + colors.primary + ')', color: 'var(--btn-primary-text, #ffffff)' }}
           >
             {cta}
           </button>
@@ -129,6 +159,7 @@ const NavbarSection = ({ data, colors, viewport = 'desktop', onPageChange, logoU
         </div>
       )}
     </nav>
+  </div>
   );
 };
 

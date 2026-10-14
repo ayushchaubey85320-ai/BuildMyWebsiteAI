@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, Sparkles, Upload, Mail, Phone, Palette, Layout, 
@@ -19,7 +19,15 @@ export const NON_TECH_CATEGORIES = [
   "Event Management & Wedding Planner",
   "Pet Care, Veterinary & Dog Grooming",
   "Cleaning & Janitorial Services",
-  "Coaching Classes, Tuition & Preschool"
+  "Coaching Classes, Tuition & Preschool",
+  // Bharat Edition Specialized Verticals (IND-005)
+  "Mithai Shop, Sweets & Namkeen Bakery",
+  "Coaching Classes & IIT-JEE / NEET Tuitions",
+  "Wedding Mandap Decorator & Event Caterer",
+  "Ayurvedic, Homeopathy & Wellness Clinic",
+  "Astrology, Vastu Shastra & Panditji Pooja",
+  "CA, Tax Advocate & GST Consultant",
+  "Kirana Store & Wholesale Mandi Trader"
 ];
 
 const THEMES = [
@@ -31,10 +39,20 @@ const THEMES = [
   { id: "SUNSET_ORANGE", name: "Sunset Orange", bg: "bg-purple-950", border: "border-orange-500", accent: "from-orange-400 to-pink-600" },
 ];
 
+export const BRAND_TONES = [
+  { id: "Corporate & Trustworthy", label: "Corporate & Trustworthy", desc: "Authoritative & Reliable", icon: "👔" },
+  { id: "Luxury & Sophisticated", label: "Luxury & Sophisticated", desc: "Opulent & High-End", icon: "✨" },
+  { id: "Energetic & Bold", label: "Energetic & Bold", desc: "High-Impact & Dynamic", icon: "⚡" },
+  { id: "Friendly & Welcoming", label: "Friendly & Welcoming", desc: "Warm & Accessible", icon: "🤝" },
+  { id: "Modern & Minimalist", label: "Modern & Minimalist", desc: "Sleek & Direct", icon: "🌿" },
+  { id: "Desi & Vernacular", label: "Desi & Vernacular (हिन्दी / Hinglish)", desc: "Culturally Resonant & Direct", icon: "🇮🇳" }
+];
+
 const AVAILABLE_PAGES = [
   { id: "Home", label: "Home Page (index.html)", required: true },
   { id: "About Us", label: "About Us (about_us.html)", required: false },
   { id: "Services", label: "Services (services.html)", required: false },
+  { id: "Blog", label: "Blog & Educational Articles (blog.html)", required: false },
   { id: "FAQ", label: "FAQ Page (faq.html)", required: false },
   { id: "Contact Us", label: "Contact Us (contact_us.html)", required: false }
 ];
@@ -147,6 +165,69 @@ const CATEGORY_DEFAULTS = {
     highlights: "Certified School Teachers, Small Class Sizes (Max 8), 98% Grade Improvement Rate, Free Skill Assessment",
     cta: "Book Free Assessment",
     hours: "Mon - Fri: 9:00 AM - 7:30 PM | Sat: 9:00 AM - 2:00 PM"
+  },
+  "Mithai Shop, Sweets & Namkeen Bakery": {
+    tagline: "100% Pure Desi Ghee Sweets, Bengali Chenna & Traditional Crunchy Namkeen",
+    services: "Kaju Katli, Pure Desi Ghee Motichoor Ladoos, Rasmalai, Ratlami Sev, Mathri, Custom Wedding Sweet Hampers",
+    audience: "Families, Festival Shoppers, Wedding Hosts, Corporate Gift Buyers",
+    area: "Local City & Neighborhood Express Delivery",
+    highlights: "100% Pure Desi Ghee, FSSAI Certified Kitchen, Fresh Daily Morning Preparation, Airtight Gift Packaging, Instant WhatsApp Delivery",
+    cta: "Order Fresh Sweets on WhatsApp",
+    hours: "Mon - Sun: 7:00 AM - 10:30 PM"
+  },
+  "Coaching Classes & IIT-JEE / NEET Tuitions": {
+    tagline: "Rank-Proven IIT-JEE & NEET Coaching with Kota Faculty & Small Batches",
+    services: "Class 11-12 IIT-JEE (Main + Adv), NEET-UG Medical Prep, Class 8-10 Foundation & NTSE, Weekly Test Series, Daily 1-on-1 Doubt Desk",
+    audience: "Class 8-12 Science Students, Medical & Engineering Aspirants, Parents",
+    area: "Education Hub & Metro City Centers",
+    highlights: "Ex-IIT/Medical Faculty, Max 35 Students Per Batch, Kota Pattern Study Modules, Biometric Attendance SMS for Parents, Merit Scholarships up to 90%",
+    cta: "Book 3 Free Demo Classes",
+    hours: "Mon - Sat: 8:00 AM - 8:30 PM | Sun: 9:00 AM - 2:00 PM"
+  },
+  "Wedding Mandap Decorator & Event Caterer": {
+    tagline: "Royal Vivah Mandap Setups, Thematic Haldi/Mehendi & Shahi Pure Veg Catering",
+    services: "Rajwada Floral Mandap, Thematic Haldi & Mehendi Backdrops, Sangeet Truss & Stage Lighting, Royal Shahi Buffet Catering, Live Chaat Counter",
+    audience: "Engaged Couples, Brides & Grooms, Wedding Families, Event Organizers",
+    area: "City Farmhouses, Banquet Halls & Regional Destination Venues",
+    highlights: "15+ Years Event Legacy, Direct Farm Flowers & In-House Decor Props, 100% Pure Ghee & RO Water Cooking, 3D Mandap Visualization, Single Dedicated Event Captain",
+    cta: "Schedule Free Wedding Consultation",
+    hours: "Tue - Sun: 9:30 AM - 8:00 PM"
+  },
+  "Ayurvedic, Homeopathy & Wellness Clinic": {
+    tagline: "Authentic Nadi Pariksha, Kerala Panchakarma & Side-Effect Free Natural Healing",
+    services: "Classical Nadi Pariksha, Full Body Panchakarma Detox, Janu Basti for Knee Joint Pain, Classical Homeopathy for Allergies, Herbal Oils & Rasayanas",
+    audience: "Chronic Pain Patients, Working Professionals with Stress/Insomnia, Senior Citizens, Holistic Health Seekers",
+    area: "City Center & Surrounding Residential Hubs",
+    highlights: "Qualified BAMS & MD Ayurvedic Doctors, 100% AYUSH & GMP Certified Medicines, Zero Synthetic Steroids, WhatsApp Doctor Follow-Up, Personalized Dosha Diet Charts",
+    cta: "Book Nadi Pariksha Consultation",
+    hours: "Mon - Sat: 8:30 AM - 1:30 PM & 4:30 PM - 8:30 PM | Sun: Morning Only"
+  },
+  "Astrology, Vastu Shastra & Panditji Pooja": {
+    tagline: "Authentic Vedic Horoscope, Non-Demolition Vastu & Sacred Pooja Ceremonies",
+    services: "Detailed Janampatri & Dasha Analysis, Kundali Milan for Marriage, Residential & Commercial Vastu Inspection, Griha Pravesh & Vedic Havan, Lab-Certified Gemstones",
+    audience: "Families, Property Buyers, Business Owners, Career & Matrimonial Seekers",
+    area: "Statewide Visits & Global WhatsApp Video Consultations",
+    highlights: "25+ Years Vedic Experience, 100% Strict Confidentiality, Scientific Vastu Without Demolition, Zero Fear-Mongering Remedies, Instant WhatsApp PDF Kundali",
+    cta: "Book Confidential Consultation",
+    hours: "Mon - Sun: 9:00 AM - 8:00 PM"
+  },
+  "CA, Tax Advocate & GST Consultant": {
+    tagline: "Proactive Tax Planning, Hassle-Free GST Returns & Company Incorporation",
+    services: "Income Tax Return (ITR) Filing, Monthly GST 3B/1 Compliance, Pvt Ltd & LLP Company Incorporation, Tax Notice Defense & Appeals, Bank Loan Project CMA Reports",
+    audience: "MSME Business Owners, Startups, Traders, Doctors & High-Income Salaried Professionals",
+    area: "Commercial Business Hub & All-India Online E-Filing",
+    highlights: "Direct FCA / ACS Qualified Experts, Zero Scrutiny Guarantee, 100% Paperless Digital Workflow, Maximum Legal Tax Deductions, Dedicated WhatsApp Account Manager",
+    cta: "Get Instant Tax Review",
+    hours: "Mon - Sat: 9:30 AM - 7:00 PM"
+  },
+  "Kirana Store & Wholesale Mandi Trader": {
+    tagline: "Fresh Grains, Unadulterated Spices & Daily Groceries Delivered in 30 Minutes",
+    services: "Chakki Fresh Atta & Basmati Rice, Unpolished Dals & Pulses, Pure Mustard & Cooking Oils, Whole Spices, FMCG Cleaning & Personal Care, Dry Fruits",
+    audience: "Local Neighborhood Families, Homemakers, Elderly Residents",
+    area: "Neighborhood 5-KM Radius Express Delivery",
+    highlights: "30-Minute Fast Doorstep Delivery, Order by WhatsApp 'Parchi' Photo, Free Delivery Above ₹499, Certified Electronic Weights, Pay via UPI QR or Cash on Delivery (COD)",
+    cta: "WhatsApp Your Grocery List",
+    hours: "Mon - Sun: 7:00 AM - 10:00 PM"
   }
 };
 
@@ -166,6 +247,7 @@ const CreationWizardModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
   const [phoneError, setPhoneError] = useState('');
   const [contactEmail, setContactEmail] = useState('');
   const [ctaText, setCtaText] = useState('');
+  const [brandTone, setBrandTone] = useState(BRAND_TONES[0].id);
 
   const [theme, setTheme] = useState(THEMES[0].id);
   const [themeMode, setThemeMode] = useState('light');
@@ -240,20 +322,31 @@ const CreationWizardModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
     validatePhoneDigits(val, countryCode);
   };
 
-  // Auto-fill defaults when category changes if fields are empty
-  const handleCategoryChange = (newCat) => {
-    setCategory(newCat);
-    const def = CATEGORY_DEFAULTS[newCat];
+  // Unconditionally auto-fill fields with selected category's tailored defaults
+  const applyCategoryDefaults = (targetCategory) => {
+    const def = CATEGORY_DEFAULTS[targetCategory];
     if (def) {
-      if (!tagline) setTagline(def.tagline);
-      if (!primaryServices) setPrimaryServices(def.services);
-      if (!targetAudience) setTargetAudience(def.audience);
-      if (!serviceArea) setServiceArea(def.area);
-      if (!keyHighlights) setKeyHighlights(def.highlights);
-      if (!ctaText) setCtaText(def.cta);
-      if (!businessHours) setBusinessHours(def.hours);
+      setTagline(def.tagline || '');
+      setPrimaryServices(def.services || '');
+      setTargetAudience(def.audience || '');
+      setServiceArea(def.area || '');
+      setKeyHighlights(def.highlights || '');
+      setCtaText(def.cta || 'Book An Appointment');
+      setBusinessHours(def.hours || '');
     }
   };
+
+  const handleCategoryChange = (newCat) => {
+    setCategory(newCat);
+    applyCategoryDefaults(newCat);
+  };
+
+  // Populate initial defaults when modal opens if fields are blank
+  useEffect(() => {
+    if (isOpen && (!tagline || !primaryServices)) {
+      applyCategoryDefaults(category);
+    }
+  }, [isOpen]);
 
   const togglePage = (pageId) => {
     if (pageId === "Home") return;
@@ -276,13 +369,14 @@ const CreationWizardModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
     }
   };
 
-  const effectivePhone = mobileNumber ? `${countryCode} ${mobileNumber}` : (contactPhone.trim() || `${countryCode} 9876543210`);
+  const effectivePhone = mobileNumber ? `${countryCode} ${mobileNumber}` : (contactPhone.trim() || "");
 
   // Convert inputs into clean Business Specification JSON
   const businessSpecJson = useMemo(() => {
     return {
       business_name: title.trim() || "Local Service Specialist",
       category: category,
+      brand_tone: brandTone,
       tagline: tagline.trim(),
       primary_services: primaryServices.trim(),
       target_audience: targetAudience.trim(),
@@ -302,7 +396,7 @@ const CreationWizardModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
       special_instructions: prompt.trim()
     };
   }, [
-    title, category, tagline, primaryServices, targetAudience,
+    title, category, brandTone, tagline, primaryServices, targetAudience,
     serviceArea, keyHighlights, businessHours, address,
     effectivePhone, contactEmail, ctaText, websiteType,
     selectedPages, customPages, theme, themeMode, backgroundStyle, prompt
@@ -320,6 +414,7 @@ const CreationWizardModal = ({ isOpen, onClose, onSubmit, isLoading }) => {
 
     return `Act as a world-class principal web designer and developer. Generate a production-grade, highly-converting live website for "${title || 'Business'}" in the "${category}" industry.
 Architecture: ${websiteType.toUpperCase()} (${pagesInfo}).
+Brand Voice & Tone: "${brandTone}" (Tailor vocabulary, pacing, and headlines strictly to this tone).
 Tagline: "${tagline || 'Excellence in service'}".
 Core Services: "${primaryServices || 'Comprehensive solutions'}".
 Ideal Audience: "${targetAudience || 'Local community & clients'}".
@@ -332,7 +427,7 @@ Call-To-Action: "${ctaText || 'Get In Touch'}".
 Visual Aesthetic: ${theme} in ${themeMode.toUpperCase()} mode with curated, industry-relevant photography.${customPagesText}
 Generate realistic persuasive copywriting, pricing tiers, client testimonials, FAQ accordions, and responsive layout.`;
   }, [
-    title, category, tagline, primaryServices, targetAudience,
+    title, category, brandTone, tagline, primaryServices, targetAudience,
     serviceArea, keyHighlights, address, effectivePhone, contactEmail,
     businessHours, ctaText, websiteType, selectedPages, customPages, theme, themeMode
   ]);
@@ -352,6 +447,7 @@ Generate realistic persuasive copywriting, pricing tiers, client testimonials, F
     onSubmit({
       title: title.trim(),
       category,
+      brand_tone: brandTone,
       theme,
       theme_mode: themeMode,
       website_type: websiteType,
@@ -423,9 +519,19 @@ Generate realistic persuasive copywriting, pricing tiers, client testimonials, F
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                    Select Your Business Vertical *
-                  </label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                      Select Your Business Vertical *
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => applyCategoryDefaults(category)}
+                      className="text-[11px] font-bold text-sky-600 hover:text-sky-800 transition flex items-center gap-1 bg-sky-50 hover:bg-sky-100 px-2.5 py-0.5 rounded-lg border border-sky-200"
+                      title="Reset all inputs below with tailored industry defaults"
+                    >
+                      <span>🔄 Auto-fill Defaults</span>
+                    </button>
+                  </div>
                   <select
                     value={category}
                     onChange={(e) => handleCategoryChange(e.target.value)}
@@ -469,8 +575,33 @@ Generate realistic persuasive copywriting, pricing tiers, client testimonials, F
                   placeholder="e.g. Luxury Hair Styling, Rejuvenating Facials & Bridal Artistry"
                   value={tagline}
                   onChange={(e) => setTagline(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 focus:outline-none focus:border-sky-400 text-xs sm:text-sm shadow-sm"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 focus:outline-none focus:border-sky-400 text-xs sm:text-sm shadow-sm mb-3"
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+                  <span>AI Copywriting Tone & Voice</span>
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                  {BRAND_TONES.map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => setBrandTone(t.id)}
+                      className={`p-2.5 rounded-xl border text-left transition flex flex-col items-start gap-1 ${
+                        brandTone === t.id
+                          ? 'border-indigo-500 bg-indigo-50/80 ring-2 ring-indigo-200'
+                          : 'border-slate-200 bg-white hover:bg-slate-50'
+                      }`}
+                    >
+                      <span className="text-base">{t.icon}</span>
+                      <span className="text-[11px] font-bold text-slate-800 leading-tight">{t.label}</span>
+                      <span className="text-[9px] text-slate-400 leading-tight">{t.desc}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 

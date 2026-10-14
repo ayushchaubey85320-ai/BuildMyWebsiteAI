@@ -5,7 +5,7 @@ import requests
 from typing import Dict, Any, List
 from app.config.settings import settings
 
-# 12 In-Demand Real-World Categories for Non-Tech Business Owners
+# 19 In-Demand Real-World Categories (Global & Bharat Indian MSME Edition)
 CATEGORIES_LIST = [
     "Salon, Spa & Beauty Parlour",
     "Dentist & Medical Healthcare Clinic",
@@ -18,7 +18,15 @@ CATEGORIES_LIST = [
     "Event Management & Wedding Planner",
     "Pet Care, Veterinary & Dog Grooming",
     "Cleaning & Janitorial Services",
-    "Coaching Classes, Tuition & Preschool"
+    "Coaching Classes, Tuition & Preschool",
+    # Bharat Edition Specialized Categories (IND-005)
+    "Mithai Shop, Sweets & Namkeen Bakery",
+    "Coaching Classes & IIT-JEE / NEET Tuitions",
+    "Wedding Mandap Decorator & Event Caterer",
+    "Ayurvedic, Homeopathy & Wellness Clinic",
+    "Astrology, Vastu Shastra & Panditji Pooja",
+    "CA, Tax Advocate & GST Consultant",
+    "Kirana Store & Wholesale Mandi Trader"
 ]
 
 # Curated High-Definition Photography Pools (Multiple distinct real-life shots per category)
@@ -99,6 +107,48 @@ CATEGORY_IMAGE_POOLS = {
         "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1200&q=80",
         "https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=1200&q=80",
         "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "Mithai Shop, Sweets & Namkeen Bakery": [
+        "https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "Coaching Classes & IIT-JEE / NEET Tuitions": [
+        "https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "Wedding Mandap Decorator & Event Caterer": [
+        "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "Ayurvedic, Homeopathy & Wellness Clinic": [
+        "https://images.unsplash.com/photo-1617897903246-719242758050?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "Astrology, Vastu Shastra & Panditji Pooja": [
+        "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1567157577867-05ccb1388e66?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "CA, Tax Advocate & GST Consultant": [
+        "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1450133064473-71024230f91b?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1200&q=80"
+    ],
+    "Kirana Store & Wholesale Mandi Trader": [
+        "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1588964895597-cfccd6e2dbf9?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1608686207856-001b95cf60ca?auto=format&fit=crop&w=1200&q=80"
     ]
 }
 
@@ -214,6 +264,130 @@ def synthesize_custom_page_content(
         }
     }
 
+def synthesize_blog_articles(cat: str, brand_name: str) -> List[Dict[str, Any]]:
+    """Synthesizes 3 full-length, SEO-optimized educational blog articles specific to the business vertical (FEAT-018)."""
+    c_lower = (cat or "").lower()
+    if any(k in c_lower for k in ["salon", "spa", "beauty", "hair"]):
+        return [
+            {
+                "title": f"Top 5 Hair Care & Styling Secrets for Long-Lasting Shine",
+                "slug": "top-5-hair-care-secrets",
+                "date": "October 12, 2026",
+                "author": f"{brand_name} Editorial Team",
+                "read_time": "4 min read",
+                "summary": "Discover professional salon routines to preserve color vibrancy, prevent split ends, and retain moisture.",
+                "content": f"At {brand_name}, we frequently get asked how clients can keep that fresh-from-the-salon gloss between appointments. 1. Always use sulfate-free shampoo. 2. Lower your water temperature during washing. 3. Apply a weekly deep conditioning mask. 4. Never skip heat protection before blow-drying. 5. Schedule regular 6-week trims to prevent breakage."
+            },
+            {
+                "title": f"The Ultimate Guide to Choosing the Right Facial for Your Skin Type",
+                "slug": "ultimate-facial-guide",
+                "date": "October 8, 2026",
+                "author": f"{brand_name} Esthetics Team",
+                "read_time": "5 min read",
+                "summary": "From hydration to exfoliation, understand how custom botanical facials rejuvenate your natural glow.",
+                "content": f"Every skin profile has unique requirements. In this comprehensive guide from {brand_name}, our estheticians break down the differences between hydra facials, chemical peels, and relaxing lymphatic massage."
+            },
+            {
+                "title": f"Bridal & Special Occasion Prep: Timelines for Flawless Makeup",
+                "slug": "bridal-prep-timeline",
+                "date": "October 1, 2026",
+                "author": f"{brand_name} Artistry",
+                "read_time": "6 min read",
+                "summary": "A 3-month beauty countdown for brides, graduates, and special celebration hosts.",
+                "content": f"Planning your look for your big day requires a calculated schedule. Start trial sessions 8 weeks prior, focus on skin barrier repair 4 weeks prior, and get your manicure done 24-48 hours before the event."
+            }
+        ]
+    elif any(k in c_lower for k in ["coaching", "tuition", "school", "education"]):
+        return [
+            {
+                "title": f"Proven Study Habits: How Top Rankers Master Difficult Concepts",
+                "slug": "proven-study-habits-top-rankers",
+                "date": "October 12, 2026",
+                "author": f"{brand_name} Mentors",
+                "read_time": "5 min read",
+                "summary": "Actionable revision strategies, time-blocking methods, and active recall techniques.",
+                "content": f"Success in competitive exams is about strategy, not just hours. At {brand_name}, we teach students the Feynman technique, spaced repetition, and systematic error tracking."
+            },
+            {
+                "title": f"Overcoming Exam Anxiety: Mental Toughness & Focus Protocols",
+                "slug": "overcoming-exam-anxiety",
+                "date": "October 7, 2026",
+                "author": f"{brand_name} Faculty",
+                "read_time": "4 min read",
+                "summary": "How students can maintain calm composure and mental sharpness on test day.",
+                "content": f"Anxiety often prevents capable students from scoring their potential. Learn breathing techniques, simulation drills, and positive visualization taught at {brand_name}."
+            },
+            {
+                "title": f"The 6-Month Roadmap to Excelling in Board Exams and Entrance Tests",
+                "slug": "6-month-exam-roadmap",
+                "date": "September 29, 2026",
+                "author": f"{brand_name} Academic Counsel",
+                "read_time": "6 min read",
+                "summary": "Step-by-step syllabus pacing, weekly mock assessments, and doubt-solving frameworks.",
+                "content": f"A structured roadmap ensures you never feel overwhelmed. Divide your preparation into concept absorption, intensive numerical practice, and full-length timed simulations."
+            }
+        ]
+    elif any(k in c_lower for k in ["fitness", "gym", "yoga"]):
+        return [
+            {
+                "title": f"The 4 Fundamentals of Muscle Hypertrophy & Fat Loss",
+                "slug": "fundamentals-of-hypertrophy",
+                "date": "October 12, 2026",
+                "author": f"{brand_name} Head Coach",
+                "read_time": "5 min read",
+                "summary": "How progressive overload, protein intake, sleep quality, and consistency drive real results.",
+                "content": f"Building strength is rooted in exercise science. At {brand_name}, our coaches prioritize compound lifting mechanics, progressive overload, and 1.6-2.2g of protein per kg of bodyweight."
+            },
+            {
+                "title": f"Pre-Workout vs. Post-Workout Nutrition: What Really Matters",
+                "slug": "workout-nutrition-guide",
+                "date": "October 6, 2026",
+                "author": f"{brand_name} Nutritionist",
+                "read_time": "4 min read",
+                "summary": "Fueling intense sessions with complex carbs and speeding up glycogen recovery.",
+                "content": f"Discover what and when to eat before lifting weights or practicing high-intensity yoga to maximize your endurance and minimize muscle soreness."
+            },
+            {
+                "title": f"Mobility & Recovery: Why Rest Days Are Essential for Athletes",
+                "slug": "mobility-and-recovery-protocols",
+                "date": "October 2, 2026",
+                "author": f"{brand_name} Wellness Team",
+                "read_time": "4 min read",
+                "summary": "Foam rolling, active recovery walks, and sauna benefits for long-term joint health.",
+                "content": f"Muscles grow when you rest, not when you train. Learn how incorporating dedicated mobility drills and steam sessions prevents overuse injuries."
+            }
+        ]
+    else:
+        return [
+            {
+                "title": f"How to Choose the Best {cat} Service Provider for Your Needs",
+                "slug": "how-to-choose-the-best-service",
+                "date": "October 12, 2026",
+                "author": f"{brand_name} Editorial Team",
+                "read_time": "4 min read",
+                "summary": f"Key qualifications, certifications, transparent pricing models, and red flags to watch for when booking {cat}.",
+                "content": f"Finding a reliable {cat} partner gives you peace of mind. At {brand_name}, we believe in transparency, certified background-checked staff, and upfront pricing."
+            },
+            {
+                "title": f"5 Cost-Saving Tips & Preventive Maintenance for Your Service",
+                "slug": "preventive-maintenance-tips",
+                "date": "October 5, 2026",
+                "author": f"{brand_name} Specialists",
+                "read_time": "5 min read",
+                "summary": f"Simple daily practices that prolong quality, prevent emergency repairs, and save money.",
+                "content": f"Preventive care is always more economical than reactive repairs. Our experienced team at {brand_name} shares actionable steps you can take today."
+            },
+            {
+                "title": f"Why Local Expertise Matters in Delivering High Quality Service",
+                "slug": "why-local-expertise-matters",
+                "date": "September 28, 2026",
+                "author": f"{brand_name} Leadership",
+                "read_time": "4 min read",
+                "summary": "How community roots, rapid dispatch times, and personal accountability elevate customer satisfaction.",
+                "content": f"When you hire locally from {brand_name}, you support neighborhood specialists who care deeply about long-term reputation and customer trust."
+            }
+        ]
+
 def synthesize_master_prompt_from_json(business_spec: Dict[str, Any]) -> str:
     """
     Synthesizes all business input fields into an expert architectural prompt
@@ -234,6 +408,7 @@ def synthesize_master_prompt_from_json(business_spec: Dict[str, Any]) -> str:
     arch = business_spec.get("website_type", "single")
     pages = business_spec.get("selected_pages", [])
     custom = business_spec.get("prompt", "")
+    brand_tone = business_spec.get("brand_tone", "Corporate & Trustworthy")
 
     custom_pages = business_spec.get("custom_pages", [])
     custom_pages_summary = ""
@@ -249,6 +424,7 @@ def synthesize_master_prompt_from_json(business_spec: Dict[str, Any]) -> str:
 Synthesize an authentic, high-converting real-life website specification for:
 - Business Name: {biz_name}
 - Category: {category}
+- Brand Voice & Tone: {brand_tone} (Tailor phrasing, vocabulary, emotional appeal, and headline tone strictly to this tone)
 - Tagline: {tagline or f"Premium {category} Care & Services"}
 - Core Services: {services or f"Full range of certified professional {category} services"}
 - Location & Service Area: {service_area or "Local community & metropolitan area"}
@@ -267,9 +443,10 @@ def call_gemini_ai_content(master_prompt: str, category: str, title: str) -> Dic
     if not api_key:
         return None
 
-    # Supported and recommended Google Gemini models (fastest first)
+    # Supported and recommended Google Gemini models (fastest and verified first)
     models_to_try = [
-        "gemini-3.8-flash",
+        "gemini-flash-lite-latest",
+        "gemini-3.1-flash-lite",
         "gemini-flash-latest"
     ]
     for model_name in models_to_try:
@@ -283,14 +460,17 @@ def call_gemini_ai_content(master_prompt: str, category: str, title: str) -> Dic
                             f"{master_prompt}\n\n"
                             "Respond ONLY with a valid JSON object (no markdown, no backticks). Schema:\n"
                             "{\n"
-                            '  "badge": "string (short punchy badge)",\n'
-                            '  "headline": "string (high-converting hero title)",\n'
-                            '  "subheadline": "string (2-3 sentences explaining value proposition)",\n'
+                            '  "badge": "string (short punchy badge matching the requested tone)",\n'
+                            '  "headline": "string (high-converting hero title strictly reflecting the brand voice)",\n'
+                            '  "subheadline": "string (2-3 sentences explaining value proposition matching the tone)",\n'
                             '  "about_story": ["paragraph 1", "paragraph 2", "paragraph 3"],\n'
                             '  "mission": "string",\n'
                             '  "vision": "string",\n'
                             '  "services": [{"title": "string", "description": "string", "price": "string"}],\n'
                             '  "features": [{"title": "string", "description": "string"}],\n'
+                            '  "pillars_title": "string (title for foundational values / principles)",\n'
+                            '  "pillars_subtitle": "string (1-2 sentences on commitment to quality and client trust)",\n'
+                            '  "pillars": [{"title": "string", "desc": "string"}],\n'
                             '  "testimonials": [{"name": "string", "role": "string", "quote": "string"}],\n'
                             '  "faqs": [{"question": "string", "answer": "string"}]\n'
                             "}"
@@ -302,7 +482,7 @@ def call_gemini_ai_content(master_prompt: str, category: str, title: str) -> Dic
                     "responseMimeType": "application/json"
                 }
             }
-            resp = requests.post(url, headers=headers, json=req_payload, timeout=5)
+            resp = requests.post(url, headers=headers, json=req_payload, timeout=10)
             if resp.status_code == 200:
                 data = resp.json()
                 text_body = data['candidates'][0]['content']['parts'][0]['text']
@@ -314,11 +494,64 @@ def call_gemini_ai_content(master_prompt: str, category: str, title: str) -> Dic
                 if clean_text.endswith("```"):
                     clean_text = clean_text[:-3]
                 parsed = json.loads(clean_text.strip())
-                print(f"[SUCCESS] AI website copy generated using {model_name}!")
+                print(f"[SUCCESS] AI website copy generated using {model_name} with custom tone!")
                 return parsed
-        except Exception:
+        except Exception as e:
+            print(f"[WARN] Model {model_name} failed: {e}")
             continue
     return None
+
+def apply_brand_tone_to_content(
+    content: Dict[str, Any],
+    brand_tone: str,
+    category: str,
+    safe_title: str
+) -> Dict[str, Any]:
+    """
+    Transforms headlines, badges, value propositions, and copywriting
+    strictly into the requested brand personality persona.
+    """
+    tone = (brand_tone or "Corporate & Trustworthy").strip()
+    c = json.loads(json.dumps(content))
+
+    if tone == "Luxury & Sophisticated":
+        c["badge"] = f"✨ Exquisite & Bespoke {category} Artistry"
+        c["headline"] = f"The Pinnacle of Refinement & Bespoke Artistry at {safe_title}"
+        c["subheadline"] = f"An unparalleled bespoke journey tailored exclusively for discerning clients who demand perfection in {category}."
+        c["mission"] = f"To set the highest standard for luxury, discretion, and timeless aesthetic craftsmanship in {category}."
+        c["vision"] = "To be celebrated globally as the paramount sanctuary of prestige and refined distinction."
+    elif tone == "Energetic & Bold":
+        c["badge"] = f"⚡ High-Impact & Relentless {category}"
+        c["headline"] = f"Unleash Maximum Potential & Bold Results at {safe_title}"
+        c["subheadline"] = f"Fast, dynamic, and game-changing {category} solutions built to outperform expectations and drive unstoppable momentum."
+        c["mission"] = f"To ignite transformation, break barriers, and deliver explosive, high-impact results in {category}."
+        c["vision"] = "To spearhead an industry revolution through daring innovation, relentless drive, and superior performance."
+    elif tone == "Friendly & Welcoming":
+        c["badge"] = f"🤝 Heartfelt Care & Welcoming Smiles"
+        c["headline"] = f"You're Always Family at {safe_title}"
+        c["subheadline"] = f"Warm, compassionate, and down-to-earth {category} care designed to make you feel right at home with every visit."
+        c["mission"] = f"To build lifelong relationships, warm smiles, and supportive neighborhood care with genuine dedication."
+        c["vision"] = "To be the most beloved and trusted neighborhood haven where everyone feels valued and understood."
+    elif tone == "Modern & Minimalist":
+        c["badge"] = f"🌿 Pure Clarity & Purposeful Precision"
+        c["headline"] = f"Essential Quality & Minimalist Focus by {safe_title}"
+        c["subheadline"] = f"Stripped of noise, engineered for pure efficiency. Thoughtful {category} design meets seamless, distraction-free execution."
+        c["mission"] = f"To simplify complexities through intentional design, clear communication, and purposeful precision."
+        c["vision"] = "To inspire seamless modern living through uncluttered simplicity and peak functional elegance."
+    elif tone in ["Desi & Vernacular", "Desi & Vernacular (Hindi / Hinglish)", "Hinglish"]:
+        c["badge"] = f"🇮🇳 आपका विश्वास, हमारी पहचान • Trusted {category}"
+        c["headline"] = f"शुद्धता, भरोसा और बेहतरीन सेवा • Welcome to {safe_title}"
+        c["subheadline"] = f"100% प्रामाणिक और उच्च-गुणवत्ता वाली {category} सेवा। पारदर्शी दाम, अनुभवी विशेषज्ञ और आपके पूरे परिवार के लिए समर्पित देखभाल।"
+        c["mission"] = f"हमारे ग्राहकों को सर्वोत्तम गुणवत्ता, ईमानदारी और अपनत्व के साथ {category} सेवाएँ प्रदान करना।"
+        c["vision"] = "क्षेत्र का सबसे भरोसेमंद और पसंदीदा संस्थान बनना, जहाँ हर ग्राहक संतुष्ट और प्रसन्न रहे।"
+    else: # Corporate & Trustworthy (Default)
+        c["badge"] = f"🏛️ Established Leadership & Certified {category}"
+        c["headline"] = f"Strategic Excellence & Proven Reliability at {safe_title}"
+        c["subheadline"] = f"Delivering disciplined, results-driven {category} solutions with uncompromising integrity, certified expertise, and transparent standards."
+        c["mission"] = f"To deliver authoritative, reliable, and ethical {category} solutions that safeguard our clients and guarantee measurable success."
+        c["vision"] = "To be the gold standard in professional governance, trusted counsel, and enduring operational excellence."
+
+    return c
 
 def get_category_preset(
     category: str,
@@ -814,6 +1047,342 @@ def get_category_preset(
                 {"question": "Can I leave the cleaning team unattended?", "answer": "Yes, all our cleaners are background-checked and vetted. You can inspect the premises at the end of the service."},
                 {"question": "How soon can you schedule a service?", "answer": "We often offer next-day scheduling, and same-day slots are available for urgent requests."}
             ]
+        },
+        "Mithai Shop, Sweets & Namkeen Bakery": {
+            "badge": " शुद्ध देशी घी व पारंपरिक स्वाद | FSSAI Certified",
+            "headline": "Pure Desi Ghee Sweets & Traditional Namkeen by {safe_title}",
+            "subheadline": "Handcrafted Kaju Katli, Motichoor Ladoos, Bengali Sweets, and fresh crispy Namkeen prepared with pure ingredients.",
+            "about_story": [
+                "For generations, {safe_title} has celebrated the rich culinary heritage of India with timeless recipes crafted from 100% pure desi ghee, organic milk, and authentic spices.",
+                "We take immense pride in bringing people together over festivities, weddings, and family gatherings with hygienic, preservative-free sweets and crunchy savory snacks.",
+                "Every batch is prepared fresh daily under strict FSSAI quality benchmarks, ensuring genuine traditional taste that melts in your mouth."
+            ],
+            "mission": "To sweeten every Indian celebration with purity, tradition, and uncompromising taste.",
+            "vision": "To be the most trusted and beloved sweet destination known for pure desi ghee delicacies.",
+            "pillars_title": "Our Heritage & Purity Promise",
+            "pillars_subtitle": "Preserving generations of authentic recipes, 100% pure desi ghee, and festive joy.",
+            "pillars": [
+                {"title": "100% Pure Desi Ghee", "desc": "Prepared strictly in certified pure cow and buffalo desi ghee without adulterants."},
+                {"title": "Daily Morning Batches", "desc": "Freshly crafted every dawn with zero artificial preservatives or food additives."},
+                {"title": "FSSAI Certified Hygiene", "desc": "Sanitized stainless-steel modern kitchens with strict food safety benchmarks."},
+                {"title": "Custom Festive Packaging", "desc": "Elegant gift hampers and bulk wedding orders packed with customized branding."}
+            ],
+            "services": [
+                {"title": "Pure Desi Ghee Ladoos & Peda", "description": "Motichoor, Besan, Gond, and Mathura Peda made with fresh khoya and golden ghee.", "price": "From ₹480/kg"},
+                {"title": "Royal Kaju & Dry Fruit Sweets", "description": "Silver-leaf Kaju Katli, Kaju Roll, Anjeer Barfi, and roasted dry fruit bites.", "price": "From ₹880/kg"},
+                {"title": "Fresh Bengali Chenna Delights", "description": "Spongy Rasgulla, Rajbhog, Rasmalai, and Chamcham made fresh every morning.", "price": "From ₹350/box"},
+                {"title": "Crispy Namkeen & Farsan", "description": "Ratlami Sev, Bhujia, Mathri, Dalmoth, and roasted Mixture packed for crisp freshness.", "price": "From ₹220/kg"},
+                {"title": "Wedding & Festival Gift Boxes", "description": "Customized brass-finish and designer hampers for Diwali, Rakhi, and corporate gifts.", "price": "From ₹499/box"},
+                {"title": "Hot Snacks: Samosa & Kachori", "description": "Crispy golden Samosas, Khasta Hing Kachori, and spicy mint-tamarind chutneys.", "price": "From ₹20/pc"}
+            ],
+            "features": [
+                {"title": "100% Pure Desi Ghee", "description": "No palm oil, no artificial essences—strictly premium dairy ghee and fresh milk."},
+                {"title": "FSSAI Food Safety Certified", "description": "Prepared in clean, temperature-regulated stainless steel kitchens."},
+                {"title": "Daily Fresh Preparation", "description": "Every batch prepared the same morning for peak flavor and natural texture."},
+                {"title": "Custom Festival Packaging", "description": "Airtight, tamper-proof, and gift-ready luxury boxes."},
+                {"title": "Bulk Catering Orders", "description": "Special wholesale discounts for weddings, pujas, and corporate gifting."},
+                {"title": "Instant WhatsApp Delivery", "description": "Order via WhatsApp or UPI for same-day doorstep delivery."}
+            ],
+            "testimonials": [
+                {"name": "Rajesh Sharma", "role": "Wedding Host", "quote": "We ordered 300 sweet boxes for my daughter's wedding from {safe_title}. Every guest praised the Kaju Katli and Motichoor Ladoos. Utter purity!"},
+                {"name": "Sunita Agarwal", "role": "Homemaker", "quote": "The Rasmalai at {safe_title} melts in your mouth! Their FSSAI hygiene standard is evident in every single bite."},
+                {"name": "Vikram Singhania", "role": "Corporate Buyer", "quote": "Ordered Diwali gift hampers for our office team. On-time delivery, premium packing, and top-tier taste."}
+            ],
+            "faqs": [
+                {"question": "Are your sweets prepared in pure desi ghee?", "answer": "Yes, 100% of our traditional ghee sweets are prepared exclusively with pure cow and buffalo desi ghee."},
+                {"question": "How long do the sweets stay fresh?", "answer": "Dry fruit and ghee sweets stay fresh for 10-15 days at room temperature. Chenna and milk sweets should be consumed within 48-72 hours refrigerated."},
+                {"question": "Do you provide custom boxes for weddings and corporate events?", "answer": "Yes, we offer bespoke gift boxes with custom branding, ribbon ties, and assorted sweet selections."},
+                {"question": "Can I pay via UPI or Cash on Delivery?", "answer": "We accept all UPI apps (GPay, PhonePe, Paytm), credit/debit cards, and Cash on Delivery / Pay at Shop."},
+                {"question": "Do you offer doorstep home delivery?", "answer": "Yes, we deliver within 2 hours locally for phone and WhatsApp orders."}
+            ]
+        },
+        "Coaching Classes & IIT-JEE / NEET Tuitions": {
+            "badge": "🎯 Rank-Proven Coaching | Top Kota & Delhi Faculty",
+            "headline": "Crack IIT-JEE, NEET & Foundation with {safe_title}",
+            "subheadline": "Personalized small batches, Kota-pattern test series, rigorous doubt clearance, and top percentile mentors.",
+            "about_story": [
+                "{safe_title} was established with a singular mission: to empower ambitious students to conquer competitive national examinations through conceptual clarity, discipline, and systematic problem-solving.",
+                "Our faculty team comprises seasoned ex-IITians, medical doctors, and veteran academic educators who provide individual attention rather than overcrowded lecture halls.",
+                "With adaptive weekly mock tests, comprehensive printed study modules, and dedicated one-on-one doubt counters, we transform aspirations into top All India Ranks (AIR)."
+            ],
+            "mission": "To deliver rigorous, accessible, and result-oriented education that helps every student achieve their dream college.",
+            "vision": "To be the most respected competitive coaching institute recognized for ethics, student care, and rank consistency.",
+            "pillars_title": "Our Academic Foundations",
+            "pillars_subtitle": "Nurturing analytical thinking, conceptual clarity, and rank consistency for future leaders.",
+            "pillars": [
+                {"title": "Top Faculty Mentors", "desc": "Classes led by seasoned ex-IITian and medical subject specialists."},
+                {"title": "Small Batch Focus", "desc": "Strict 35-student limit ensuring personal attention and real-time doubt clearing."},
+                {"title": "Comprehensive DPP & Tests", "desc": "Daily practice problem sets and weekly simulated All-India pattern test series."},
+                {"title": "Parent Progress Transparency", "desc": "Daily biometric attendance alerts and detailed bi-weekly performance analytics."}
+            ],
+            "services": [
+                {"title": "IIT-JEE (Main + Advanced) 2-Year Program", "description": "Comprehensive Physics, Chemistry, and Math preparation for Class 11 & 12 students.", "price": "Annual / Installments"},
+                {"title": "NEET-UG Medical Entrance Program", "description": "In-depth NCERT mastery, Biology mnemonics, high-yield Physics, and regular tests.", "price": "Annual / Installments"},
+                {"title": "Class 8th-10th Pre-Foundation Course", "description": "Olympiads, NTSE, CBSE/ICSE board excellence, and early competitive aptitude.", "price": "From ₹25,000/yr"},
+                {"title": "Repeater / Dropper Target Batch", "description": "High-intensity crash revision, advanced question banks, and daily full-length tests.", "price": "Target Session"},
+                {"title": "Weekly All-India Pattern Test Series (AITS)", "description": "Computer-based test simulation with detailed AI rank and weak-area analysis.", "price": "Included"},
+                {"title": "1-on-1 Daily Doubt Resolution Desk", "description": "Dedicated subject experts available every afternoon for personalized doubt solving.", "price": "Included"}
+            ],
+            "features": [
+                {"title": "Small Batch Size (Max 35 Students)", "description": "Every student gets direct interaction with faculty—no backbench neglect."},
+                {"title": "Ex-IIT / Medical Faculty", "description": "Taught by subject specialists with 10+ years of national exam coaching experience."},
+                {"title": "Daily Practice Problem (DPP) Sheets", "description": "Curated graded problem sets for daily homework and retention testing."},
+                {"title": "Parent Mobile App & Attendance Tracking", "description": "Biometric attendance SMS and instant test scorecard reports for parents."},
+                {"title": "AC Classrooms & Silent Study Library", "description": "Comfortable, noise-free study environment open 12 hours a day."},
+                {"title": "Scholarship Test (Admission Discount)", "description": "Merit scholarships up to 100% tuition waiver based on aptitude score."}
+            ],
+            "testimonials": [
+                {"name": "Aman Verma", "role": "AIR 412, IIT-JEE Advanced", "quote": "The doubt-solving sessions at {safe_title} were game-changing. The teachers never hesitated to explain concepts 5 times until I grasped them."},
+                {"name": "Dr. Prerna Deshmukh", "role": "NEET 680/720 Scorer", "quote": "NCERT-focused biology tests and physics shortcut workshops at {safe_title} gave me the confidence to secure a government MBBS seat!"},
+                {"name": "Suresh Trivedi", "role": "Parent of Class 12 Student", "quote": "The weekly progress reports and mentor calls kept my son disciplined throughout his JEE journey. Highly trustworthy institute."}
+            ],
+            "faqs": [
+                {"question": "What is the maximum batch size at your institute?", "answer": "We cap our batches strictly at 30-35 students to guarantee personal mentoring and doubt support."},
+                {"question": "Do you provide printed study modules and question banks?", "answer": "Yes, students receive complete subject theory booklets, formula handbooks, and chapter-wise question banks with solutions."},
+                {"question": "Is there a scholarship test for fee concessions?", "answer": "Yes, we conduct our scholarship admission test every Sunday, offering up to 90% fee waivers for meritorious students."},
+                {"question": "How do parents stay updated on their child's progress?", "answer": "Parents receive automated daily attendance SMS and detailed bi-weekly test performance reports via WhatsApp and our parent portal."},
+                {"question": "Can students attend demo classes before admission?", "answer": "Yes, we provide 3 complimentary trial demo classes with our senior faculty before enrollment."}
+            ]
+        },
+        "Wedding Mandap Decorator & Event Caterer": {
+            "badge": "🌺 Shahi Vivah & Royal Event Specialists | 15+ Yrs Legacy",
+            "headline": "Royal Wedding Mandaps & Grand Event Decor by {safe_title}",
+            "subheadline": "Bespoke floral mandaps, Haldi/Mehendi thematic setups, ambient LED lighting, and pure vegetarian shahi catering.",
+            "about_story": [
+                "{safe_title} crafts majestic, memorable wedding celebrations steeped in cultural magnificence and modern elegance.",
+                "From vibrant marigold Haldi swings and exotic Mehendi canopies to royal Rajwada floral mandaps and reception stages, our artisanal team coordinates every visual detail.",
+                "Combined with authentic regional Shahi catering featuring live chaat counters, authentic mithai stations, and gourmet multi-course buffets, we make your big day truly unforgettable."
+            ],
+            "mission": "To turn dream wedding visions into majestic, stress-free royal celebrations for families.",
+            "vision": "To be the preferred wedding decor and hospitality partner known for creativity, punctuality, and grand execution.",
+            "pillars_title": "Our Celebration Values",
+            "pillars_subtitle": "Curating royal aesthetics, flawless hospitality, and unforgettable memories for your family.",
+            "pillars": [
+                {"title": "Bespoke Royal Decor", "desc": "Handcrafted mandaps, fresh floral canopies, and fairy-tale stage lighting."},
+                {"title": "Pure Shuddh Catering", "desc": "Live chaat counters, rich royal thalis, and pure ghee vegetarian feasts."},
+                {"title": "Transparent Budgeting", "desc": "Clear itemized estimates with no last-minute charges or unexpected extras."},
+                {"title": "Complete Peace of Mind", "desc": "Dedicated on-ground event directors managing logistics from muhurat to vidaai."}
+            ],
+            "services": [
+                {"title": "Grand Rajwada & Floral Mandap Setups", "description": "Exotic orchids, fresh marigold, draped silk canopies, and sacred havan kund stages.", "price": "Custom Packages"},
+                {"title": "Haldi & Mehendi Thematic Decor", "description": "Boho canopies, vibrant yellow marigold backdrops, photo booths, and floral jewelry.", "price": "From ₹45,000"},
+                {"title": "Sangeet Stage & Intelligent Lighting", "description": "Trussing, LED video walls, sound systems, cold-fire pyro sparklers, and haze effects.", "price": "Custom Estimate"},
+                {"title": "Royal Shahi Vegetarian Catering", "description": "Live Delhi Chaat, Wood-fired Pizza, Tandoori appetizers, Shahi Paneer, and hot Jalebi counter.", "price": "From ₹750/plate"},
+                {"title": "Bride & Groom Grand Entry Concepts", "description": "Floral chadar, vintage car entries, cold pyro walkways, and dhol troupe.", "price": "From ₹18,000"},
+                {"title": "Complete Destination Wedding Planning", "description": "Hospitality coordination, room gifting, luggage tags, and guest welcoming.", "price": "Turnkey Packages"}
+            ],
+            "features": [
+                {"title": "15+ Years Event Legacy", "description": "Over 1,200 successful royal weddings managed flawlessly without delays."},
+                {"title": "In-House Decor & Floral Warehouses", "description": "We own extensive decor props and direct farm-sourced fresh flowers, reducing cost."},
+                {"title": "Hygienic 5-Star Kitchen Staff", "description": "Trained culinary chefs with gloves, caps, and pure RO water cooking standards."},
+                {"title": "3D Stage & Mandap Mockups", "description": "Visualize your wedding design in 3D before committing to the final execution."},
+                {"title": "Dedicated On-Site Event Captain", "description": "One single point of contact present from morning muhurat to late night vidaai."},
+                {"title": "Transparent Line-Item Budgeting", "description": "No hidden last-minute surprises—every prop and food plate clearly itemized."}
+            ],
+            "testimonials": [
+                {"name": "Ananya & Rohan Kulkarni", "role": "Newlyweds", "quote": "The floral mandap created by {safe_title} looked straight out of a royal fairy tale. Our guests are still raving about the Delhi chaat counter!"},
+                {"name": "Sunil Bansal", "role": "Father of Bride", "quote": "{safe_title} managed everything from Haldi to Vidaai with supreme professionalism. I could actually enjoy my daughter's wedding without any stress."},
+                {"name": "Pooja Singhal", "role": "Event Host", "quote": "The lighting, sound, and floral decor for our Sangeet night were spectacular. Highly recommended for destination weddings!"}
+            ],
+            "faqs": [
+                {"question": "How early should we book for the wedding season?", "answer": "For auspicious sawaya (muhurat) dates, we recommend booking 3 to 6 months in advance to secure prime dates and decor props."},
+                {"question": "Can you customize decor designs based on Pinterest or Instagram photos?", "answer": "Yes! Our designers recreate or customize any reference theme you share to fit your venue layout and budget."},
+                {"question": "Do you provide pure vegetarian catering?", "answer": "Yes, we specialize in 100% pure vegetarian, Jain, and Swaminarayan culinary spreads prepared with pure ghee and fresh ingredients."},
+                {"question": "What is the advance payment policy?", "answer": "We usually book dates with a 25% token advance, 50% milestone payment before setup, and the final balance on the wedding day."},
+                {"question": "Do you handle outdoor farmhouse and resort setups?", "answer": "Yes, we are fully equipped with weatherproof canopies, generator backups, and lawn decor infrastructure."}
+            ]
+        },
+        "Ayurvedic, Homeopathy & Wellness Clinic": {
+            "badge": "🌿 Nadi Pariksha & Authentic Panchakarma | Ayush Certified",
+            "headline": "Holistic Healing & Panchakarma by {safe_title}",
+            "subheadline": "Root-cause healing for joint pain, digestive issues, skin ailments, and chronic stress through ancient Ayurveda and gentle Homeopathy.",
+            "about_story": [
+                "{safe_title} provides authentic, time-tested natural healing through certified Ayurvedic Vaidyas and Homeopathic practitioners.",
+                "Rather than merely masking symptoms, we employ classical Nadi Pariksha (Pulse Diagnosis) and Prakriti evaluation to pinpoint the metabolic imbalance at the root of chronic disease.",
+                "With certified herbal medicines, therapeutic Panchakarma detox therapies, and personalized dietary guidance, we help restore harmony to body, mind, and spirit."
+            ],
+            "mission": "To restore vibrant health naturally by uniting authentic Ayurvedic wisdom with compassionate patient care.",
+            "vision": "To be the leading holistic wellness sanctuary trusted for natural, side-effect-free healing.",
+            "pillars_title": "Our Healing Philosophy",
+            "pillars_subtitle": "Root-cause healing uniting classical Ayurvedic texts with compassionate clinical care.",
+            "pillars": [
+                {"title": "Classical Nadi Pariksha", "desc": "Accurate pulse diagnosis identifying the deep metabolic root cause of ailments."},
+                {"title": "Pure AYUSH Formulations", "desc": "Heavy-metal free, GMP-certified botanical extracts and classical tailams."},
+                {"title": "Authentic Panchakarma", "desc": "Traditional wooden Droni therapies administered by skilled Ayurvedic practitioners."},
+                {"title": "Zero Side Effects", "desc": "Gentle, constitutional healing that strengthens the body's innate immunity naturally."}
+            ],
+            "services": [
+                {"title": "Classical Nadi Pariksha (Pulse Diagnosis)", "description": "Comprehensive physical and mental health evaluation through traditional pulse reading.", "price": "From ₹500"},
+                {"title": "Panchakarma Detox Therapy", "description": "Full-body Abhyanga oil massage, Shirodhara for stress, and herbal steam Swedana.", "price": "From ₹1,800/session"},
+                {"title": "Chronic Joint & Back Pain Management", "description": "Janu Basti, Kati Basti, and herbal poultice therapies for arthritis and spondylitis.", "price": "Custom Treatment"},
+                {"title": "Digestive & Acidity Care", "description": "Natural herbal formulation for IBS, fatty liver, acid reflux, and metabolic sluggishness.", "price": "Consultation + Meds"},
+                {"title": "Classical Homeopathy Consultation", "description": "Gentle, non-addictive constitutional remedies for respiratory allergies and skin conditions.", "price": "From ₹450"},
+                {"title": "Custom Herbal Medicines & Oils", "description": "Freshly formulated GMP-certified Rasayanas, herbal tonics, and hair/joint oils.", "price": "Prescription Based"}
+            ],
+            "features": [
+                {"title": "Qualified BAMS & MD Ayurvedic Doctors", "description": "Government-registered practitioners with decades of classical clinical experience."},
+                {"title": "100% Chemical-Free Herbal Formulations", "description": "Standardized herbal extracts free of heavy metal contaminants and synthetic additives."},
+                {"title": "Therapeutic Panchakarma Facility", "description": "Authentic wooden Droni tables, medicated oils, and trained Kerala therapists."},
+                {"title": "Holistic Diet & Lifestyle Charts", "description": "Personalized Pathya-Apathya dietary charts tailored to your dosha constitution."},
+                {"title": "Zero Side Effects", "description": "Gentle natural healing that fortifies the body's innate immune defense."},
+                {"title": "WhatsApp Doctor Follow-Ups", "description": "Easily share reports and receive dosage instructions directly on WhatsApp."}
+            ],
+            "testimonials": [
+                {"name": "Mahesh Bhatt", "role": "Retired Teacher", "quote": "I had severe knee pain and was advised surgery. After 14 days of Janu Basti and herbal treatment at {safe_title}, I can walk without pain!"},
+                {"name": "Sunita Rao", "role": "IT Professional", "quote": "The Shirodhara therapy at {safe_title} resolved my chronic insomnia and work anxiety. Deeply grateful to the Vaidya for such caring treatment."},
+                {"name": "Praveen Patel", "role": "Businessman", "quote": "Their homeopathic treatment for my son's chronic dust allergy gave permanent relief within 3 months where allopathy failed."}
+            ],
+            "faqs": [
+                {"question": "What is Nadi Pariksha and how should I prepare?", "answer": "Nadi Pariksha is ancient pulse diagnosis. It is best performed on an empty stomach in the morning or 2.5 hours after a light meal."},
+                {"question": "Are your Ayurvedic medicines tested for purity?", "answer": "Yes, all our medicines are AYUSH and GMP certified, rigorously tested for purity without any synthetic steroids or heavy metals."},
+                {"question": "How long does a Panchakarma treatment session take?", "answer": "A typical Panchakarma therapy session (such as Abhyanga + Shirodhara) takes approximately 60 to 75 minutes in our sanitized therapy rooms."},
+                {"question": "Can I consult online if I cannot visit the clinic?", "answer": "Yes, we offer video consultations and deliver prescribed herbal medicines across India via courier."},
+                {"question": "Is Ayurvedic treatment covered under medical insurance?", "answer": "Many health insurance policies now cover AYUSH inpatient treatments; our team provides detailed medical bills for claim submission."}
+            ]
+        },
+        "Astrology, Vastu Shastra & Panditji Pooja": {
+            "badge": "🪐 Vedic Kundali & Scientific Vastu | 25+ Yrs Experience",
+            "headline": "Vedic Astrology, Kundali & Vastu Guidance by {safe_title}",
+            "subheadline": "Accurate birth chart analysis, marriage matchmaking, career guidance, Vastu home inspections, and Vedic pooja rituals.",
+            "about_story": [
+                "{safe_title} brings the timeless wisdom of Vedic Jyotish and authentic Vastu Shastra to navigate life's challenges with clarity and peace of mind.",
+                "With over 25 years of rigorous study and practical consultations, our revered Acharya provides non-fear-based, practical planetary guidance and scientifically verified Vastu remedies without costly structural demolition.",
+                "Whether you are planning a new home, marriage alliance, business venture, or looking for auspicious muhurats, we guide you with devotion, confidentiality, and time-tested Vedic remedies."
+            ],
+            "mission": "To illuminate life's journey with ethical, authentic Vedic knowledge and practical remedies.",
+            "vision": "To be the most trusted spiritual consultancy recognized for compassionate and accurate guidance.",
+            "pillars_title": "Pillars of Vedic Trust",
+            "pillars_subtitle": "Guiding individuals and families with scriptural authenticity, compassionate counsel, and ethical remedies.",
+            "pillars": [
+                {"title": "Authentic Vedic Vidya", "desc": "Calculations based strictly on classical Parashara and Brihat Samhita principles."},
+                {"title": "100% Confidentiality", "desc": "Your horoscopes, birth details, and personal life matters remain completely private."},
+                {"title": "Non-Demolition Vastu", "desc": "Energy harmonizing using directional adjustments and elements without tearing down structures."},
+                {"title": "Compassionate Guidance", "desc": "Zero fear-mongering; only practical, affordable, and spirit-lifting remedies."}
+            ],
+            "services": [
+                {"title": "Detailed Kundali & Janampatri Analysis", "description": "Complete planetary dasha analysis covering career, wealth, health, and family life.", "price": "From ₹1,100"},
+                {"title": "Kundali Milan (Marriage Matchmaking)", "description": "Ashtakoot Guna Milan, Manglik dosha remedies, and mutual harmony assessment.", "price": "From ₹1,500"},
+                {"title": "Residential & Commercial Vastu Inspection", "description": "Compass-calibrated energy inspection of flats, bungalows, offices, and factories.", "price": "From ₹3,500"},
+                {"title": "Vastu Without Demolition Remedies", "description": "Placement remedies, copper helix, pyramids, and color corrections without tearing down walls.", "price": "Consultation Based"},
+                {"title": "Vedic Pooja & Havan Ceremonies", "description": "Griha Pravesh, Satyanarayan Katha, Navgrah Shanti, and Kaal Sarp Dosha poojas.", "price": "Custom Samagri Package"},
+                {"title": "Certified Gemstones & Rudraksha", "description": "100% natural, laboratory-certified energized gemstones matched to your lagna.", "price": "Certified Rates"}
+            ],
+            "features": [
+                {"title": "25+ Years Vedic Scholarship", "description": "Traditional Sanskrit Vidya combined with rational, ethical problem analysis."},
+                {"title": "100% Confidential Consultations", "description": "Your birth details and personal family matters remain strictly private."},
+                {"title": "Zero Fear-Mongering", "description": "We offer simple, practical, affordable remedies rather than inducing unnecessary fear."},
+                {"title": "Scientific Non-Demolition Vastu", "description": "Balance energy flow through directional elements, mirrors, and copper helixes."},
+                {"title": "Instant WhatsApp Kundali PDF", "description": "Receive your computerized high-resolution Kundali report instantly on WhatsApp."},
+                {"title": "Global Phone & Video Consultations", "description": "Consultations available across India and worldwide via Zoom or WhatsApp video."}
+            ],
+            "testimonials": [
+                {"name": "Alok Mathur", "role": "Business Owner", "quote": "The business Vastu consultation by {safe_title} transformed the cash flow in our manufacturing plant. Simple directional remedies worked wonders!"},
+                {"name": "Sneha & Varun Kapoor", "role": "Newlyweds", "quote": "Guruji did our Kundali Milan and presided over our Griha Pravesh pooja. The rituals were conducted with such devotion and peace."},
+                {"name": "Ramesh Chawla", "role": "Chartered Accountant", "quote": "His career predictions regarding my job switch were accurate down to the exact month. Highly insightful Vedic scholar."}
+            ],
+            "faqs": [
+                {"question": "What information is needed for a Kundali consultation?", "answer": "You only need to provide exact Date of Birth, Time of Birth, and Place of Birth (City/State)."},
+                {"question": "Do I need to break walls for Vastu correction?", "answer": "No! 95% of Vastu defects can be remedied through copper energy strips, crystals, elemental balance, and room usage adjustments without any physical demolition."},
+                {"question": "Do you perform Griha Pravesh and office inauguration poojas?", "answer": "Yes, our certified Vedic pandits conduct complete Vedic rituals with pure samagri and clear explanations of every mantra."},
+                {"question": "Can I consult via phone or video call?", "answer": "Yes, we conduct consultations daily over WhatsApp video calls and phone for clients across India and internationally."},
+                {"question": "Are the gemstones energized (prana pratishtha) before delivery?", "answer": "Yes, every gemstone is certified by a reputed gemology laboratory and energized with Vedic mantras according to your horoscope."}
+            ]
+        },
+        "CA, Tax Advocate & GST Consultant": {
+            "badge": "💼 Certified Chartered Accountant | GST & Tax Advisory",
+            "headline": "Expert Tax Planning, GST & Business Compliance by {safe_title}",
+            "subheadline": "End-to-end Income Tax Return (ITR), GST monthly filings, company incorporation, and financial audit services.",
+            "about_story": [
+                "{safe_title} provides proactive, ethical, and technology-driven tax advisory and corporate accounting services for MSMEs, startups, and salaried individuals.",
+                "With deep expertise in Indian direct and indirect tax laws, we safeguard your business against compliance penalties while maximizing legitimate tax savings.",
+                "From seamless GST return filing and MCA annual compliances to tax notice defense and bank loan project reports, we serve as your trusted financial confidant."
+            ],
+            "mission": "To empower Indian enterprises and professionals with transparent, reliable, and stress-free financial compliance.",
+            "vision": "To be the premier corporate advisory firm recognized for fiscal integrity, speed, and client prosperity.",
+            "pillars_title": "Our Professional Standards",
+            "pillars_subtitle": "Delivering statutory compliance, financial integrity, and proactive tax advisory for your business.",
+            "pillars": [
+                {"title": "Certified Expertise", "desc": "Handled directly by qualified Chartered Accountants with extensive tax tribunal experience."},
+                {"title": "Zero Notice Focus", "desc": "Thorough reconciliation of ITC, TDS, and financial statements to safeguard against scrutiny."},
+                {"title": "Transparent Pricing", "desc": "Upfront fixed fees with zero hidden surprises across accounting, filings, and audit."},
+                {"title": "Prompt Client Support", "desc": "Dedicated relationship managers providing real-time query resolution and deadline alerts."}
+            ],
+            "services": [
+                {"title": "Income Tax Return (ITR) Filing", "description": "ITR-1 to ITR-7 for salaried, professionals, traders, capital gains, and corporate entities.", "price": "From ₹999"},
+                {"title": "Monthly & Quarterly GST Compliance", "description": "GSTR-1, GSTR-3B, GSTR-9 annual returns, input tax credit (ITC) reconciliation, and new registrations.", "price": "From ₹1,499/mo"},
+                {"title": "Company & LLP Incorporation", "description": "Pvt Ltd, LLP, One Person Company (OPC), MSME Udyam, and Startup India registration.", "price": "From ₹4,999 + Govt Fees"},
+                {"title": "Tax Notice Representation & Appeals", "description": "Drafting legal replies for Section 148, 143(1), GST show-cause notices, and department hearings.", "price": "Case Based"},
+                {"title": "Accounting & Bookkeeping Services", "description": "Tally, Zoho Books, cloud ledger maintenance, TDS compliance, and monthly P&L statements.", "price": "From ₹2,999/mo"},
+                {"title": "CMA Data & Bank Loan Project Reports", "description": "Detailed project reports, projected balance sheets, and DSCR ratios for CC limits and term loans.", "price": "Custom Report"}
+            ],
+            "features": [
+                {"title": "Qualified FCA / ACS Professionals", "description": "Handled directly by certified Chartered Accountants, not automated inexperienced bots."},
+                {"title": "Zero Notice Guarantee", "description": "Meticulous calculation and cross-verification to prevent scrutiny notices."},
+                {"title": "100% Digital & Paperless Workflow", "description": "Upload documents securely via WhatsApp or portal—no office visits required."},
+                {"title": "Maximized Tax Savings", "description": "Legitimate deduction planning under 80C, 80D, 54F, 44AD presumptive schemes."},
+                {"title": "Dedicated Relationship Manager", "description": "Direct phone and WhatsApp access to your designated accountant for rapid queries."},
+                {"title": "Timely Due-Date Alerts", "description": "Advance automated reminders so your business never incurs late filing fees."}
+            ],
+            "testimonials": [
+                {"name": "Gaurav Singhal", "role": "E-Commerce Founder", "quote": "{safe_title} resolved our complicated GST input tax credit reconciliation and saved us over ₹3.4 Lakhs in penalties. Invaluable expertise!"},
+                {"name": "Dr. Neha Parekh", "role": "Consultant Surgeon", "quote": "Filing my doctor's ITR under 44ADA was seamless with {safe_title}. Clear explanations and prompt submission within 24 hours."},
+                {"name": "Vikas Agarwal", "role": "MSME Manufacturer", "quote": "Their team prepared our bank CMA report for a ₹2 Crore machinery loan and got it sanctioned without hassle. Highly recommended!"}
+            ],
+            "faqs": [
+                {"question": "Can I file my ITR completely online without visiting your office?", "answer": "Yes! You can share your Form 16, bank statements, and investment proofs securely on WhatsApp or email, and we handle the rest digitally."},
+                {"question": "How quickly can you register a new Private Limited Company or LLP?", "answer": "With valid PAN, Aadhaar, and bank statements, we typically complete company incorporation within 5 to 7 working days."},
+                {"question": "What happens if I receive an Income Tax or GST notice?", "answer": "Do not panic. Share the notice PDF with our team immediately. Our tax advocates analyze the grounds and draft an authoritative legal reply for department submission."},
+                {"question": "Do you provide monthly bookkeeping on Tally or Zoho Books?", "answer": "Yes, we manage complete monthly ledgers, bank reconciliations, vendor bill entry, and monthly financial statements remotely."},
+                {"question": "Do you help with MSME Udyam registration and subsidies?", "answer": "Yes, we handle Udyam registration, Startup India recognition, and documentation for government subsidized loan schemes."}
+            ]
+        },
+        "Kirana Store & Wholesale Mandi Trader": {
+            "badge": "🛒 Fresh Grocery & Daily Staples | Free Home Delivery",
+            "headline": "Quality Groceries, Daily Staples & FMCG by {safe_title}",
+            "subheadline": "Farm-fresh grains, pure cooking oils, pulses, household essentials, and packaged FMCG delivered to your door in 30 minutes.",
+            "about_story": [
+                "{safe_title} has been the trusted neighborhood Kirana partner for families seeking wholesome pulses, unadulterated spices, and fresh kitchen staples.",
+                "Directly sourced from verified mandis and premier FMCG brands, we guarantee honest weights, uncompromised quality, and competitive wholesale-level pricing.",
+                "Simply send your handwritten grocery list or voice note on WhatsApp, and our prompt delivery staff delivers your order directly to your doorstep with Cash on Delivery or UPI payment."
+            ],
+            "mission": "To provide fresh, authentic, and affordable daily groceries with warm neighborhood service and lightning-fast delivery.",
+            "vision": "To be the most dependable neighborhood grocery store blending traditional trust with modern convenience.",
+            "pillars_title": "Our Neighborhood Promise",
+            "pillars_subtitle": "Bringing purity, honest weights, and warm traditional service to every Indian household.",
+            "pillars": [
+                {"title": "100% Shuddh & Pure", "desc": "Unadulterated pulses, chakki fresh flour, and authentic cold-pressed oils."},
+                {"title": "Honest Digital Measure", "desc": "Certified digital weighing scales ensuring accurate quantity on every order."},
+                {"title": "Mandi Wholesale Rates", "desc": "Direct mandi sourcing allows us to offer supermarket-beating rates every day."},
+                {"title": "Express Doorstep Delivery", "desc": "Send your handwritten slip or voice note on WhatsApp; delivered in 30 minutes."}
+            ],
+            "services": [
+                {"title": "Premium Atta, Rice & Grains", "description": "Chakki fresh wheat atta, Sharbati wheat, Basmati rice, Sona Masoori, and millet grains.", "price": "Mandi Rates"},
+                {"title": "Unpolished Pulses & Dals", "description": "Chemical-free Toor Dal, Moong, Chana, Urad, and Rajma packed for superior taste and nutrition.", "price": "Wholesale Prices"},
+                {"title": "Pure Mustard & Refined Oils", "description": "Kachi Ghani Mustard oil, pure Sunflower oil, Desi Ghee tins, and cold-pressed sesame oil.", "price": "Best Market Price"},
+                {"title": "Fresh Whole & Ground Spices", "description": "Fragrant Cardamom, Cumin (Jeera), Turmeric, Kashmiri Red Chilli, and Garam Masala.", "price": "From ₹45/pack"},
+                {"title": "Personal Care & Household FMCG", "description": "Soaps, detergents, floor cleaners, dishwash bars, shampoos, and toothpaste.", "price": "MRP Discounts"},
+                {"title": "Dry Fruits & Morning Breakfast", "description": "California Almonds, Cashews, Raisins, Oats, Cornflakes, Tea leaves, and packaged snacks.", "price": "Special Combos"}
+            ],
+            "features": [
+                {"title": "30-Minute Doorstep Delivery", "description": "Local neighborhood express delivery right to your door with zero delivery fees on orders above ₹499."},
+                {"title": "WhatsApp 'Parchi' Order Dispatch", "description": "Simply click a photo of your handwritten grocery slip and WhatsApp it to us!"},
+                {"title": "Honest Digital Weight Scales", "description": "Certified digital electronic scales ensure you receive every single gram you pay for."},
+                {"title": "Zero Adulteration Guarantee", "description": "Hand-cleaned grains and unadulterated spices sourced straight from reputable producers."},
+                {"title": "Pay via UPI QR or Cash on Delivery", "description": "Pay easily with any UPI app on delivery or convenient Cash on Delivery."},
+                {"title": "Monthly Ration Account Facility", "description": "Convenient khata / monthly billing options for verified regular neighborhood families."}
+            ],
+            "testimonials": [
+                {"name": "Kavita Sethi", "role": "Regular Customer", "quote": "I just send a WhatsApp photo of my grocery list to {safe_title}, and everything arrives cleanly packed in 20 minutes. Pure lifesaver!"},
+                {"name": "Om Prakash Goyal", "role": "Senior Citizen", "quote": "Their Chakki Atta and Toor Dal are of the highest quality. Honest weights and extremely polite delivery boys."},
+                {"name": "Meenu Verma", "role": "Homemaker", "quote": "Prices are lower than big supermarkets, and the quality of dry fruits and spices is unmatched. Highly recommend!"}
+            ],
+            "faqs": [
+                {"question": "How can I place an order via WhatsApp?", "answer": "You can type your grocery items or simply take a photo of your handwritten grocery slip and WhatsApp it to our store number. We confirm and dispatch immediately!"},
+                {"question": "Is there a minimum order amount for free delivery?", "answer": "Free delivery is available for orders above ₹499 within our local neighborhood delivery radius."},
+                {"question": "What payment methods do you accept upon delivery?", "answer": "We accept Cash on Delivery, all UPI QR apps (Google Pay, PhonePe, Paytm), and mobile card swipe machines."},
+                {"question": "Can I return an item if I am not satisfied with the quality?", "answer": "Yes, we have an instant no-questions-asked replacement or refund policy right at the time of delivery."},
+                {"question": "Do you offer wholesale discounts for bulk party or monthly ration orders?", "answer": "Yes, we provide special tiered wholesale discounts for monthly family ration orders and wedding catering bulk purchases."}
+            ]
         }
     }
 
@@ -861,7 +1430,15 @@ def get_category_preset(
                     "title": f,
                     "description": f"We take pride in {f.lower()}, ensuring top quality for all our clients."
                 })
-            base["features"] = new_feats
+    if "pillars" not in base or not base.get("pillars"):
+        base["pillars_title"] = "Our Core Principles"
+        base["pillars_subtitle"] = "Committed to dedicated craftsmanship, client trust, and exceptional service."
+        base["pillars"] = [
+            {"title": "Uncompromised Quality", "desc": "Maintaining the highest standards of craftsmanship, attention to detail, and care."},
+            {"title": "Trust & Integrity", "desc": "Building lasting client relationships through honesty, transparent pricing, and dependable service."},
+            {"title": "Excellence in Service", "desc": "Striving for perfection and delivering consistent, exceptional customer experiences every day."},
+            {"title": "Customer Satisfaction", "desc": "Prioritizing your comfort, convenience, and individual needs with personalized attention."}
+        ]
 
     base["hero_image"] = hero_image
     return base
@@ -877,6 +1454,7 @@ def generate_website_tree(
     contact_phone: str = None,
     background_style: str = "live",
     theme_mode: str = "light",
+    brand_tone: str = "Corporate & Trustworthy",
     user_prompt: str = None,
     tagline: str = None,
     primary_services: str = None,
@@ -899,6 +1477,7 @@ def generate_website_tree(
     safe_title = title.strip() if title else "Studio Brand"
     cat = category.strip() if category else "Salon, Spa & Beauty Parlour"
     colors = get_theme_colors(theme, theme_mode)
+    effective_tone = brand_tone or (business_spec_json.get("brand_tone") if isinstance(business_spec_json, dict) else "Corporate & Trustworthy") or "Corporate & Trustworthy"
 
     # Extract user-defined custom pages
     custom_page_prompts = {}
@@ -915,6 +1494,7 @@ def generate_website_tree(
     business_spec = business_spec_json or {
         "business_name": safe_title,
         "category": cat,
+        "brand_tone": effective_tone,
         "tagline": tagline or "",
         "primary_services": primary_services or "",
         "service_area": service_area or "",
@@ -933,6 +1513,8 @@ def generate_website_tree(
         "background_style": background_style,
         "prompt": user_prompt or ""
     }
+    if "brand_tone" not in business_spec:
+        business_spec["brand_tone"] = effective_tone
 
     # 2. Synthesize Master Prompt
     master_prompt = synthesize_master_prompt_from_json(business_spec)
@@ -948,7 +1530,10 @@ def generate_website_tree(
         service_area=service_area
     )
 
-    # Blend Gemini AI outputs if returned, otherwise use the rich preset
+    # Apply brand copywriting tone transformation to preset fallback
+    preset = apply_brand_tone_to_content(preset, effective_tone, cat, safe_title)
+
+    # Blend Gemini AI outputs if returned, otherwise use the tone-transformed preset
     badge = ai_content.get("badge") if ai_content and ai_content.get("badge") else preset["badge"]
     headline = ai_content.get("headline") if ai_content and ai_content.get("headline") else preset["headline"]
     subheadline = ai_content.get("subheadline") if ai_content and ai_content.get("subheadline") else preset["subheadline"]
@@ -959,6 +1544,9 @@ def generate_website_tree(
     features_items = ai_content.get("features") if ai_content and isinstance(ai_content.get("features"), list) else preset["features"]
     testimonials_items = ai_content.get("testimonials") if ai_content and isinstance(ai_content.get("testimonials"), list) else preset["testimonials"]
     faqs_items = ai_content.get("faqs") if ai_content and isinstance(ai_content.get("faqs"), list) else preset["faqs"]
+    pillars = ai_content.get("pillars") if ai_content and isinstance(ai_content.get("pillars"), list) and ai_content.get("pillars") else preset.get("pillars", [])
+    pillars_title = ai_content.get("pillars_title") if ai_content and ai_content.get("pillars_title") else preset.get("pillars_title", "Our Core Principles")
+    pillars_subtitle = ai_content.get("pillars_subtitle") if ai_content and ai_content.get("pillars_subtitle") else preset.get("pillars_subtitle", "Committed to dedicated craftsmanship, client trust, and exceptional service.")
 
     safe_phone = contact_phone or "+1 (800) 555-0199"
     safe_email = contact_email or "info@example.com"
@@ -1008,6 +1596,9 @@ def generate_website_tree(
         "mission": mission,
         "vision_title": "Our Vision",
         "vision": vision,
+        "pillars_title": pillars_title,
+        "pillars_subtitle": pillars_subtitle,
+        "pillars": pillars,
         "image": get_unique_category_image(cat, seed_offset=2)
     }
 
@@ -1058,6 +1649,11 @@ def generate_website_tree(
         "website_type": website_type,
         "background_style": background_style,
         "selected_pages": pages_list,
+        "section_order": ["hero", "about", "services", "features", "testimonials", "faq", "cta"],
+        "hidden_sections": {},
+        "brand_tone": effective_tone,
+        "layout_variant": "split",
+        "blog_articles": synthesize_blog_articles(cat, safe_title),
         "custom_pages": [{"name": k, "prompt": v} for k, v in custom_page_prompts.items()],
         "business_spec": business_spec,
         "synthesized_prompt": master_prompt,
@@ -1167,6 +1763,19 @@ def generate_website_tree(
                     "faq": faq_section,
                     "contact": contact_section
                 }
+            elif p in ["Blog", "Blog & Articles", "Articles"]:
+                pages_dict[p] = {
+                    "hero": {
+                        "badge": "📰 Knowledge, Tips & Expert Advice",
+                        "headline": f"Latest Articles & Insights by {safe_title}",
+                        "subheadline": f"Practical advice, industry deep dives, and expert tutorials curated for our clients.",
+                        "primary_cta": "Read Articles",
+                        "hero_image": get_unique_category_image(cat, seed_offset=8)
+                    },
+                    "blog_articles": synthesize_blog_articles(cat, safe_title),
+                    "faq": faq_section,
+                    "contact": contact_section
+                }
             else:
                 # Custom User-Created Page with its specific prompt!
                 custom_prompt_text = custom_page_prompts.get(p, "")
@@ -1183,18 +1792,294 @@ def generate_website_tree(
 
     return home_sections
 
+CATEGORY_HERO_PRESETS = {
+    "Fitness Gym, Yoga & Personal Training": [
+        {
+            "headline": "Transform Your Body & Mind With Expert Coaching & Community",
+            "subheadline": "Achieve your peak physique with science-backed personal training, customized nutrition blueprints, and state-of-the-art training facilities.",
+            "primary_cta": "Claim Free 3-Day Pass"
+        },
+        {
+            "headline": "Unleash Your Ultimate Strength & Fitness Potential Today",
+            "subheadline": "Join our empowering fitness sanctuary featuring elite coaches, personalized workout splits, and motivating group energy.",
+            "primary_cta": "Book Intro Session"
+        },
+        {
+            "headline": "Your Journey to Peak Health, Endurance & Longevity Starts Here",
+            "subheadline": "Personalized fitness coaching tailored to your lifestyle, body type, and sustainable health goals.",
+            "primary_cta": "Get Started Today"
+        }
+    ],
+    "Event Management & Wedding Planner": [
+        {
+            "headline": "Crafting Unforgettable Moments & Dream Celebrations",
+            "subheadline": "From magical wedding ceremonies to bespoke grand galas, we deliver flawless event production with unmatched elegance.",
+            "primary_cta": "Schedule Consultation"
+        },
+        {
+            "headline": "Bespoke Wedding Planning for Your Once-in-a-Lifetime Celebration",
+            "subheadline": "Exquisite decor, seamless logistics, and personalized vendor coordination crafted to bring your fairytale to life.",
+            "primary_cta": "Explore Wedding Packages"
+        }
+    ],
+    "Dentist & Medical Healthcare Clinic": [
+        {
+            "headline": "Gentle, World-Class Healthcare Designed for Your Family",
+            "subheadline": "Modern clinical precision, empathetic doctors, and comprehensive preventative care in a welcoming, patient-first environment.",
+            "primary_cta": "Book Appointment"
+        }
+    ],
+    "Salon, Spa & Beauty Parlour": [
+        {
+            "headline": "Indulge in Luxury Beauty, Styling & Rejuvenation Treatments",
+            "subheadline": "Experience radiant transformations with master stylists, organic botanicals, and bespoke beauty treatments designed for you.",
+            "primary_cta": "Book Experience"
+        }
+    ],
+    "Mithai Shop, Sweets & Namkeen Bakery": [
+        {
+            "headline": "Pure Desi Ghee Sweets, Namkeen & Traditional Festive Delicacies",
+            "subheadline": "Crafted with 100% pure ingredients, time-honored Indian recipes, and unmatched hygiene for authentic taste in every bite.",
+            "primary_cta": "Order Sweets Box Online"
+        },
+        {
+            "headline": "Handcrafted Indian Mithai & Fresh Daily Savory Treats",
+            "subheadline": "Specializing in Kaju Katli, Motichoor Ladoos, Besan Ladoo, and fresh spicy namkeens for every celebration.",
+            "primary_cta": "View Festive Menu"
+        }
+    ],
+    "Coaching Classes & IIT-JEE / NEET Tuitions": [
+        {
+            "headline": "Premier Coaching for IIT-JEE, NEET & CBSE Board Excellence",
+            "subheadline": "Proven top ranker track record, dedicated doubt counters, expert faculty, and structured mock test series designed for victory.",
+            "primary_cta": "Book Free Demo Class"
+        },
+        {
+            "headline": "Crack Your Dream Competitive Exams With Proven Mentorship",
+            "subheadline": "Personalized academic mentoring, comprehensive study material, and daily concept revision classes in small batches.",
+            "primary_cta": "Enroll in Batch Now"
+        }
+    ],
+    "Wedding Mandap Decorator & Event Caterer": [
+        {
+            "headline": "Royal Mandap Setups, Shahi Catering & Grand Shaadi Celebrations",
+            "subheadline": "Turning your dream Indian wedding into a breathtaking royal reality with bespoke floral stages, baraat entries, and gourmet banquets.",
+            "primary_cta": "Book Wedding Consultation"
+        }
+    ],
+    "Ayurvedic, Homeopathy & Wellness Clinic": [
+        {
+            "headline": "Holistic Healing, Natural Herbal Remedies & Root-Cause Wellness",
+            "subheadline": "Certified Ayurvedic doctors offering personalized Nadi Pariksha, Panchakarma rejuvenation, and chemical-free healing.",
+            "primary_cta": "Book Doctor Consultation"
+        }
+    ],
+    "Astrology, Vastu Shastra & Panditji Pooja": [
+        {
+            "headline": "Accurate Kundali Predictions, Auspicious Muhurat & Certified Vastu",
+            "subheadline": "Experienced Vedic Astrologer providing precise horoscope readings, gem therapy, Griha Pravesh Pooja, and harmony remedies.",
+            "primary_cta": "Consult Panditji Online"
+        }
+    ],
+    "CA, Tax Advocate & GST Consultant": [
+        {
+            "headline": "Seamless GST Registration, ITR Filing & Business Audit Advisory",
+            "subheadline": "Expert Chartered Accountants ensuring 100% tax compliance, prompt ROC filings, startup incorporation, and smart financial planning.",
+            "primary_cta": "Schedule Tax Consultation"
+        }
+    ],
+    "Kirana Store & Wholesale Mandi Trader": [
+        {
+            "headline": "Fresh Farm Staples, Wholesale Pulses & 1-Hour Local Delivery",
+            "subheadline": "Your trusted local neighborhood Kirana store supplying pure grains, spices, edible oils, and household essentials at mandi rates.",
+            "primary_cta": "Order Grocery via WhatsApp"
+        }
+    ],
+    "DEFAULT": [
+        {
+            "headline": "Elevate Your Experience With Industry-Leading Excellence",
+            "subheadline": "We deliver verified professional solutions, transparent pricing, and trusted service designed to exceed your highest expectations.",
+            "primary_cta": "Get In Touch Today"
+        },
+        {
+            "headline": "Trusted Professional Care Tailored Exclusively for You",
+            "subheadline": "Dedicated specialists, prompt communication, and premium quality crafted to deliver exceptional results every single time.",
+            "primary_cta": "Book An Appointment"
+        }
+    ]
+}
+
 def edit_website_tree(current_tree: Dict[str, Any], instruction: str) -> Dict[str, Any]:
-    """Updates the website tree based on user prompt instruction."""
+    """Updates the website tree based on user prompt instruction with Gemini AI & resilient category NLP."""
+    import re
     updated = json.loads(json.dumps(current_tree))
-    if "headline" in instruction.lower() or "title" in instruction.lower():
-        updated["hero"]["headline"] = instruction
-    elif "service" in instruction.lower():
+    clean_inst = (instruction or "").strip()
+    if not clean_inst:
+        return updated
+
+    # 1. Attempt Gemini 3.8 / Flash Content Edit (with fast 5s timeout)
+    api_key = settings.GEMINI_API_KEY or os.getenv("GEMINI_API_KEY", "")
+    if api_key:
+        models_to_try = ["gemini-flash-lite-latest", "gemini-3.1-flash-lite", "gemini-flash-latest"]
+        brand_name = current_tree.get("brand_name", "Our Business")
+        prompt_text = (
+            f"You are an expert website designer. Update the website tree according to this instruction:\n"
+            f"Instruction: \"{clean_inst}\"\n\n"
+            f"Current Website Brand: \"{brand_name}\"\n"
+            f"Current Hero: {json.dumps(current_tree.get('hero', {}))}\n\n"
+            f"Return ONLY a valid JSON object of modified fields. Example:\n"
+            f'{{"hero": {{"headline": "New Headline", "subheadline": "New compelling subheadline", "primary_cta": "Get Started"}}}}\n'
+            f"Respond with ONLY raw JSON, no markdown codeblocks, no commentary."
+        )
+        for m in models_to_try:
+            try:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent?key={api_key}"
+                resp = requests.post(
+                    url,
+                    json={
+                        "contents": [{"parts": [{"text": prompt_text}]}],
+                        "generationConfig": {
+                            "responseMimeType": "application/json",
+                            "temperature": 0.7
+                        }
+                    },
+                    timeout=5
+                )
+                if resp.status_code == 200:
+                    raw_json = resp.json()
+                    candidates = raw_json.get("candidates", [])
+                    if candidates:
+                        text_part = candidates[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+                        cleaned_text = re.sub(r"^```json\s*", "", text_part.strip())
+                        cleaned_text = re.sub(r"\s*```$", "", cleaned_text)
+                        parsed = json.loads(cleaned_text)
+                        if isinstance(parsed, dict):
+                            for k, v in parsed.items():
+                                if isinstance(v, dict) and isinstance(updated.get(k), dict):
+                                    updated[k].update(v)
+                                else:
+                                    updated[k] = v
+                            return updated
+            except Exception:
+                pass
+
+    # 2. Resilient Deterministic NLP Engine
+    inst_lower = clean_inst.lower()
+
+    # Detect business category from tree or content
+    category = current_tree.get("category", "")
+    if not category:
+        combined_text = (
+            str(current_tree.get("brand_name", "")) + " " +
+            str(current_tree.get("hero", {}).get("headline", "")) + " " +
+            str(current_tree.get("hero", {}).get("subheadline", ""))
+        ).lower()
+        if any(w in combined_text for w in ["gym", "fitness", "workout", "coach", "training", "body", "mind"]):
+            category = "Fitness Gym, Yoga & Personal Training"
+        elif any(w in combined_text for w in ["wedding", "event", "marriage", "celebration"]):
+            category = "Event Management & Wedding Planner"
+        elif any(w in combined_text for w in ["doctor", "clinic", "dentist", "healthcare", "medical"]):
+            category = "Dentist & Medical Healthcare Clinic"
+        elif any(w in combined_text for w in ["salon", "spa", "beauty", "hair", "parlour"]):
+            category = "Salon, Spa & Beauty Parlour"
+        elif any(w in combined_text for w in ["food", "restaurant", "cafe", "bakery", "dining"]):
+            category = "Restaurant, Café & Bakery"
+        elif any(w in combined_text for w in ["plumb", "electric", "handyman", "repair", "service"]):
+            category = "Plumbing, Electrician & Home Handyman"
+        else:
+            category = "DEFAULT"
+
+    presets = CATEGORY_HERO_PRESETS.get(category, CATEGORY_HERO_PRESETS["DEFAULT"])
+
+    def get_explicit(text: str) -> str:
+        m_q = re.search(r'["\']([^"\']+)["\']', text)
+        if m_q and len(m_q.group(1).strip()) > 3:
+            return m_q.group(1).strip()
+        m_c = re.search(r'(?:headline|title|subheading|subhead|to|as)\s*[:\-]\s*(.+)$', text, re.I)
+        if m_c and len(m_c.group(1).strip()) > 3:
+            return m_c.group(1).strip()
+        m_to = re.search(r'(?:to|as|saying|say)\s+(.+)$', text, re.I)
+        if m_to:
+            val = m_to.group(1).strip()
+            if val.lower() not in ['something else', 'anything', 'change', 'new', 'hero', 'content']:
+                return val
+        return ""
+
+    explicit_val = get_explicit(clean_inst)
+    if "hero" not in updated or not isinstance(updated["hero"], dict):
+        updated["hero"] = {}
+
+    # Color changes
+    color_map = {
+        "purple": "#8b5cf6",
+        "indigo": "#6366f1",
+        "blue": "#2563eb",
+        "emerald": "#10b981",
+        "green": "#22c55e",
+        "rose": "#ec4899",
+        "pink": "#ec4899",
+        "amber": "#f59e0b",
+        "orange": "#f97316",
+        "cyan": "#06b6d4",
+        "red": "#ef4444"
+    }
+    for c_name, c_hex in color_map.items():
+        if f"{c_name}" in inst_lower and ("color" in inst_lower or "theme" in inst_lower or "button" in inst_lower):
+            cur_col = updated.get("colors", {})
+            updated["colors"] = {**cur_col, "primary": c_hex, "accent": c_hex}
+            break
+
+    # Subheading specific instruction
+    if "subheading" in inst_lower or "subhead" in inst_lower or "tagline" in inst_lower:
+        if explicit_val:
+            updated["hero"]["subheadline"] = explicit_val
+        else:
+            cur_sub = updated["hero"].get("subheadline", "")
+            chosen = next((p["subheadline"] for p in presets if p["subheadline"] != cur_sub), presets[0]["subheadline"])
+            updated["hero"]["subheadline"] = chosen
+
+    # Headline specific instruction
+    elif "headline" in inst_lower or "title" in inst_lower:
+        if explicit_val:
+            updated["hero"]["headline"] = explicit_val
+        else:
+            cur_head = updated["hero"].get("headline", "")
+            chosen = next((p["headline"] for p in presets if p["headline"] != cur_head), presets[0]["headline"])
+            updated["hero"]["headline"] = chosen
+
+    # General hero content / rewrite
+    elif "hero" in inst_lower or "content" in inst_lower or "copy" in inst_lower or "text" in inst_lower:
+        cur_head = updated["hero"].get("headline", "")
+        preset = next((p for p in presets if p["headline"] != cur_head), presets[0])
+        updated["hero"]["headline"] = preset["headline"]
+        updated["hero"]["subheadline"] = preset["subheadline"]
+        if "primary_cta" in preset:
+            updated["hero"]["primary_cta"] = preset["primary_cta"]
+
+    # CTA / Button specific
+    elif "button" in inst_lower or "cta" in inst_lower:
+        if explicit_val:
+            updated["hero"]["primary_cta"] = explicit_val
+        else:
+            updated["hero"]["primary_cta"] = "Get Started Now"
+
+    # Services specific
+    elif "service" in inst_lower:
         if "services" in updated and "items" in updated["services"]:
+            item_title = explicit_val or f"Featured: {clean_inst[:35]}"
             updated["services"]["items"].insert(0, {
-                "title": f"Special Offer: {instruction[:30]}",
-                "description": instruction,
-                "price": "Featured"
+                "title": item_title,
+                "description": "Comprehensive professional service crafted specifically for your requirements.",
+                "price": "Popular"
             })
+
+    # Catch-all: Never write prompt as raw subheading! Pick fresh subheading
     else:
-        updated["hero"]["subheadline"] = f"{instruction}"
+        if explicit_val:
+            updated["hero"]["subheadline"] = explicit_val
+        else:
+            cur_sub = updated["hero"].get("subheadline", "")
+            chosen = next((p["subheadline"] for p in presets if p["subheadline"] != cur_sub), presets[0]["subheadline"])
+            updated["hero"]["subheadline"] = chosen
+
     return updated

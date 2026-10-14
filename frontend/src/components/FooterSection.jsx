@@ -18,7 +18,7 @@ const FooterSection = ({ data, colors, viewport = 'desktop' }) => {
   const isMobile = viewport === 'mobile';
 
   return (
-    <footer className={`w-full border-t py-10 mt-16 ${isMobile ? 'px-4' : 'px-6 sm:px-12'}`} style={{ backgroundColor: footerBg, borderColor: footerBorder }}>
+    <footer className={`footer-section w-full border-t py-10 mt-16 ${isMobile ? 'px-4' : 'px-6 sm:px-12'}`} style={{ backgroundColor: footerBg, borderColor: footerBorder }}>
       <div className={`max-w-6xl mx-auto flex gap-6 mb-8 ${isMobile ? 'flex-col items-center text-center' : 'flex-col md:flex-row items-start justify-between'}`}>
         <div className={isMobile ? 'flex flex-col items-center' : ''}>
           <h3 className="text-xl font-black mb-2 tracking-tight" style={{ color: textColor }}>
@@ -45,7 +45,47 @@ const FooterSection = ({ data, colors, viewport = 'desktop' }) => {
         </div>
       </div>
 
-      <div className={`max-w-6xl mx-auto pt-6 border-t flex items-center justify-between gap-4 text-xs ${isMobile ? 'flex-col text-center' : 'flex-col sm:flex-row'}`} style={{ borderColor: isLight ? '#cbd5e1' : 'rgba(255,255,255,0.05)', color: subtextColor }}>
+      {/* Authentic Verified Business Badges */}
+      <div className="max-w-6xl mx-auto py-5 border-t border-slate-800/20 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 text-xs mb-4">
+        {data?.gstin && (
+          <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold ${
+            isLight ? 'bg-slate-200/80 text-slate-800' : 'bg-slate-800/80 text-slate-200 border border-slate-700/50'
+          }`}>
+            <span>🇮🇳</span>
+            <span>GSTIN: {data.gstin}</span>
+          </div>
+        )}
+        {data?.fssai && (
+          <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold ${
+            isLight ? 'bg-slate-200/80 text-slate-800' : 'bg-slate-800/80 text-slate-200 border border-slate-700/50'
+          }`}>
+            <span>🥗</span>
+            <span>FSSAI Lic: {data.fssai}</span>
+          </div>
+        )}
+        {data?.msme_number && (
+          <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold ${
+            isLight ? 'bg-slate-200/80 text-slate-800' : 'bg-slate-800/80 text-slate-200 border border-slate-700/50'
+          }`}>
+            <span>🛡️</span>
+            <span>MSME: {data.msme_number}</span>
+          </div>
+        )}
+        <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold ${
+          isLight ? 'bg-slate-200/80 text-slate-800' : 'bg-slate-800/80 text-slate-200 border border-slate-700/50'
+        }`}>
+          <span>🔒</span>
+          <span>SSL Secured & Verified</span>
+        </div>
+        <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold ${
+          isLight ? 'bg-slate-200/80 text-slate-800' : 'bg-slate-800/80 text-slate-200 border border-slate-700/50'
+        }`}>
+          <span>⚡</span>
+          <span>Direct Orders & Rapid Support</span>
+        </div>
+      </div>
+
+      <div className={`max-w-6xl mx-auto pt-4 border-t flex items-center justify-between gap-4 text-xs ${isMobile ? 'flex-col text-center' : 'flex-col sm:flex-row'}`} style={{ borderColor: isLight ? '#cbd5e1' : 'rgba(255,255,255,0.05)', color: subtextColor }}>
         <span>{copyright}</span>
         <span className="font-semibold" style={{ color: colors.primary }}>
           {credit}

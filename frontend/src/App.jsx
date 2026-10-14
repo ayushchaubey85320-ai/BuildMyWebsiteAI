@@ -22,8 +22,28 @@ const ProtectedRoute = ({ children }) => {
   if (!token) {
     return <Navigate to="/login" replace />;
   }
+
+  // Validate JWT expiration and integrity
+  try {
+    const parts = token.split('.');
+    if (parts.length === 3) {
+      const payload = JSON.parse(atob(parts[1]));
+      if (payload.exp && Date.now() >= payload.exp * 1000) {
+        localStorage.removeItem('buildmywebsiteai_token');
+        localStorage.removeItem('buildmywebsiteai_user');
+        return <Navigate to="/login" replace />;
+      }
+    }
+  } catch (e) {
+    // Malformed token
+    localStorage.removeItem('buildmywebsiteai_token');
+    localStorage.removeItem('buildmywebsiteai_user');
+    return <Navigate to="/login" replace />;
+  }
+
   return children;
 };
+
 
 /* Cross-Tab Authentication & Session Synchronization Listener */
 const AuthSyncListener = ({ children }) => {
@@ -32,38 +52,21 @@ const AuthSyncListener = ({ children }) => {
 
   useEffect(() => {
     const handleStorageChange = (e) => {
-      if (e.key === 'buildmywebsiteai_token' || e.key === 'buildmywebsiteai_user') {
+      // Only react if authentication token changed across tabs
+      if (e.key === 'buildmywebsiteai_token') {
         const token = localStorage.getItem('buildmywebsiteai_token');
-        const userStr = localStorage.getItem('buildmywebsiteai_user');
-
         const publicRoutes = ['/', '/features', '/showcase', '/how-it-works', '/faq', '/login', '/signup'];
 
-        // Scenario 1: User signed out in another tab -> Automatically sign out this tab if on protected route
-        if (!token || !userStr) {
+        if (!token) {
+          // User signed out in another tab
           if (!publicRoutes.includes(location.pathname)) {
-            navigate('/', { replace: true });
+            navigate('/login', { replace: true });
           }
-          return;
-        }
-
-        // Scenario 2: User logged into a different account in another tab -> Automatically switch session
-        try {
-          const user = JSON.parse(userStr);
-          if (user.is_admin || user.email === 'admin@buildmywebsiteai.ai') {
-            if (location.pathname !== '/admin') {
-              navigate('/admin', { replace: true });
-              window.location.reload();
-            }
-          } else {
-            if (location.pathname === '/admin') {
-              navigate('/dashboard', { replace: true });
-              window.location.reload();
-            } else {
-              window.location.reload();
-            }
+        } else {
+          // User signed in from another tab while on login/signup
+          if (location.pathname === '/login' || location.pathname === '/signup') {
+            navigate('/dashboard', { replace: true });
           }
-        } catch (err) {
-          navigate('/login', { replace: true });
         }
       }
     };

@@ -2,6 +2,8 @@ import io
 import zipfile
 import json
 import re
+import html
+import urllib.parse
 from typing import Dict, Any
 
 def safe_dict(val: Any) -> Dict[str, Any]:
@@ -24,6 +26,81 @@ def get_page_slug(p_name: str) -> str:
     clean = re.sub(r'[^a-zA-Z0-9]+', '_', p_name.strip().lower()).strip('_')
     return f"{clean or 'page'}.html"
 
+def clean_phone_for_wa(phone_str: str) -> str:
+    """Extracts clean digits for WhatsApp wa.me links, defaulting to India +91 if 10-digit."""
+    digits = re.sub(r'\D', '', str(phone_str or ''))
+    if len(digits) == 10:
+        return f"91{digits}"
+    return digits
+
+
+def get_font_pairing(category: str) -> Dict[str, str]:
+    """Returns curated Google Font pairings tailored to the business vertical."""
+    c_lower = (category or "").lower()
+    if any(k in c_lower for k in ["salon", "spa", "beauty", "jewelry", "bridal", "fashion"]):
+        return {
+            "heading": "'Playfair Display', Georgia, serif",
+            "body": "'Inter', -apple-system, sans-serif",
+            "link": "family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,400&family=Inter:wght@400;500;600;700",
+            "badge": "Luxury Serif"
+        }
+    elif any(k in c_lower for k in ["restaurant", "café", "cafe", "bakery", "food", "dining", "bar"]):
+        return {
+            "heading": "'DM Serif Display', Georgia, serif",
+            "body": "'Poppins', -apple-system, sans-serif",
+            "link": "family=DM+Serif+Display&family=Poppins:wght@400;500;600;700",
+            "badge": "Editorial Dining"
+        }
+    elif any(k in c_lower for k in ["gym", "fitness", "yoga", "crossfit", "sports", "martial"]):
+        return {
+            "heading": "'Oswald', Impact, sans-serif",
+            "body": "'Roboto', -apple-system, sans-serif",
+            "link": "family=Oswald:wght@500;600;700&family=Roboto:wght@400;500;700",
+            "badge": "Athletic Bold"
+        }
+    elif any(k in c_lower for k in ["coaching", "tuition", "preschool", "school", "education", "academy"]):
+        return {
+            "heading": "'Outfit', -apple-system, sans-serif",
+            "body": "'Plus Jakarta Sans', -apple-system, sans-serif",
+            "link": "family=Outfit:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700",
+            "badge": "Academic Modern"
+        }
+    elif any(k in c_lower for k in ["clinic", "dental", "doctor", "health", "hospital", "pharma"]):
+        return {
+            "heading": "'Inter', -apple-system, sans-serif",
+            "body": "'Manrope', -apple-system, sans-serif",
+            "link": "family=Inter:wght@600;700;800&family=Manrope:wght@400;500;600;700",
+            "badge": "Clinical Precision"
+        }
+    elif any(k in c_lower for k in ["pet", "vet", "dog", "cat", "animal"]):
+        return {
+            "heading": "'Fredoka', -apple-system, sans-serif",
+            "body": "'Plus Jakarta Sans', -apple-system, sans-serif",
+            "link": "family=Fredoka:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600",
+            "badge": "Warm & Friendly"
+        }
+    return {
+        "heading": "'Plus Jakarta Sans', -apple-system, sans-serif",
+        "body": "'Inter', -apple-system, sans-serif",
+        "link": "family=Plus+Jakarta+Sans:wght@600;700;800;900&family=Inter:wght@400;500;600;700",
+        "badge": "Universal Clean"
+    }
+
+def generate_svg_logo(brand_name: str, primary_color: str, secondary_color: str) -> str:
+    """Synthesizes an elegant vector SVG brand emblem when no custom logo is uploaded."""
+    words = [w for w in brand_name.split() if w]
+    initials = ("".join([w[0] for w in words[:2]]) if words else "AI").upper()
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="logo-img" style="height: 38px; width: 38px; border-radius: 10px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+      <defs>
+        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="{primary_color}"/>
+          <stop offset="100%" stop-color="{secondary_color}"/>
+        </linearGradient>
+      </defs>
+      <rect width="48" height="48" rx="12" fill="url(#logoGrad)"/>
+      <text x="50%" y="54%" font-family="system-ui, -apple-system, sans-serif" font-size="19" font-weight="900" fill="#ffffff" dominant-baseline="middle" text-anchor="middle">{initials}</text>
+    </svg>'''
+
 def generate_export_zip(website_data: Dict[str, Any]) -> io.BytesIO:
     page_tree = safe_dict(website_data.get("page_tree"))
     brand_name = page_tree.get("brand_name") or website_data.get("title") or "My Website"
@@ -34,6 +111,8 @@ def generate_export_zip(website_data: Dict[str, Any]) -> io.BytesIO:
     
     colors = safe_dict(page_tree.get("colors"))
     website_type = page_tree.get("website_type", "single")
+    category = website_data.get("category") or page_tree.get("category", "")
+    font_info = get_font_pairing(category)
     theme_mode = page_tree.get("theme_mode") or colors.get("mode") or "light"
     selected_pages = page_tree.get("selected_pages", ["Home", "About Us", "Services", "Contact Us"])
     if not isinstance(selected_pages, list):
@@ -115,12 +194,14 @@ def generate_export_zip(website_data: Dict[str, Any]) -> io.BytesIO:
   --input-border: {input_border};
   --input-text: {input_text};
   --modal-bg: {modal_bg};
-  --font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading: {font_info["heading"]};
+  --font-body: {font_info["body"]};
 }}
 
 * {{ box-sizing: border-box; margin: 0; padding: 0; }}
 html {{ scroll-behavior: smooth; }}
-body {{ background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-family); line-height: 1.6; overflow-x: hidden; }}
+body {{ background-color: var(--bg-color); color: var(--text-color); font-family: var(--font-body); line-height: 1.6; overflow-x: hidden; }}
+h1, h2, h3, h4, .hero-title, .section-title {{ font-family: var(--font-heading); }}
 a {{ color: inherit; text-decoration: none; }}
 .container {{ max-width: 1200px; margin: 0 auto; padding: 0 24px; width: 100%; }}
 
@@ -197,8 +278,166 @@ footer a {{ color: var(--accent-color); }}
 .toast-notice.active {{ display: flex; animation: slideUp 0.3s ease; }}
 @keyframes slideUp {{ from {{ transform: translateY(30px); opacity: 0; }} to {{ transform: translateY(0); opacity: 1; }} }}
 
+/* WhatsApp & Lead Action Buttons */
+.btn-whatsapp {{
+  background: #25D366;
+  color: #ffffff !important;
+  padding: 12px 24px;
+  border-radius: 9999px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 8px 20px -4px rgba(37, 211, 102, 0.4);
+  font-size: 14px;
+}}
+.btn-whatsapp:hover {{
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -4px rgba(37, 211, 102, 0.55);
+}}
+
+/* Mobile Floating Call/WhatsApp Bar */
+.mobile-sticky-bar {{
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 990;
+  background: var(--header-bg);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid var(--header-border);
+  padding: 8px 12px;
+  gap: 8px;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+}}
+.sticky-action-btn {{
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 8px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s;
+}}
+.sticky-action-btn.btn-call {{ background: var(--primary-color); color: #fff; }}
+.sticky-action-btn.btn-wa {{ background: #25D366; color: #fff; }}
+.sticky-action-btn.btn-book {{ background: var(--secondary-color); color: #fff; }}
+.sticky-action-btn:active {{ transform: scale(0.96); }}
+
+/* Service Chips for Multi-Selection (FEAT-005) */
+.service-chips {{ display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }}
+.service-chip-lbl {{ display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 9999px; border: 1px solid var(--input-border); background: var(--input-bg); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; user-select: none; }}
+.service-chip-lbl:hover {{ border-color: var(--primary-color); }}
+.service-chip-lbl input:checked + span {{ color: var(--primary-color); }}
+
+/* Festive Ribbon Banner (IND-008) */
+.festive-ribbon {{
+  background: linear-gradient(90deg, #b91c1c, #ea580c, #d97706);
+  color: #ffffff;
+  padding: 8px 12px;
+  text-align: center;
+  position: relative;
+  z-index: 101;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 2px 10px rgba(185, 28, 28, 0.25);
+}}
+.coupon-tag {{
+  background: #fef08a;
+  color: #854d0e;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-weight: 900;
+  letter-spacing: 1px;
+}}
+.copy-coupon-btn {{
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: 8px;
+}}
+.copy-coupon-btn:hover {{
+  background: #ffffff;
+  color: #b91c1c;
+}}
+
+/* Language Switcher (IND-004) */
+.lang-switch-btn {{
+  background: transparent;
+  border: 1px solid var(--primary-color);
+  color: var(--text-color);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}}
+.lang-switch-btn:hover {{
+  background: var(--primary-color);
+  color: #ffffff;
+}}
+
+/* UPI QR Code Card & Badges (IND-001) */
+.upi-card {{
+  border: 2px dashed var(--primary-color) !important;
+  background: var(--card-bg) !important;
+  border-radius: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}}
+.upi-card:hover {{
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}}
+
+/* Indian Trust Badges (IND-006) */
+.trust-badges-bar {{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}}
+.trust-badge-pill {{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+}}
+
 /* Responsiveness */
 @media (max-width: 768px) {{
+  body {{ padding-bottom: 64px; }}
+  .mobile-sticky-bar {{ display: flex; }}
   .container {{ padding: 0 16px; }}
   .mobile-toggle {{ display: block; }}
   .nav-links {{ display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--header-bg); flex-direction: column; padding: 20px; gap: 16px; border-bottom: 1px solid var(--header-border); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); text-align: left; }}
@@ -208,10 +447,15 @@ footer a {{ color: var(--accent-color); }}
   .hero-title {{ font-size: 32px !important; }}
   .hero-subtitle {{ font-size: 14px !important; }}
   .grid-3, .grid-4 {{ grid-template-columns: 1fr !important; gap: 16px !important; }}
-  .btn-primary, .btn-secondary {{ width: 100%; text-align: center; display: block; }}
+  .btn-primary, .btn-secondary, .btn-whatsapp {{ width: 100%; text-align: center; display: flex; }}
   .phone-row {{ grid-template-columns: 1fr; }}
 }}
 """
+    # Inject Custom Studio CSS if provided (FEAT-013)
+    custom_css = page_tree.get("custom_css", "")
+    if custom_css:
+        css_content += f"\n\n/* Custom Studio CSS Injected (FEAT-013) */\n{custom_css}\n"
+
 
     def build_page_html(page_name: str, p_data: Dict[str, Any]) -> str:
         p_data = safe_dict(p_data)
@@ -234,7 +478,7 @@ footer a {{ color: var(--accent-color); }}
             nav_links = navbar.get("links", [])
             if not isinstance(nav_links, list): nav_links = []
             nav_items_html = "".join([f'<li><a href="{link.get("href")}" class="{"active" if link.get("label") == page_name else ""}">{link.get("label")}</a></li>' for link in nav_links if isinstance(link, dict)])
-        logo_img_html = f'<img src="{logo_url}" alt="Logo" class="logo-img">' if logo_url else ''
+        logo_img_html = f'<img src="{logo_url}" alt="Logo" class="logo-img">' if logo_url else generate_svg_logo(brand_name, primary, secondary)
 
         # Build Section HTML snippets
         hero_html = f"""
@@ -279,6 +523,15 @@ footer a {{ color: var(--accent-color); }}
           {f'<div class="card" style="border-left: 4px solid var(--secondary-color);"><h4 style="font-weight: 800; color: var(--secondary-color); margin-bottom: 8px;">Our Vision</h4><p style="font-size: 14px; color: var(--muted-color);">{p_about.get("vision")}</p></div>' if p_about.get("vision") else ''}
         </div>
       </div>
+      {f"""<div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(128,128,128,0.15);">
+        <div class="section-header" style="margin-bottom: 24px; text-align: center;">
+          <h3 style="font-size: 22px; font-weight: 800; color: var(--text-color);">{p_about.get("pillars_title", "Our Core Principles")}</h3>
+          <p class="section-subtitle" style="font-size: 13px;">{p_about.get("pillars_subtitle", "")}</p>
+        </div>
+        <div class="grid-4" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+          {"".join([f'<div class="card" style="padding: 20px; border-radius: 16px;"><h4 style="font-size: 15px; font-weight: 800; margin-bottom: 6px; color: var(--text-color);">{pil.get("title")}</h4><p style="font-size: 13px; color: var(--muted-color); line-height: 1.5;">{pil.get("desc")}</p></div>' for pil in p_about.get("pillars") if isinstance(pil, dict)])}
+        </div>
+      </div>""" if isinstance(p_about.get("pillars"), list) and p_about.get("pillars") else ""}
     </div>
   </section>"""
 
@@ -330,6 +583,38 @@ footer a {{ color: var(--accent-color); }}
     </div>
   </section>"""
 
+        blog_html = ""
+        blog_items = p_data.get("blog_articles") if (is_subpage and "blog_articles" in p_data) else page_tree.get("blog_articles")
+        if blog_items and isinstance(blog_items, list):
+            b_cards = "".join([f"""
+        <div class="card" data-aos="fade-up" style="display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; padding: 24px;">
+          <div>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; font-size: 12px; color: var(--muted-color);">
+              <span style="background: var(--badge-bg); color: var(--primary-color); padding: 3px 8px; border-radius: 6px; font-weight: 700;">{art.get("read_time", "5 min read")}</span>
+              <span>{art.get("date", "Recent")}</span>
+            </div>
+            <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 10px; line-height: 1.4; color: var(--text-color);">{art.get("title")}</h3>
+            <p style="font-size: 13px; color: var(--muted-color); line-height: 1.6; margin-bottom: 16px;">{art.get("summary")}</p>
+          </div>
+          <div style="border-top: 1px solid rgba(128,128,128,0.15); padding-top: 14px; display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-size: 12px; font-weight: 700; color: var(--primary-color);">By {art.get("author", brand_name)}</span>
+            <button onclick="alert('{str(art.get('title', '')).replace("'", "\\'")}:\\n\\n{str(art.get('content', '')).replace("'", "\\'")}')" class="btn-primary" style="padding: 6px 14px; font-size: 11px; border-radius: 6px;">Read Post</button>
+          </div>
+        </div>""" for art in blog_items if isinstance(art, dict)])
+            blog_html = f"""
+  <section id="blog" class="section" data-aos="fade-up">
+    <div class="container">
+      <div class="section-header">
+        <span class="badge">Knowledge & Insights</span>
+        <h2 class="section-title">Latest Articles & Guides</h2>
+        <p class="section-subtitle">Expert advice and practical guides authored by {brand_name}.</p>
+      </div>
+      <div class="grid-3">
+        {b_cards}
+      </div>
+    </div>
+  </section>"""
+
         faq_html = ""
         if p_faq and isinstance(p_faq.get("items"), list):
             faq_items = "".join([f"""
@@ -375,44 +660,80 @@ footer a {{ color: var(--accent-color); }}
   </section>"""
 
         contact_html = ""
+        phone_val = p_contact.get("contact_phone") or (p_footer.get("contact_phone") if p_footer else "") or ""
+        email_val = p_contact.get("contact_email") or (p_footer.get("contact_email") if p_footer else "") or ""
+        address_val = p_contact.get("address") or (p_footer.get("address") if p_footer else "") or ""
+        hours_val = p_contact.get("business_hours") or (p_footer.get("business_hours") if p_footer else "") or ""
+        clean_wa = clean_phone_for_wa(phone_val)
+        wa_url = f"https://wa.me/{clean_wa}?text={urllib.parse.quote(f'Hello {brand_name}, I would like to inquire about your services.')}" if clean_wa else ""
+        web3forms_key = p_contact.get("web3forms_key") or (p_footer.get("web3forms_key") if p_footer else "") or ""
+
         if p_contact and isinstance(p_contact, dict):
-            phone_val = p_contact.get("contact_phone") or (p_footer.get("contact_phone") if p_footer else "") or "+91 9876543210"
-            email_val = p_contact.get("contact_email") or (p_footer.get("contact_email") if p_footer else "") or "contact@example.com"
-            address_val = p_contact.get("address") or (p_footer.get("address") if p_footer else "") or "120 Main Street"
-            hours_val = p_contact.get("business_hours") or (p_footer.get("business_hours") if p_footer else "") or "Mon - Sat: 9:00 AM - 7:00 PM"
+            encoded_addr = urllib.parse.quote_plus(address_val) if address_val else ""
+            maps_iframe_html = f'''<div class="card" style="margin-top: 24px; padding: 20px; border-radius: 18px; overflow: hidden; background: var(--card-bg, rgba(255,255,255,0.03)); border: 1px solid var(--card-border, rgba(255,255,255,0.1));">
+              <div style="font-weight: 800; font-size: 14px; margin-bottom: 12px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 8px; color: var(--text-color);">
+                  <span>📍 Google Maps Live Navigation</span>
+                  <span style="font-size: 11px; font-weight: 600; color: var(--muted-color);">{html.escape(address_val)}</span>
+                </div>
+                <a href="https://www.google.com/maps/search/?api=1&query={encoded_addr}" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 9999px; background: #ea4335; color: #ffffff; font-size: 11px; font-weight: 700; text-decoration: none; box-shadow: 0 4px 12px rgba(234,67,53,0.3); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+                  <span>Open in Google Maps ↗</span>
+                </a>
+              </div>
+              <div style="position: relative; width: 100%; height: 280px; border-radius: 12px; overflow: hidden; background: #0f172a;">
+                <iframe width="100%" height="100%" style="border:0; position: absolute; inset: 0; width: 100%; height: 100%;" allowfullscreen="" allow="geolocation; fullscreen" src="https://maps.google.com/maps?q={encoded_addr}&t=&z=14&ie=UTF8&iwloc=B&output=embed"></iframe>
+              </div>
+            </div>''' if address_val else ''
+
+            contact_cards = []
+            if wa_url:
+                contact_cards.append(f'''<div class="card" style="border-left: 4px solid #25D366; background: linear-gradient(135deg, rgba(37,211,102,0.06), transparent);">
+            <div style="font-size: 24px; margin-bottom: 8px;">💬</div>
+            <div style="font-weight: 800; font-size: 14px; margin-bottom: 4px;">Instant WhatsApp Booking</div>
+            <p style="font-size: 12px; margin-bottom: 12px;">Chat directly with our representatives for real-time answers.</p>
+            <a href="{wa_url}" target="_blank" class="btn-whatsapp">Chat on WhatsApp</a>
+          </div>''')
+            if phone_val:
+                contact_cards.append(f'''<div class="card">
+            <div style="font-size: 24px; margin-bottom: 8px;">📞</div>
+            <div style="font-weight: 800; font-size: 14px; margin-bottom: 4px;">Direct Phone Support</div>
+            <a href="tel:{html.escape(phone_val)}" style="color: var(--primary-color); font-weight: 700; font-size: 15px;">{html.escape(phone_val)}</a>
+          </div>''')
+            if email_val:
+                contact_cards.append(f'''<div class="card">
+            <div style="font-size: 24px; margin-bottom: 8px;">✉️</div>
+            <div style="font-weight: 800; font-size: 14px; margin-bottom: 4px;">Email Us</div>
+            <a href="mailto:{html.escape(email_val)}" style="color: var(--primary-color); font-weight: 700; font-size: 15px;">{html.escape(email_val)}</a>
+          </div>''')
+            if address_val:
+                contact_cards.append(f'''<div class="card">
+            <div style="font-size: 24px; margin-bottom: 8px;">📍</div>
+            <div style="font-weight: 800; font-size: 14px; margin-bottom: 4px;">Physical Location</div>
+            <p style="font-size: 13px;">{html.escape(address_val)}</p>
+          </div>''')
+            if hours_val:
+                contact_cards.append(f'''<div class="card">
+            <div style="font-size: 24px; margin-bottom: 8px;">⏰</div>
+            <div style="font-weight: 800; font-size: 14px; margin-bottom: 4px;">Operating Hours</div>
+            <p style="font-size: 13px;">{html.escape(hours_val)}</p>
+          </div>''')
+
+            cards_html = "".join(contact_cards)
+
             contact_html = f"""
   <section id="contact" class="section-alt" data-aos="fade-up">
     <div class="container">
       <div class="section-header">
-        <span class="badge">{p_contact.get("section_badge", "Get In Touch")}</span>
-        <h2 class="section-title">{p_contact.get("section_title", f"Contact {brand_name}")}</h2>
-        <p class="section-subtitle">{p_contact.get("section_subtitle", "Reach out directly or send us an inquiry below.")}</p>
+        <span class="badge">{html.escape(p_contact.get("section_badge", "Get In Touch"))}</span>
+        <h2 class="section-title">{html.escape(p_contact.get("section_title", f"Contact {brand_name}"))}</h2>
+        <p class="section-subtitle">{html.escape(p_contact.get("section_subtitle", "Reach out directly or send us an inquiry below."))}</p>
       </div>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px;">
         <div style="display: flex; flex-direction: column; gap: 16px;">
-          <div class="card">
-            <div style="font-size: 24px; margin-bottom: 8px;">📞</div>
-            <div style="font-weight: 800; font-size: 14px; margin-bottom: 4px;">Direct Phone Support</div>
-            <a href="tel:{phone_val}" style="color: var(--primary-color); font-weight: 700; font-size: 15px;">{phone_val}</a>
-          </div>
-          <div class="card">
-            <div style="font-size: 24px; margin-bottom: 8px;">✉️</div>
-            <div style="font-weight: 800; font-size: 14px; margin-bottom: 4px;">Email Us</div>
-            <a href="mailto:{email_val}" style="color: var(--primary-color); font-weight: 700; font-size: 15px;">{email_val}</a>
-          </div>
-          <div class="card">
-            <div style="font-size: 24px; margin-bottom: 8px;">📍</div>
-            <div style="font-weight: 800; font-size: 14px; margin-bottom: 4px;">Location</div>
-            <p style="font-size: 13px;">{address_val}</p>
-          </div>
-          <div class="card">
-            <div style="font-size: 24px; margin-bottom: 8px;">⏰</div>
-            <div style="font-weight: 800; font-size: 14px; margin-bottom: 4px;">Operating Hours</div>
-            <p style="font-size: 13px;">{hours_val}</p>
-          </div>
+          {cards_html}
         </div>
         <div class="card" style="padding: 36px;">
-          <h3 style="font-size: 20px; font-weight: 900; margin-bottom: 16px;">{p_contact.get("form_title", "Send a Direct Inquiry")}</h3>
+          <h3 style="font-size: 20px; font-weight: 900; margin-bottom: 16px;">{html.escape(p_contact.get("form_title", "Send a Direct Inquiry"))}</h3>
           <form onsubmit="handleContactSubmit(event)" style="display: flex; flex-direction: column; gap: 14px;">
             <div>
               <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Your Full Name *</label>
@@ -444,52 +765,193 @@ footer a {{ color: var(--accent-color); }}
               <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Message or Inquiry *</label>
               <textarea id="contact_msg" rows="3" required placeholder="Describe what service you are looking for..." class="form-input"></textarea>
             </div>
-            <button type="submit" class="btn-primary" style="margin-top: 8px;">{p_contact.get("cta_text", "Send Message")}</button>
+            <button type="submit" class="btn-primary" style="margin-top: 8px;">{html.escape(p_contact.get("cta_text", "Send Message"))}</button>
           </form>
         </div>
       </div>
+      {maps_iframe_html}
     </div>
   </section>"""
 
+        # Direct UPI QR Code (IND-001) - Only render if legitimate UPI ID is provided!
+        upi_id = p_contact.get("upi_id") or p_footer.get("upi_id") or ""
+        upi_card_html = ""
+        if upi_id:
+            encoded_brand_name = urllib.parse.quote(brand_name)
+            upi_pay_url = f"upi://pay?pa={upi_id}&pn={encoded_brand_name}&cu=INR"
+            upi_qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={urllib.parse.quote_plus(upi_pay_url)}"
+            upi_card_html = f"""
+      <div class="card upi-card" style="padding: 24px; max-width: 440px; margin: 0 auto; text-align: center;">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 6px;">
+          <span style="font-size: 20px;">⚡</span>
+          <span style="font-weight: 800; font-size: 15px; color: var(--text-color);">Zero-MDR Direct UPI Payment</span>
+        </div>
+        <p style="font-size: 12px; color: var(--muted-color); margin-bottom: 14px;">Scan with GPay, PhonePe, Paytm, or BHIM for direct advance token / billing.</p>
+        <div style="background: #ffffff; padding: 12px; border-radius: 14px; display: inline-block; box-shadow: 0 4px 16px rgba(0,0,0,0.08); margin-bottom: 12px;">
+          <img src="{upi_qr_url}" alt="UPI QR Code for {html.escape(brand_name)}" width="160" height="160" style="display: block; border-radius: 8px;">
+        </div>
+        <div style="font-size: 13px; font-weight: 800; color: var(--primary-color); margin-bottom: 10px;">
+          UPI ID: <span style="font-family: monospace; background: var(--badge-bg); padding: 2px 8px; border-radius: 6px; user-select: all;">{html.escape(upi_id)}</span>
+        </div>
+        <div style="display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px;">
+          <span style="font-size: 11px; font-weight: 700; background: var(--badge-bg); color: var(--text-color); padding: 3px 8px; border-radius: 9999px;">Google Pay</span>
+          <span style="font-size: 11px; font-weight: 700; background: var(--badge-bg); color: var(--text-color); padding: 3px 8px; border-radius: 9999px;">PhonePe</span>
+          <span style="font-size: 11px; font-weight: 700; background: var(--badge-bg); color: var(--text-color); padding: 3px 8px; border-radius: 9999px;">Paytm</span>
+          <span style="font-size: 11px; font-weight: 700; background: var(--badge-bg); color: var(--text-color); padding: 3px 8px; border-radius: 9999px;">BHIM UPI</span>
+        </div>
+        <a href="{upi_pay_url}" class="btn-primary" style="display: inline-block; width: 100%; padding: 10px 18px; font-size: 13px; border-radius: 9999px; text-decoration: none;">📱 Tap to Pay on Mobile UPI App</a>
+      </div>"""
+
+        # Indian Trust Credentials (IND-006) - Only render if legitimate registration is present!
+        gstin = p_footer.get("gstin") or p_contact.get("gstin") or ""
+        fssai = p_footer.get("fssai") or p_contact.get("fssai") or ""
+        msme = p_footer.get("msme_number") or p_contact.get("msme_number") or ""
+        is_food = any(k in (category or "").lower() for k in ["sweet", "mithai", "restaurant", "café", "bakery", "kirana", "food", "caterer", "grocery"])
+
+        trust_badge_items = []
+        if gstin:
+            trust_badge_items.append(f'''<div class="trust-badge-pill"><span>🇮🇳</span> <span>GST Verified: {html.escape(gstin)}</span></div>''')
+        if fssai and is_food:
+            trust_badge_items.append(f'''<div class="trust-badge-pill"><span>🥗</span> <span>FSSAI Lic: {html.escape(fssai)}</span></div>''')
+        if msme:
+            trust_badge_items.append(f'''<div class="trust-badge-pill"><span>🛡️</span> <span>MSME Udyam Verified: {html.escape(str(msme))}</span></div>''')
+        elif p_footer.get("msme_verified") or p_contact.get("msme_verified") or gstin:
+            trust_badge_items.append('''<div class="trust-badge-pill"><span>🛡️</span> <span>MSME Udyam Verified Enterprise</span></div>''')
+        if upi_id:
+            trust_badge_items.append(f'''<div class="trust-badge-pill"><span>⚡</span> <span>Direct UPI Accepted</span></div>''')
+
+        trust_badges_bar_html = f'''<div class="trust-badges-bar">{"".join(trust_badge_items)}</div>''' if trust_badge_items else ''
+
+        # Festive Ribbon Content (IND-008)
+        coupon_code = (p_cta.get("coupon_code") if p_cta else "") or "FESTIVE15"
+        festive_banner_text = (p_cta.get("festive_offer") if p_cta else "") or "Festive Dhamaka Offer: Flat 15% OFF on all bookings & orders!"
+
         cta_html = ""
         if p_cta and isinstance(p_cta, dict):
+            wa_cta_btn = f'<a href="{wa_url}" target="_blank" class="btn-whatsapp">💬 Instant WhatsApp</a>' if wa_url else ''
             cta_html = f"""
   <section class="section" style="background: linear-gradient(135deg, var(--surface-color), var(--bg-color)); text-align: center;" data-aos="zoom-in">
-    <div class="container" style="max-width: 720px;">
-      <h2 class="section-title">{p_cta.get("headline", f"Ready to Connect with {brand_name}?")}</h2>
-      <p class="hero-subtitle" style="margin: 0 auto 24px;">{p_cta.get("subheadline", "Reach out today and our dedicated team will respond promptly.")}</p>
-      <button onclick="openBookingModal()" class="btn-primary">{p_cta.get("button_text", "Book An Appointment Now")}</button>
+    <div class="container" style="max-width: 760px;">
+      <h2 class="section-title">{html.escape(p_cta.get("headline", f"Ready to Connect with {brand_name}?"))}</h2>
+      <p class="hero-subtitle" style="margin: 0 auto 24px;">{html.escape(p_cta.get("subheadline", "Reach out today and our dedicated team will respond promptly."))}</p>
+      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 28px;">
+        <button onclick="openBookingModal()" class="btn-primary">{html.escape(p_cta.get("button_text", "Book An Appointment Now"))}</button>
+        {wa_cta_btn}
+      </div>
+      {upi_card_html}
     </div>
   </section>"""
 
         footer_html = f"""
   <footer>
     <div class="container">
-      <p style="font-weight: 800; font-size: 16px; margin-bottom: 8px; color: #fff;">{p_footer.get("brand", brand_name) if p_footer else brand_name}</p>
-      <p style="margin-bottom: 16px; font-size: 13px;">{p_footer.get("copyright", f"© 2026 {brand_name}. All rights reserved.") if p_footer else f"© 2026 {brand_name}. All rights reserved."}</p>
-      <p style="font-size: 12px; opacity: 0.6;">{p_footer.get("credit", "Website built by BuildMyWebsiteAI") if p_footer else "Website built by BuildMyWebsiteAI"}</p>
+      <p style="font-weight: 800; font-size: 16px; margin-bottom: 8px; color: #fff;">{html.escape(p_footer.get("brand", brand_name) if p_footer else brand_name)}</p>
+      <p style="margin-bottom: 16px; font-size: 13px;">{html.escape(p_footer.get("copyright", f"© 2026 {brand_name}. All rights reserved.") if p_footer else f"© 2026 {brand_name}. All rights reserved.")}</p>
+      {trust_badges_bar_html}
+      <p style="font-size: 12px; opacity: 0.6; margin-top: 12px;">{html.escape(p_footer.get("credit", "Website built by BuildMyWebsiteAI") if p_footer else "Website built by BuildMyWebsiteAI")}</p>
     </div>
   </footer>"""
 
-        # Generate service options for booking modal
+        # Generate multi-select service chips for booking modal (FEAT-005)
         service_options = ""
+        service_chips_html = ""
         if services and isinstance(services.get("items"), list):
-            service_options = "".join([f'<option value="{item.get("title")}">{item.get("title")} - {item.get("price", "")}</option>' for item in services.get("items", []) if isinstance(item, dict)])
+            service_options = "".join([f'<option value="{html.escape(item.get("title", ""))}">{html.escape(item.get("title", ""))} - {html.escape(item.get("price", ""))}</option>' for item in services.get("items", []) if isinstance(item, dict)])
+            service_chips_html = "".join([f'''<label class="service-chip-lbl">
+              <input type="checkbox" name="service_chip" value="{html.escape(item.get("title", ""))}">
+              <span>{html.escape(item.get("title", ""))}</span>
+              <small style="opacity: 0.7; font-size: 11px;">({html.escape(item.get("price", ""))})</small>
+            </label>''' for item in services.get("items", []) if isinstance(item, dict)])
+
+        # Determine SEO and Social Meta tags (FEAT-021, FEAT-022)
+        seo_title = f"{page_name} | {brand_name}" if page_name != "Home" else f"{brand_name} - Official Website"
+        hero_desc = p_hero.get("subheadline") if p_hero else ""
+        seo_description = hero_desc[:155] if hero_desc else f"Welcome to {brand_name}. Explore our specialized services, portfolio, and connect with our team."
+        hero_img = (p_hero.get("image_url") if p_hero else "") or "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80"
+
+        # Determine business type for Schema.org LocalBusiness JSON-LD (FEAT-023)
+        schema_type = "LocalBusiness"
+        c_lower = (category or "").lower()
+        if any(k in c_lower for k in ["coaching", "school", "education", "tuition", "academy"]):
+            schema_type = "EducationalOrganization"
+        elif any(k in c_lower for k in ["restaurant", "food", "café", "cafe", "bakery", "mithai", "sweet"]):
+            schema_type = "Restaurant"
+        elif any(k in c_lower for k in ["salon", "spa", "beauty", "hair"]):
+            schema_type = "BeautySalon"
+        elif any(k in c_lower for k in ["gym", "fitness", "yoga"]):
+            schema_type = "HealthClub"
+        elif any(k in c_lower for k in ["clinic", "hospital", "doctor", "ayurved"]):
+            schema_type = "MedicalBusiness"
+        elif any(k in c_lower for k in ["consultant", "ca", "tax", "accounting", "legal"]):
+            schema_type = "FinancialService"
+
+        schema_dict = {
+            "@context": "https://schema.org",
+            "@type": schema_type,
+            "name": brand_name,
+            "description": seo_description,
+            "url": f"https://{re.sub(r'[^a-zA-Z0-9]+', '', brand_name.lower())}.com"
+        }
+        if phone_val:
+            schema_dict["telephone"] = phone_val
+        if email_val:
+            schema_dict["email"] = email_val
+        if address_val:
+            schema_dict["address"] = {
+                "@type": "PostalAddress",
+                "streetAddress": address_val,
+                "addressCountry": "IN"
+            }
+        if hours_val:
+            schema_dict["openingHours"] = hours_val
+
+        schema_json_ld = json.dumps(schema_dict, indent=2)
 
         return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <title>{brand_name} - {page_name}</title>
+  <title>{html.escape(seo_title)}</title>
+
+  <!-- Dynamic Localized SEO Meta Generator (FEAT-021) -->
+  <meta name="description" content="{html.escape(seo_description)}">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="{html.escape(brand_name)}">
+
+  <!-- Open Graph & Social Card Injection (FEAT-022) -->
+  <meta property="og:site_name" content="{html.escape(brand_name)}">
+  <meta property="og:title" content="{html.escape(seo_title)}">
+  <meta property="og:description" content="{html.escape(seo_description)}">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="{html.escape(hero_img)}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{html.escape(seo_title)}">
+  <meta name="twitter:description" content="{html.escape(seo_description)}">
+  <meta name="twitter:image" content="{html.escape(hero_img)}">
+
+  <!-- Schema.org Rich Snippets JSON-LD (FEAT-023) -->
+  <script type="application/ld+json">
+{schema_json_ld}
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?{font_info['link']}&display=swap" rel="stylesheet">
   <!-- AOS Animate On Scroll Library CDN -->
   <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+  <!-- Festive Promotional Ribbon Banner (IND-008) -->
+  <div class="festive-ribbon" id="festive-ribbon">
+    <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+      <span>🎉 <span id="festive-ribbon-text">{festive_banner_text}</span> Use Code: <span class="coupon-tag">{coupon_code}</span></span>
+      <button onclick="copyCouponCode('{coupon_code}')" class="copy-coupon-btn">📋 Copy Code</button>
+    </div>
+  </div>
+
   <header>
     <div class="container">
       <div class="nav-wrap">
@@ -500,6 +962,7 @@ footer a {{ color: var(--accent-color); }}
         <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle Menu">☰</button>
         <ul class="nav-links" id="nav-links">
           {nav_items_html}
+          <li><button id="lang-toggle-btn" class="lang-switch-btn" onclick="toggleLanguage()">🇮🇳 हिन्दी</button></li>
           <li><button onclick="openBookingModal()" class="btn-primary" style="padding: 8px 20px; font-size: 13px;">Get In Touch</button></li>
         </ul>
       </div>
@@ -510,18 +973,19 @@ footer a {{ color: var(--accent-color); }}
   {about_html}
   {services_html}
   {features_html}
+  {blog_html}
   {faq_html}
   {testimonials_html}
   {contact_html}
   {cta_html}
   {footer_html}
 
-  <!-- Interactive Booking / Appointment Modal -->
+  <!-- Interactive Booking / Appointment Modal with Bharat Stack (IND-001, IND-007, IND-010) -->
   <div id="booking-modal" class="modal-overlay">
     <div class="modal-box">
       <button class="modal-close" onclick="closeBookingModal()">✕</button>
       <div style="margin-bottom: 20px;">
-        <span class="badge">Appointment & Inquiry</span>
+        <span class="badge">Appointment & Order Booking</span>
         <h3 style="font-size: 22px; font-weight: 900; margin-top: 6px; color: var(--text-color);">Book With {brand_name}</h3>
         <p style="font-size: 13px; color: var(--muted-color);">Select your preferred service and schedule an appointment.</p>
       </div>
@@ -552,10 +1016,34 @@ footer a {{ color: var(--accent-color); }}
         </div>
 
         <div>
-          <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Select Service *</label>
-          <select id="modal_service" class="form-input" required>
+          <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Select Service(s) (Multi-Select Available) *</label>
+          <div class="service-chips" style="margin-bottom: 8px;">
+            {service_chips_html}
+          </div>
+          <select id="modal_service" class="form-input">
+            <option value="">Or choose from dropdown...</option>
             <option value="General Consultation">General Consultation / Trial</option>
             {service_options}
+          </select>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Nearby Landmark</label>
+            <input type="text" id="modal_landmark" placeholder="Near Temple / Metro" class="form-input">
+          </div>
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">6-Digit Pincode</label>
+            <input type="text" id="modal_pincode" maxlength="6" placeholder="e.g. 110001" class="form-input">
+          </div>
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;">Payment Preference</label>
+          <select id="modal_payment_pref" class="form-input">
+            <option value="Direct UPI QR (GPay / PhonePe / Paytm)">⚡ Direct UPI QR (GPay / PhonePe / Paytm)</option>
+            <option value="Cash on Delivery / Pay at Shop (COD)">💵 Cash on Delivery / Pay at Shop (COD)</option>
+            <option value="Pay after Consultation / Service">🤝 Pay after Consultation / Service</option>
           </select>
         </div>
 
@@ -577,6 +1065,13 @@ footer a {{ color: var(--accent-color); }}
         <button type="submit" class="btn-primary" style="margin-top: 10px; width: 100%;">Confirm Appointment Request</button>
       </form>
     </div>
+  </div>
+
+  <!-- Floating Call-Now & WhatsApp Lead Action Bar (Mobile - IND-009) -->
+  <div class="mobile-sticky-bar">
+    <a href="tel:{phone_val}" class="sticky-action-btn btn-call">📞 Call Now</a>
+    <a href="{wa_url}" target="_blank" class="sticky-action-btn btn-wa">💬 WhatsApp</a>
+    <button onclick="openBookingModal()" class="sticky-action-btn btn-book">⚡ Book / UPI</button>
   </div>
 
   <!-- Toast Notification -->
@@ -618,6 +1113,44 @@ footer a {{ color: var(--accent-color); }}
     function toggleFaq(el) {{
       var card = el.parentElement;
       card.classList.toggle('open');
+    }}
+
+    // Coupon Code Copy (IND-008)
+    function copyCouponCode(code) {{
+      if (navigator.clipboard && navigator.clipboard.writeText) {{
+        navigator.clipboard.writeText(code).then(function() {{
+          showToast('📋 Coupon ' + code + ' Copied! 15% discount applied.');
+        }}).catch(function() {{
+          prompt('Copy coupon code:', code);
+        }});
+      }} else {{
+        prompt('Copy coupon code:', code);
+      }}
+    }}
+
+    // Bilingual Desi / English Language Toggle (IND-004)
+    var currentLang = 'en';
+    function toggleLanguage() {{
+      var btn = document.getElementById('lang-toggle-btn');
+      if (currentLang === 'en') {{
+        currentLang = 'hi';
+        btn.innerText = '🇬🇧 English';
+        document.querySelectorAll('.btn-primary').forEach(function(el) {{
+          if (el.innerText.indexOf('Book') !== -1 || el.innerText.indexOf('Touch') !== -1) {{
+            el.setAttribute('data-original-text', el.innerText);
+            el.innerText = 'अभी संपर्क / बुकिंग करें';
+          }}
+        }});
+        showToast('🇮🇳 भाषा हिन्दी में बदली गई');
+      }} else {{
+        currentLang = 'en';
+        btn.innerText = '🇮🇳 हिन्दी';
+        document.querySelectorAll('.btn-primary').forEach(function(el) {{
+          var orig = el.getAttribute('data-original-text');
+          if (orig) el.innerText = orig;
+        }});
+        showToast('🇬🇧 Switched back to English');
+      }}
     }}
 
     // Phone Validation for India (+91)
@@ -674,9 +1207,64 @@ footer a {{ color: var(--accent-color); }}
         return;
       }}
       var name = document.getElementById('modal_name').value;
-      var service = document.getElementById('modal_service').value;
+      var chips = document.querySelectorAll('input[name="service_chip"]:checked');
+      var selServices = [];
+      for (var i = 0; i < chips.length; i++) {{
+        selServices.push(chips[i].value);
+      }}
+      var ddVal = document.getElementById('modal_service').value;
+      if (ddVal && selServices.indexOf(ddVal) === -1) {{
+        selServices.push(ddVal);
+      }}
+      var service = selServices.length > 0 ? selServices.join(', ') : 'General Consultation';
+      var dateVal = document.getElementById('modal_date').value || 'Flexible Date';
+      var timeVal = document.getElementById('modal_time').value || 'Flexible Time';
+      var landmark = document.getElementById('modal_landmark') ? document.getElementById('modal_landmark').value : '';
+      var pincode = document.getElementById('modal_pincode') ? document.getElementById('modal_pincode').value : '';
+      var paymentPref = document.getElementById('modal_payment_pref') ? document.getElementById('modal_payment_pref').value : 'Direct UPI';
+
       closeBookingModal();
-      showToast('🎉 Appointment Confirmed! Thank you, ' + name + '. Our team will contact you at ' + code + ' ' + phone + ' for ' + service + '.');
+      showToast('🎉 Appointment Confirmed! Sending email confirmation & WhatsApp...');
+
+      // Automated Booking Confirmation Email dispatch (FEAT-006) - Only dispatches if legitimate Web3Forms key is configured
+      var web3Key = "{web3forms_key}";
+      if (web3Key && web3Key.length > 5 && web3Key !== "YOUR_ACCESS_KEY_HERE") {{
+        try {{
+          fetch('https://api.web3forms.com/submit', {{
+            method: 'POST',
+            headers: {{ 'Content-Type': 'application/json', 'Accept': 'application/json' }},
+            body: JSON.stringify({{
+              access_key: web3Key,
+              subject: 'Confirmed Appointment Booking for {brand_name}',
+              customer_name: name,
+              customer_phone: code + ' ' + phone,
+              services_booked: service,
+              preferred_date: dateVal,
+              preferred_time: timeVal,
+              landmark: landmark,
+              pincode: pincode,
+              payment_preference: paymentPref
+            }})
+          }}).catch(function(err){{}});
+        }} catch(e){{}}
+      }}
+
+      // Desi WhatsApp 1-Click Order / Booking Message Dispatch (IND-002, IND-007, IND-010)
+      var waMsg = "🙏 Namaste {brand_name}!\n\n*New Booking & Order Request:*\n" +
+        "👤 *Name:* " + name + "\n" +
+        "📞 *Phone:* " + code + " " + phone + "\n" +
+        "🛍️ *Service/Order:* " + service + "\n" +
+        "📅 *Date:* " + dateVal + " (" + timeVal + ")\n" +
+        (landmark ? "📍 *Landmark:* " + landmark + "\n" : "") +
+        (pincode ? "📮 *Pincode:* " + pincode + "\n" : "") +
+        "💳 *Payment Mode:* " + paymentPref;
+      var cleanWaNumber = "{clean_wa}";
+      if (cleanWaNumber) {{
+        var waUrl = "https://wa.me/" + cleanWaNumber + "?text=" + encodeURIComponent(waMsg);
+        setTimeout(function() {{
+          try {{ window.open(waUrl, '_blank'); }} catch(err) {{}}
+        }}, 500);
+      }}
       e.target.reset();
     }}
 
@@ -690,7 +1278,37 @@ footer a {{ color: var(--accent-color); }}
         return;
       }}
       var name = document.getElementById('contact_name').value;
-      showToast('✉️ Thank you ' + name + '! Your message has been received.');
+      var msg = document.getElementById('contact_msg').value;
+      var emailVal = document.getElementById('contact_email_input') ? document.getElementById('contact_email_input').value : '';
+      showToast('✉️ Thank you ' + name + '! Dispatching inquiry...');
+
+      // Zero-backend Web3Forms email notification - Only if configured
+      var web3Key = "{web3forms_key}";
+      if (web3Key && web3Key.length > 5 && web3Key !== "YOUR_ACCESS_KEY_HERE") {{
+        try {{
+          fetch('https://api.web3forms.com/submit', {{
+            method: 'POST',
+            headers: {{ 'Content-Type': 'application/json', 'Accept': 'application/json' }},
+            body: JSON.stringify({{
+              access_key: web3Key,
+              subject: 'New Website Lead for {brand_name}',
+              name: name,
+              phone: code + ' ' + phone,
+              email: emailVal,
+              message: msg
+            }})
+          }}).catch(function(e) {{}});
+        }} catch(err) {{}}
+      }}
+
+      var cleanWaNumber = "{clean_wa}";
+      if (cleanWaNumber) {{
+        var waContactMsg = "🙏 Namaste {brand_name}!\n*New Website Inquiry*\n👤 *From:* " + name + " (" + code + " " + phone + ")\n💬 *Message:* " + msg;
+        var waContactUrl = "https://wa.me/" + cleanWaNumber + "?text=" + encodeURIComponent(waContactMsg);
+        setTimeout(function() {{
+          try {{ window.open(waContactUrl, '_blank'); }} catch(err) {{}}
+        }}, 500);
+      }}
       e.target.reset();
     }}
   </script>
@@ -701,13 +1319,52 @@ footer a {{ color: var(--accent-color); }}
     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
         zip_file.writestr("style.css", css_content)
 
+        clean_sub = re.sub(r'[^a-zA-Z0-9]+', '', brand_name.lower()) or "mywebsite"
+        site_base_url = f"https://{clean_sub}.buildmywebsiteai.site"
+
+        sitemap_urls = []
         if website_type == "multi":
             for p_name in selected_pages:
                 file_name = get_page_slug(p_name)
                 p_data = pages_dict.get(p_name, {})
                 zip_file.writestr(file_name, build_page_html(p_name, p_data))
+                priority = "1.0" if file_name == "index.html" else "0.8"
+                sitemap_urls.append(f"""  <url>
+    <loc>{site_base_url}/{file_name}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>{priority}</priority>
+  </url>""")
         else:
             zip_file.writestr("index.html", build_page_html("Home", page_tree))
+            sitemap_urls.append(f"""  <url>
+    <loc>{site_base_url}/index.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>""")
+
+        # Bundle valid XML Sitemap (FEAT-024)
+        sitemap_content = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{"".join(sitemap_urls)}
+</urlset>"""
+        zip_file.writestr("sitemap.xml", sitemap_content.strip())
+
+        # Bundle robots.txt referencing the sitemap (FEAT-024)
+        robots_content = f"""User-agent: *
+Allow: /
+
+Sitemap: {site_base_url}/sitemap.xml
+"""
+        zip_file.writestr("robots.txt", robots_content)
+
+        # Include beginner-friendly deployment guide PDF inside the zip
+        try:
+            from app.services.deployment_guide import generate_deployment_guide_pdf_bytes
+            guide_pdf_bytes = generate_deployment_guide_pdf_bytes(brand_name)
+            zip_file.writestr("HOW_TO_DEPLOY_WEBSITE_FREE.pdf", guide_pdf_bytes)
+        except Exception as e:
+            print(f"Warning: Failed to generate deployment guide PDF in zip: {e}")
 
     zip_buffer.seek(0)
     return zip_buffer
+

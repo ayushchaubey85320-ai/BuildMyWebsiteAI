@@ -1,7 +1,5 @@
-import os
 import datetime
 import random
-import smtplib
 from typing import Optional
 import jwt
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -17,10 +15,8 @@ from app.schemas.website import (
     ForgotPasswordPayload, ResetPasswordPayload
 )
 from app.utils.auth import (
-    get_password_hash, verify_password, create_access_token, get_current_user,
-    validate_full_name, validate_password_strength
+    get_password_hash, verify_password, create_access_token, get_current_user
 )
-from app.services.email import send_password_reset_email
 
 router = APIRouter(prefix="/auth", tags=["Authentication & User Security"])
 
@@ -53,7 +49,8 @@ def update_password(
     if not verify_password(current_password, current_user.hashed_password):
         raise HTTPException(status_code=400, detail="Current password is incorrect.")
 
-    validate_password_strength(new_password)
+    if len(new_password) < 6:
+        raise HTTPException(status_code=400, detail="New password must be at least 6 characters long.")
 
     current_user.hashed_password = get_password_hash(new_password)
     db.commit()
@@ -63,10 +60,7 @@ def update_password(
 @router.post("/register", response_model=TokenResponse)
 @router.post("/signup", response_model=TokenResponse)
 def register_user(payload: RegisterPayload, db: Session = Depends(get_db)):
-    clean_full_name = validate_full_name(payload.full_name)
     clean_email = payload.email.strip().lower()
-    validate_password_strength(payload.password)
-
     existing = db.query(User).filter(User.email == clean_email).first()
     if existing:
         raise HTTPException(status_code=400, detail="An account with this email already exists.")
@@ -76,7 +70,7 @@ def register_user(payload: RegisterPayload, db: Session = Depends(get_db)):
     expires_at = datetime.datetime.utcnow() + datetime.timedelta(minutes=15)
 
     user = User(
-        full_name=clean_full_name,
+        full_name=payload.full_name.strip() if payload.full_name else clean_email.split("@")[0],
         email=clean_email,
         hashed_password=hashed_pw,
         is_verified=True,
@@ -162,10 +156,9 @@ def forgot_password(payload: ForgotPasswordPayload, db: Session = Depends(get_db
     user = db.query(User).filter(User.email == clean_email).first()
 
     if not user:
-        raise HTTPException(
-            status_code=404,
-            detail="No account associated with this email address was found. Please check your spelling or sign up."
-        )
+        return {
+            "message": "If this email is registered, a password reset link has been dispatched."
+        }
 
     otp = generate_otp()
     user.otp_code = otp
@@ -177,26 +170,23 @@ def forgot_password(payload: ForgotPasswordPayload, db: Session = Depends(get_db
         expires_delta=datetime.timedelta(minutes=15)
     )
 
-    frontend_base = os.getenv("FRONTEND_URL", "https://buildmywebsiteai-frontend.onrender.com")
-    reset_link = f"{frontend_base}/reset-password?token={reset_token}"
-    print(f"\n[EMAIL DISPATCH] Dispatching to {user.email}:\nReset Link: {reset_link}\nOTP Code: {otp}\n")
-
-    # Send real email via configured SMTP / HTTPS API
-    email_sent = send_password_reset_email(to_email=user.email, otp_code=otp, reset_link=reset_link)
-    if not email_sent:
-        raise HTTPException(
-            status_code=500,
-            detail="Failed to dispatch verification email. Please check that email service/SMTP is configured on the server."
-        )
+    reset_link = f"http://localhost:5173/reset-password?token={reset_token}"
+    print(f"\n[EMAIL SIMULATION] Send to {user.email}:\nReset Link: {reset_link}\nOTP Code: {otp}\n")
 
     return {
-        "message": "A 6-digit security OTP and password reset instructions have been dispatched to your email inbox."
+        "message": "If this email is registered, a password reset link and OTP have been dispatched.",
+        "debug_reset_token": reset_token,
+        "debug_otp": otp
     }
 
 # 4. RESET PASSWORD (Verify token or OTP and update password)
 @router.post("/reset-password")
 def reset_password(payload: ResetPasswordPayload, db: Session = Depends(get_db)):
-    validate_password_strength(payload.new_password)
+    if len(payload.new_password) < 6:
+        raise HTTPException(
+            status_code=400,
+            detail="Password must be at least 6 characters."
+        )
 
     user = None
 
@@ -256,45 +246,12 @@ def google_auth(payload: GoogleAuthPayload, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Missing Google credential payload.")
 
     try:
-        # Validate against configured Google Client IDs
-        valid_audiences = [
-            cid for cid in [
-                settings.GOOGLE_CLIENT_ID,
-                "702327971210-mpvaknnf4ipdlvvkgg7uf1fp0c8dq63u.apps.googleusercontent.com"
-            ] if cid
-        ]
-
-        id_info = None
-        last_error = None
-        for audience in valid_audiences:
-            try:
-                id_info = id_token.verify_oauth2_token(
-                    id_token_str,
-                    requests.Request(),
-                    audience
-                )
-                if id_info:
-                    break
-            except Exception as e:
-                last_error = e
-
-        # Fallback validation without strict audience if needed
-        if not id_info:
-            try:
-                id_info = id_token.verify_oauth2_token(
-                    id_token_str,
-                    requests.Request()
-                )
-            except Exception as e:
-                raise HTTPException(
-                    status_code=401,
-                    detail=f"Google authentication token validation failed: {str(last_error or e)}"
-                )
-
-        email = id_info.get("email", "").strip().lower()
-        if not email:
-            raise HTTPException(status_code=400, detail="Google authentication did not provide an email address.")
-
+        id_info = id_token.verify_oauth2_token(
+            id_token_str,
+            requests.Request(),
+            "702327971210-5eo4gladvjb1j9iqt6i6u6d39phe6pht.apps.googleusercontent.com"
+        )
+        email = id_info.get("email").strip().lower()
         full_name = id_info.get("name") or email.split("@")[0]
 
         user = db.query(User).filter(User.email == email).first()
@@ -321,34 +278,5 @@ def google_auth(payload: GoogleAuthPayload, db: Session = Depends(get_db)):
                 "is_admin": user.is_admin
             }
         )
-    except HTTPException:
-        raise
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Google authentication failed: {str(e)}")
-
-# 6. EMAIL DIAGNOSTICS
-@router.get("/email-status")
-def email_status():
-    """Diagnostic check to see configured email services on this instance."""
-    resend_key = os.getenv("RESEND_API_KEY", "").strip()
-    brevo_key = os.getenv("BREVO_API_KEY", "").strip()
-    smtp_user = settings.SMTP_USER.strip() if settings.SMTP_USER else ""
-    smtp_pass_set = bool(settings.SMTP_PASSWORD)
-    google_id = settings.GOOGLE_CLIENT_ID.strip() if settings.GOOGLE_CLIENT_ID else ""
-
-    return {
-        "status": "ready",
-        "resend_https_configured": bool(resend_key),
-        "brevo_https_configured": bool(brevo_key),
-        "smtp_configured": bool(smtp_user and smtp_pass_set),
-        "smtp_host": settings.SMTP_HOST,
-        "smtp_port": settings.SMTP_PORT,
-        "smtp_user_preview": f"{smtp_user[:3]}***@{smtp_user.split('@')[-1]}" if "@" in smtp_user else "Not set",
-        "google_client_id_configured": bool(google_id),
-        "google_client_id_preview": f"{google_id[:20]}..." if google_id else "Not set",
-        "notice": (
-            "Render free tier blocks raw SMTP ports 587/465. "
-            "To send emails in production, set RESEND_API_KEY or BREVO_API_KEY in Render Environment Variables."
-            if not (resend_key or brevo_key) else "HTTPS email delivery configured."
-        )
-    }

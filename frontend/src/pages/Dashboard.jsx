@@ -61,18 +61,26 @@ const Dashboard = () => {
         } catch (e) {}
       }
 
-      try {
-        const meResp = await api.get('/auth/me');
-        if (meResp.data) {
-          setUserEmail(meResp.data.email || '');
-          setUserFullName(meResp.data.full_name || '');
-          setUserId(meResp.data.id || null);
-          localStorage.setItem('buildmywebsiteai_user', JSON.stringify(meResp.data));
-        }
-      } catch (e) {}
+      const [meRes, projRes] = await Promise.allSettled([
+        api.get('/auth/me'),
+        api.get('/dashboard/projects')
+      ]);
 
-      const projResp = await api.get('/dashboard/projects');
-      setProjects(projResp.data || []);
+      if (meRes.status === 'fulfilled' && meRes.value?.data) {
+        const u = meRes.value.data;
+        setUserEmail(u.email || '');
+        setUserFullName(u.full_name || '');
+        setUserId(u.id || null);
+        const curStr = localStorage.getItem('buildmywebsiteai_user');
+        const newStr = JSON.stringify(u);
+        if (curStr !== newStr) {
+          localStorage.setItem('buildmywebsiteai_user', newStr);
+        }
+      }
+
+      if (projRes.status === 'fulfilled' && projRes.value?.data) {
+        setProjects(projRes.value.data || []);
+      }
     } catch (err) {
       console.error('Error fetching dashboard projects:', err);
     } finally {
@@ -89,12 +97,10 @@ const Dashboard = () => {
     }, 3000);
 
     const handleStorageChange = (e) => {
-      if (e.key === 'buildmywebsiteai_token' || e.key === 'buildmywebsiteai_user') {
+      if (e.key === 'buildmywebsiteai_token') {
         const token = localStorage.getItem('buildmywebsiteai_token');
         if (!token) {
           navigate('/login');
-        } else {
-          fetchDashboardData();
         }
       }
     };

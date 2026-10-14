@@ -1,6 +1,7 @@
 import re
 import uuid
 from typing import List
+from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.db.session import get_db
@@ -29,6 +30,7 @@ def create_website(payload: WebsiteCreatePayload, current_user: User = Depends(g
         contact_phone=payload.contact_phone,
         background_style=payload.background_style,
         theme_mode=payload.theme_mode,
+        brand_tone=payload.brand_tone,
         user_prompt=payload.prompt,
         tagline=payload.tagline,
         primary_services=payload.primary_services,
@@ -89,6 +91,28 @@ def edit_website(website_id: int, payload: WebsiteEditPayload, current_user: Use
     db.commit()
     db.refresh(website)
 
+    return website
+
+
+class WebsiteTreeUpdatePayload(BaseModel):
+    page_tree: dict
+    instruction: str = "Studio Customization"
+
+@router.put("/tree/{website_id}", response_model=WebsiteResponse)
+def update_website_tree_direct(website_id: int, payload: WebsiteTreeUpdatePayload, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    website = db.query(Website).filter(Website.id == website_id, Website.user_id == current_user.id).first()
+    if not website:
+        raise HTTPException(status_code=404, detail="Website project not found.")
+
+    website.page_tree = payload.page_tree
+    history_record = EditHistory(
+        website_id=website.id,
+        prompt_instruction=payload.instruction or "In-Browser Studio Customization",
+        page_tree_snapshot=payload.page_tree
+    )
+    db.add(history_record)
+    db.commit()
+    db.refresh(website)
     return website
 
 

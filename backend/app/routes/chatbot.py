@@ -17,16 +17,13 @@ class ChatQueryRequest(BaseModel):
     history: Optional[List[ChatMessage]] = []
     api_key: Optional[str] = None  # Allow user to provide key directly or use server settings
 
-# Priority list of active Gemini API models
+# Priority list of active Google Gemini API models (fastest and verified first)
 GEMINI_MODELS = [
-    "gemini-3.5-flash",
-    "gemini-3.5-flash-lite",
+    "gemini-flash-lite-latest",
     "gemini-3.1-flash-lite",
-    "gemini-3-flash-preview",
-    "gemini-flash-latest",
-    "gemini-pro-latest",
-    "gemini-2.5-flash-lite"
+    "gemini-flash-latest"
 ]
+
 
 @router.post("/query")
 def chat_with_gemini(req: ChatQueryRequest):

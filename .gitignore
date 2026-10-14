@@ -18,8 +18,12 @@ backend/.env
 *.db
 webrisk_fallback.db
 
-# OS & IDE files
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
+.env
+*.env
+scratch/
+frontend/vite.config.js.timestamp*
+

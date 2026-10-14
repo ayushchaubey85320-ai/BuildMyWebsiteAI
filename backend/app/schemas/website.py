@@ -48,6 +48,7 @@ class WebsiteCreatePayload(BaseModel):
     prompt: Optional[str] = None
 
     # Rich business inputs
+    brand_tone: Optional[str] = "Corporate & Trustworthy"
     tagline: Optional[str] = None
     primary_services: Optional[str] = None
     service_area: Optional[str] = None

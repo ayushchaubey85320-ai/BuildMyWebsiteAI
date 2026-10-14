@@ -46,12 +46,10 @@ const AdminDashboard = () => {
     fetchAdminData();
 
     const handleStorageChange = (e) => {
-      if (e.key === 'buildmywebsiteai_token' || e.key === 'buildmywebsiteai_user') {
+      if (e.key === 'buildmywebsiteai_token') {
         const token = localStorage.getItem('buildmywebsiteai_token');
         if (!token) {
-          navigate('/');
-        } else {
-          fetchAdminData();
+          navigate('/login');
         }
       }
     };

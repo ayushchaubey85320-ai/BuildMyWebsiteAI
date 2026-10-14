@@ -10,10 +10,10 @@ const ICON_MAP = {
   Laptop, Dumbbell, Utensils, Clock, Home, Compass, Wine, Heart, Target
 };
 
-const FeaturesSection = ({ data, colors, viewport = 'desktop' }) => {
+const FeaturesSection = ({ data, colors, viewport = 'desktop', isEditMode = false, onUpdate }) => {
   const badge = data?.section_badge || "Capabilities";
   const title = data?.section_title || "Why Choose Us";
-  const subtitle = data?.section_subtitle || "Engineered for maximum reliability and ease of use.";
+  const subtitle = data?.section_subtitle || "Dedicated to excellence, client trust, and unmatched service quality.";
   const items = data?.items || [];
   const isMobile = viewport === 'mobile';
 
@@ -25,18 +25,23 @@ const FeaturesSection = ({ data, colors, viewport = 'desktop' }) => {
   const accentColor = colors.primary || '#6366f1';
 
   return (
-    <section id="features" className={`max-w-6xl mx-auto scroll-mt-20 ${
+    <section id="features" className={`section features-section container max-w-6xl mx-auto scroll-mt-20 ${
       isMobile ? 'px-4 py-10' : 'px-6 lg:px-8 py-20'
     }`}>
       
       {/* Refined Header - Asymmetric Split Layout */}
-      <div className={`grid items-end gap-6 mb-12 sm:mb-16 ${
+      <div className={`section-header grid items-end gap-6 mb-12 sm:mb-16 ${
         isMobile ? 'grid-cols-1 text-center' : 'grid-cols-1 lg:grid-cols-12'
       }`}>
         <div className={isMobile ? 'w-full' : 'lg:col-span-6 space-y-3'}>
           {badge && (
             <span 
-              className="font-extrabold uppercase tracking-widest text-[10px] sm:text-xs px-3 py-1 rounded-full border inline-block" 
+              contentEditable={isEditMode}
+              suppressContentEditableWarning
+              onBlur={(e) => onUpdate && onUpdate({ section_badge: e.currentTarget.textContent })}
+              className={`badge font-extrabold uppercase tracking-widest text-[10px] sm:text-xs px-3 py-1 rounded-full border inline-block ${
+                isEditMode ? 'outline-dashed outline-2 outline-indigo-400 cursor-text' : ''
+              }`} 
               style={{ 
                 backgroundColor: isLight ? '#eff6ff' : 'rgba(255,255,255,0.03)', 
                 color: accentColor, 
@@ -46,15 +51,26 @@ const FeaturesSection = ({ data, colors, viewport = 'desktop' }) => {
               {badge}
             </span>
           )}
-          <h2 className={`font-black tracking-tight leading-tight ${
-            isMobile ? 'text-2xl' : 'text-3xl sm:text-4xl lg:text-5xl'
-          }`} style={{ color: textColor }}>
+          <h2 
+            contentEditable={isEditMode}
+            suppressContentEditableWarning
+            onBlur={(e) => onUpdate && onUpdate({ section_title: e.currentTarget.textContent })}
+            className={`section-title font-black tracking-tight leading-tight ${
+              isMobile ? 'text-2xl' : 'text-3xl sm:text-4xl lg:text-5xl'
+            } ${isEditMode ? 'outline-dashed outline-2 outline-indigo-400 p-1 rounded-lg cursor-text' : ''}`} 
+          >
             {title}
           </h2>
         </div>
         
         <div className={isMobile ? 'w-full' : 'lg:col-span-6 lg:border-l lg:pl-8 lg:pb-1'} style={{ borderColor: isLight ? '#e2e8f0' : 'rgba(255,255,255,0.1)' }}>
-          <p className="text-xs sm:text-base font-medium leading-relaxed" style={{ color: subtextColor }}>
+          <p 
+            contentEditable={isEditMode}
+            suppressContentEditableWarning
+            onBlur={(e) => onUpdate && onUpdate({ section_subtitle: e.currentTarget.textContent })}
+            className={`text-xs sm:text-base font-medium leading-relaxed ${isEditMode ? 'outline-dashed outline-2 outline-indigo-400 p-1 rounded-lg cursor-text' : ''}`} 
+            style={{ color: subtextColor }}
+          >
             {subtitle}
           </p>
         </div>
@@ -73,7 +89,7 @@ const FeaturesSection = ({ data, colors, viewport = 'desktop' }) => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: idx * 0.1 }}
-              className={`rounded-2xl border p-6 transition-all duration-300 relative overflow-hidden group hover:-translate-y-2 hover:shadow-2xl ${
+              className={`card rounded-2xl border p-6 transition-all duration-300 relative overflow-hidden group hover:-translate-y-2 hover:shadow-2xl ${
                 isLight ? 'hover:shadow-slate-200/50' : 'hover:shadow-indigo-500/5'
               }`}
               style={{ 
@@ -99,18 +115,41 @@ const FeaturesSection = ({ data, colors, viewport = 'desktop' }) => {
                 <IconComp className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
               </div>
 
-              <h3 className="text-base sm:text-lg font-bold mb-2 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors duration-200" style={{ color: textColor }}>
+              <h3 
+                contentEditable={isEditMode}
+                suppressContentEditableWarning
+                onBlur={(e) => {
+                  if (onUpdate) {
+                    const newItems = [...items];
+                    newItems[idx] = { ...newItems[idx], title: e.currentTarget.textContent };
+                    onUpdate({ items: newItems });
+                  }
+                }}
+                className={`text-base sm:text-lg font-bold mb-2 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors duration-200 ${isEditMode ? 'outline-dashed outline-2 outline-indigo-400 p-0.5 rounded cursor-text' : ''}`} 
+                style={{ color: textColor }}
+              >
                 {item.title}
               </h3>
               
-              <p className="text-xs leading-relaxed font-medium" style={{ color: subtextColor }}>
+              <p 
+                contentEditable={isEditMode}
+                suppressContentEditableWarning
+                onBlur={(e) => {
+                  if (onUpdate) {
+                    const newItems = [...items];
+                    newItems[idx] = { ...newItems[idx], description: e.currentTarget.textContent };
+                    onUpdate({ items: newItems });
+                  }
+                }}
+                className={`text-xs leading-relaxed font-medium ${isEditMode ? 'outline-dashed outline-2 outline-indigo-400 p-1 rounded cursor-text' : ''}`} 
+                style={{ color: subtextColor }}
+              >
                 {item.description}
               </p>
             </motion.div>
           );
         })}
       </div>
-
     </section>
   );
 };
