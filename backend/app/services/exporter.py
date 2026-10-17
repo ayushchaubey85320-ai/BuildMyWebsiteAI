@@ -481,12 +481,14 @@ footer a {{ color: var(--accent-color); }}
         logo_img_html = f'<img src="{logo_url}" alt="Logo" class="logo-img">' if logo_url else generate_svg_logo(brand_name, primary, secondary)
 
         # Build Section HTML snippets
+        hero_badge_html = f'<span class="badge">{p_hero.get("badge")}</span>' if p_hero.get("badge") else ''
+        hero_img_html = f'<img src="{p_hero.get("hero_image")}" alt="Hero" class="hero-img" data-aos="zoom-in" data-aos-delay="200">' if p_hero.get("hero_image") else ''
         hero_html = f"""
   <section id="home" class="hero-section" data-aos="fade-down">
     <div class="container">
       <div class="hero-grid">
         <div class="hero-left">
-          {f'<span class="badge">{p_hero.get("badge")}</span>' if p_hero.get("badge") else ''}
+          {hero_badge_html}
           <h1 class="hero-title">{p_hero.get("headline", brand_name)}</h1>
           <p class="hero-subtitle">{p_hero.get("subheadline", "")}</p>
           <div style="display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px;">
@@ -495,7 +497,7 @@ footer a {{ color: var(--accent-color); }}
           </div>
         </div>
         <div class="hero-right">
-          {f'<img src="{p_hero.get("hero_image")}" alt="Hero" class="hero-img" data-aos="zoom-in" data-aos-delay="200">' if p_hero.get("hero_image") else ''}
+          {hero_img_html}
         </div>
       </div>
     </div>
@@ -504,6 +506,25 @@ footer a {{ color: var(--accent-color); }}
         about_html = ""
         if p_about and isinstance(p_about.get("paragraphs"), list):
             paragraphs_html = "".join([f'<p style="margin-bottom: 16px; font-size: 15px; line-height: 1.7; color: var(--muted-color);">{p}</p>' for p in p_about.get("paragraphs", [])])
+            mission_card_html = f'<div class="card" style="border-left: 4px solid var(--primary-color);"><h4 style="font-weight: 800; color: var(--primary-color); margin-bottom: 8px;">Our Mission</h4><p style="font-size: 14px; color: var(--muted-color);">{p_about.get("mission")}</p></div>' if p_about.get("mission") else ''
+            vision_card_html = f'<div class="card" style="border-left: 4px solid var(--secondary-color);"><h4 style="font-weight: 800; color: var(--secondary-color); margin-bottom: 8px;">Our Vision</h4><p style="font-size: 14px; color: var(--muted-color);">{p_about.get("vision")}</p></div>' if p_about.get("vision") else ''
+            
+            pillars_html = ""
+            if isinstance(p_about.get("pillars"), list) and p_about.get("pillars"):
+                pil_cards = "".join([
+                    f'<div class="card" style="padding: 20px; border-radius: 16px;"><h4 style="font-size: 15px; font-weight: 800; margin-bottom: 6px; color: var(--text-color);">{pil.get("title")}</h4><p style="font-size: 13px; color: var(--muted-color); line-height: 1.5;">{pil.get("desc")}</p></div>'
+                    for pil in p_about.get("pillars") if isinstance(pil, dict)
+                ])
+                pillars_html = f"""<div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(128,128,128,0.15);">
+        <div class="section-header" style="margin-bottom: 24px; text-align: center;">
+          <h3 style="font-size: 22px; font-weight: 800; color: var(--text-color);">{p_about.get("pillars_title", "Our Core Principles")}</h3>
+          <p class="section-subtitle" style="font-size: 13px;">{p_about.get("pillars_subtitle", "")}</p>
+        </div>
+        <div class="grid-4" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+          {pil_cards}
+        </div>
+      </div>"""
+
             about_html = f"""
   <section id="about" class="section-alt" data-aos="fade-up">
     <div class="container">
@@ -519,19 +540,11 @@ footer a {{ color: var(--accent-color); }}
           </div>
         </div>
         <div class="about-cards" style="display: flex; flex-direction: column; gap: 20px;">
-          {f'<div class="card" style="border-left: 4px solid var(--primary-color);"><h4 style="font-weight: 800; color: var(--primary-color); margin-bottom: 8px;">Our Mission</h4><p style="font-size: 14px; color: var(--muted-color);">{p_about.get("mission")}</p></div>' if p_about.get("mission") else ''}
-          {f'<div class="card" style="border-left: 4px solid var(--secondary-color);"><h4 style="font-weight: 800; color: var(--secondary-color); margin-bottom: 8px;">Our Vision</h4><p style="font-size: 14px; color: var(--muted-color);">{p_about.get("vision")}</p></div>' if p_about.get("vision") else ''}
+          {mission_card_html}
+          {vision_card_html}
         </div>
       </div>
-      {f"""<div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(128,128,128,0.15);">
-        <div class="section-header" style="margin-bottom: 24px; text-align: center;">
-          <h3 style="font-size: 22px; font-weight: 800; color: var(--text-color);">{p_about.get("pillars_title", "Our Core Principles")}</h3>
-          <p class="section-subtitle" style="font-size: 13px;">{p_about.get("pillars_subtitle", "")}</p>
-        </div>
-        <div class="grid-4" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
-          {"".join([f'<div class="card" style="padding: 20px; border-radius: 16px;"><h4 style="font-size: 15px; font-weight: 800; margin-bottom: 6px; color: var(--text-color);">{pil.get("title")}</h4><p style="font-size: 13px; color: var(--muted-color); line-height: 1.5;">{pil.get("desc")}</p></div>' for pil in p_about.get("pillars") if isinstance(pil, dict)])}
-        </div>
-      </div>""" if isinstance(p_about.get("pillars"), list) and p_about.get("pillars") else ""}
+      {pillars_html}
     </div>
   </section>"""
 
