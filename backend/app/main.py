@@ -109,7 +109,8 @@ app.add_middleware(
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "http://localhost:3000",
-        "http://127.0.0.1:3000"
+        "http://127.0.0.1:3000",
+        "https://buildmywebsiteai-frontend.onrender.com"
     ],
     allow_origin_regex=r"^https?://([a-zA-Z0-9-]+\.)*(localhost|127\.0\.0\.1|onrender\.com|vercel\.app)(:\d+)?$",
     allow_credentials=True,

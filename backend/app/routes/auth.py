@@ -1,3 +1,4 @@
+import os
 import datetime
 import random
 from typing import Optional
@@ -170,8 +171,9 @@ def forgot_password(payload: ForgotPasswordPayload, db: Session = Depends(get_db
         expires_delta=datetime.timedelta(minutes=15)
     )
 
-    reset_link = f"http://localhost:5173/reset-password?token={reset_token}"
-    print(f"\n[EMAIL SIMULATION] Send to {user.email}:\nReset Link: {reset_link}\nOTP Code: {otp}\n")
+    frontend_base = os.getenv("FRONTEND_URL", "https://buildmywebsiteai-frontend.onrender.com").rstrip("/")
+    reset_link = f"{frontend_base}/reset-password?token={reset_token}"
+    print(f"\n[EMAIL DISPATCH] Target: {user.email}\nReset Link: {reset_link}\nOTP Code: {otp}\n")
 
     return {
         "message": "If this email is registered, a password reset link and OTP have been dispatched.",
