@@ -112,7 +112,7 @@ app.add_middleware(
         "http://127.0.0.1:3000",
         "https://buildmywebsiteai-frontend.onrender.com"
     ],
-    allow_origin_regex=r"^https?://([a-zA-Z0-9-]+\.)*(localhost|127\.0\.0\.1|onrender\.com|vercel\.app)(:\d+)?$",
+    allow_origin_regex=r"^https?://([a-zA-Z0-9-]+\.)*(localhost|127\.0\.0\.1|onrender\.com|vercel\.app|koyeb\.app)(:\d+)?$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
