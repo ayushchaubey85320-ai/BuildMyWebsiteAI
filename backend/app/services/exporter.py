@@ -340,43 +340,19 @@ footer a {{ color: var(--accent-color); }}
 .service-chip-lbl:hover {{ border-color: var(--primary-color); }}
 .service-chip-lbl input:checked + span {{ color: var(--primary-color); }}
 
-/* Festive Ribbon Banner (IND-008) */
-.festive-ribbon {{
-  background: linear-gradient(90deg, #b91c1c, #ea580c, #d97706);
-  color: #ffffff;
-  padding: 8px 12px;
+/* Guaranteed Section Visibility */
+[data-aos] {{
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+}}
+.subpage-hero-banner {{
+  background: var(--section-alt-bg);
+  padding: 56px 0 36px;
   text-align: center;
-  position: relative;
-  z-index: 101;
-  font-size: 13px;
-  font-weight: 700;
-  box-shadow: 0 2px 10px rgba(185, 28, 28, 0.25);
+  border-bottom: 1px solid var(--card-border);
 }}
-.coupon-tag {{
-  background: #fef08a;
-  color: #854d0e;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-family: monospace;
-  font-weight: 900;
-  letter-spacing: 1px;
-}}
-.copy-coupon-btn {{
-  background: rgba(255, 255, 255, 0.22);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  padding: 4px 10px;
-  border-radius: 9999px;
-  font-size: 11px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-  margin-left: 8px;
-}}
-.copy-coupon-btn:hover {{
-  background: #ffffff;
-  color: #b91c1c;
-}}
+
 
 /* Language Switcher (IND-004) */
 .lang-switch-btn {{
@@ -462,15 +438,33 @@ footer a {{ color: var(--accent-color); }}
         is_multi = website_type == "multi"
         is_subpage = is_multi and page_name != "Home"
 
+        p_name_lower = page_name.lower().strip()
+        is_about_page = "about" in p_name_lower
+        is_services_page = "service" in p_name_lower or "offering" in p_name_lower or "menu" in p_name_lower or "pricing" in p_name_lower
+        is_contact_page = "contact" in p_name_lower or "reach" in p_name_lower or "location" in p_name_lower
+        is_faq_page = "faq" in p_name_lower or "question" in p_name_lower
+
+        # Resilient subpage section matching
         p_hero = safe_dict(p_data.get("hero")) if (is_subpage and "hero" in p_data) else hero
-        p_about = safe_dict(p_data.get("about")) if (is_subpage and "about" in p_data) else (None if is_subpage else about)
-        p_services = safe_dict(p_data.get("services")) if (is_subpage and "services" in p_data) else (None if is_subpage else services)
-        p_features = safe_dict(p_data.get("features")) if (is_subpage and "features" in p_data) else (None if is_subpage else features)
-        p_faq = safe_dict(p_data.get("faq")) if (is_subpage and "faq" in p_data) else (None if is_subpage else faq)
-        p_testimonials = safe_dict(p_data.get("testimonials")) if (is_subpage and "testimonials" in p_data) else (None if is_subpage else testimonials)
-        p_cta = safe_dict(p_data.get("cta")) if (is_subpage and "cta" in p_data) else (None if is_subpage else cta)
-        p_contact = safe_dict(p_data.get("contact")) if (is_subpage and "contact" in p_data) else (None if is_subpage else contact)
-        p_footer = safe_dict(p_data.get("footer")) if (is_subpage and "footer" in p_data) else footer
+        
+        if is_subpage:
+            p_about = safe_dict(p_data.get("about")) if "about" in p_data else (about if is_about_page else None)
+            p_services = safe_dict(p_data.get("services")) if "services" in p_data else (services if is_services_page else None)
+            p_features = safe_dict(p_data.get("features")) if "features" in p_data else (features if (is_about_page or is_services_page) else None)
+            p_faq = safe_dict(p_data.get("faq")) if "faq" in p_data else (faq if (is_faq_page or is_services_page or is_contact_page) else None)
+            p_testimonials = safe_dict(p_data.get("testimonials")) if "testimonials" in p_data else (testimonials if is_about_page else None)
+            p_cta = safe_dict(p_data.get("cta")) if "cta" in p_data else cta
+            p_contact = safe_dict(p_data.get("contact")) if "contact" in p_data else (contact if is_contact_page else None)
+            p_footer = safe_dict(p_data.get("footer")) if "footer" in p_data else footer
+        else:
+            p_about = safe_dict(p_data.get("about")) or about
+            p_services = safe_dict(p_data.get("services")) or services
+            p_features = safe_dict(p_data.get("features")) or features
+            p_faq = safe_dict(p_data.get("faq")) or faq
+            p_testimonials = safe_dict(p_data.get("testimonials")) or testimonials
+            p_cta = safe_dict(p_data.get("cta")) or cta
+            p_contact = safe_dict(p_data.get("contact")) or contact
+            p_footer = safe_dict(p_data.get("footer")) or footer
 
         if is_multi:
             nav_items_html = "".join([f'<li><a href="{get_page_slug(p)}" class="{"active" if p == page_name else ""}">{p}</a></li>' for p in selected_pages])
@@ -481,18 +475,30 @@ footer a {{ color: var(--accent-color); }}
         logo_img_html = f'<img src="{logo_url}" alt="Logo" class="logo-img">' if logo_url else generate_svg_logo(brand_name, primary, secondary)
 
         # Build Section HTML snippets
-        hero_badge_html = f'<span class="badge">{p_hero.get("badge")}</span>' if p_hero.get("badge") else ''
-        hero_img_html = f'<img src="{p_hero.get("hero_image")}" alt="Hero" class="hero-img" data-aos="zoom-in" data-aos-delay="200">' if p_hero.get("hero_image") else ''
-        hero_html = f"""
-  <section id="home" class="hero-section" data-aos="fade-down">
+        if is_subpage:
+            sub_title = p_hero.get("headline") or f"{page_name}"
+            sub_desc = p_hero.get("subheadline") or f"Learn more about our {page_name.lower()} at {brand_name}."
+            hero_html = f"""
+  <section class="subpage-hero-banner">
+    <div class="container">
+      <span class="badge" style="margin-bottom: 12px; display: inline-block;">{page_name}</span>
+      <h1 style="font-size: 36px; font-weight: 900; margin-bottom: 10px; color: var(--text-color);">{html.escape(sub_title)}</h1>
+      <p style="font-size: 15px; color: var(--muted-color); max-width: 650px; margin: 0 auto;">{html.escape(sub_desc)}</p>
+    </div>
+  </section>"""
+        else:
+            hero_badge_html = f'<span class="badge">{p_hero.get("badge")}</span>' if p_hero.get("badge") else ''
+            hero_img_html = f'<img src="{p_hero.get("hero_image")}" alt="Hero" class="hero-img">' if p_hero.get("hero_image") else ''
+            hero_html = f"""
+  <section id="home" class="hero-section">
     <div class="container">
       <div class="hero-grid">
         <div class="hero-left">
           {hero_badge_html}
-          <h1 class="hero-title">{p_hero.get("headline", brand_name)}</h1>
-          <p class="hero-subtitle">{p_hero.get("subheadline", "")}</p>
+          <h1 class="hero-title">{html.escape(p_hero.get("headline", brand_name))}</h1>
+          <p class="hero-subtitle">{html.escape(p_hero.get("subheadline", ""))}</p>
           <div style="display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px;">
-            <button onclick="openBookingModal()" class="btn-primary">{p_hero.get("primary_cta", "Book Free Assessment")}</button>
+            <button onclick="openBookingModal()" class="btn-primary">{html.escape(p_hero.get("primary_cta", "Book Free Assessment"))}</button>
             <a href="#services" class="btn-secondary">Explore Services</a>
           </div>
         </div>
@@ -504,8 +510,21 @@ footer a {{ color: var(--accent-color); }}
   </section>"""
 
         about_html = ""
-        if p_about and isinstance(p_about.get("paragraphs"), list):
-            paragraphs_html = "".join([f'<p style="margin-bottom: 16px; font-size: 15px; line-height: 1.7; color: var(--muted-color);">{p}</p>' for p in p_about.get("paragraphs", [])])
+        if p_about and isinstance(p_about, dict):
+            paras = p_about.get("paragraphs")
+            if isinstance(paras, str):
+                paras = [paras]
+            elif not isinstance(paras, list):
+                paras = []
+            if not paras:
+                for k in ["description", "story", "content", "summary"]:
+                    if p_about.get(k):
+                        paras = [p_about.get(k)]
+                        break
+            if not paras:
+                paras = [f"Welcome to {brand_name}. We take immense pride in delivering exceptional care, professional service, and verified excellence."]
+
+            paragraphs_html = "".join([f'<p style="margin-bottom: 16px; font-size: 15px; line-height: 1.7; color: var(--muted-color);">{p}</p>' for p in paras])
             mission_card_html = f'<div class="card" style="border-left: 4px solid var(--primary-color);"><h4 style="font-weight: 800; color: var(--primary-color); margin-bottom: 8px;">Our Mission</h4><p style="font-size: 14px; color: var(--muted-color);">{p_about.get("mission")}</p></div>' if p_about.get("mission") else ''
             vision_card_html = f'<div class="card" style="border-left: 4px solid var(--secondary-color);"><h4 style="font-weight: 800; color: var(--secondary-color); margin-bottom: 8px;">Our Vision</h4><p style="font-size: 14px; color: var(--muted-color);">{p_about.get("vision")}</p></div>' if p_about.get("vision") else ''
             
@@ -526,7 +545,7 @@ footer a {{ color: var(--accent-color); }}
       </div>"""
 
             about_html = f"""
-  <section id="about" class="section-alt" data-aos="fade-up">
+  <section id="about" class="section-alt">
     <div class="container">
       <div class="section-header">
         <span class="badge">{p_about.get("section_badge", "Our Background")}</span>
@@ -835,9 +854,6 @@ footer a {{ color: var(--accent-color); }}
 
         trust_badges_bar_html = f'''<div class="trust-badges-bar">{"".join(trust_badge_items)}</div>''' if trust_badge_items else ''
 
-        # Festive Ribbon Content (IND-008)
-        coupon_code = (p_cta.get("coupon_code") if p_cta else "") or "FESTIVE15"
-        festive_banner_text = (p_cta.get("festive_offer") if p_cta else "") or "Festive Dhamaka Offer: Flat 15% OFF on all bookings & orders!"
 
         cta_html = ""
         if p_cta and isinstance(p_cta, dict):
@@ -957,14 +973,6 @@ footer a {{ color: var(--accent-color); }}
 </head>
 
 <body>
-  <!-- Festive Promotional Ribbon Banner (IND-008) -->
-  <div class="festive-ribbon" id="festive-ribbon">
-    <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-      <span>🎉 <span id="festive-ribbon-text">{festive_banner_text}</span> Use Code: <span class="coupon-tag">{coupon_code}</span></span>
-      <button onclick="copyCouponCode('{coupon_code}')" class="copy-coupon-btn">📋 Copy Code</button>
-    </div>
-  </div>
-
   <header>
     <div class="container">
       <div class="nav-wrap">
@@ -1096,7 +1104,11 @@ footer a {{ color: var(--accent-color); }}
   <!-- AOS Animate On Scroll JS Script -->
   <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
   <script>
-    AOS.init({{ duration: 800, once: true }});
+    try {{
+      if (typeof AOS !== 'undefined') {{
+        AOS.init({{ duration: 800, once: true }});
+      }}
+    }} catch(e) {{}}
 
     // Mobile Hamburger Toggle
     document.getElementById('mobile-toggle').addEventListener('click', function() {{

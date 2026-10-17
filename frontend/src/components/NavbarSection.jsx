@@ -43,22 +43,6 @@ const NavbarSection = ({ data, colors, viewport = 'desktop', onPageChange, logoU
 
   return (
     <div className="w-full sticky top-0 z-40">
-      {/* Festive Promotional Ribbon Banner (IND-008) */}
-      <div className="festive-ribbon w-full py-1.5 px-4 bg-gradient-to-r from-red-600 via-orange-600 to-amber-600 text-white text-xs font-bold text-center flex items-center justify-between shadow-sm">
-        <div className="container mx-auto flex items-center justify-between flex-wrap gap-2 text-center w-full">
-          <span>🎉 <strong>Festival Dhamaka:</strong> Flat 15% OFF on all bookings & orders! Use Code: <span className="bg-yellow-200 text-amber-900 font-mono px-2 py-0.5 rounded font-black tracking-wider">FESTIVE15</span></span>
-          <button 
-            onClick={() => {
-              if (navigator.clipboard) navigator.clipboard.writeText('FESTIVE15');
-              setCopied(true);
-              setTimeout(() => setCopied(false), 2000);
-            }} 
-            className="px-2.5 py-0.5 rounded-full bg-white/20 hover:bg-white/40 text-[11px] font-bold transition shrink-0"
-          >
-            {copied ? '✓ Copied!' : '📋 Copy Code'}
-          </button>
-        </div>
-      </div>
 
       <nav className={`navbar nav-wrap w-full border-b ${navBorder} px-4 sm:px-6 py-3.5 flex items-center justify-between backdrop-blur-md transition-all`} style={{ backgroundColor: navBg }}>
       {/* Left Brand Area */}
