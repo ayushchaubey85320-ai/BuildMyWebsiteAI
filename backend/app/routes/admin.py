@@ -301,6 +301,29 @@ def revoke_payment(
     }
 
 
+@router.post("/payments/{payment_id}/reject")
+def reject_payment(
+    payment_id: int,
+    admin_user: User = Depends(verify_super_admin),
+    db: Session = Depends(get_db)
+):
+    """Super Admin rejects/denies an unverified payment request."""
+    payment = db.query(Payment).filter(Payment.id == payment_id).first()
+    if not payment:
+        raise HTTPException(status_code=404, detail="Payment record not found.")
+
+    payment.status = "REJECTED"
+    payment.verified_by = f"DENIED_ADMIN ({admin_user.email})"
+    db.commit()
+
+    return {
+        "success": True,
+        "message": f"Payment #{payment.id} rejected.",
+        "payment_id": payment.id,
+        "status": payment.status
+    }
+
+
 @router.post("/impersonate/{user_id}")
 def impersonate_user(
     user_id: int,
@@ -460,6 +483,17 @@ def mobile_quick_action(
         return {
             "success": True,
             "message": f"Payment #{payment.id} revoked and credit deducted.",
+            "payment_id": payment.id,
+            "status": payment.status
+        }
+
+    elif action in ["REJECT", "DENY"] and payment:
+        payment.status = "REJECTED"
+        payment.verified_by = f"DENIED_MOBILE ({admin_user.email})"
+        db.commit()
+        return {
+            "success": True,
+            "message": f"Payment #{payment.id} denied for {target_user.email if target_user else 'user'}.",
             "payment_id": payment.id,
             "status": payment.status
         }

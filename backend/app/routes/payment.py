@@ -15,7 +15,12 @@ COST_PER_WEBSITE = 1  # ₹1 INR per additional website
 FREE_LIMIT = 1
 
 class UPIPaymentVerifyPayload(BaseModel):
-    utr_reference: str
+    utr_reference: Optional[str] = None
+    upi_id: Optional[str] = UPI_ID
+    amount: Optional[int] = 1
+    notes: Optional[str] = None
+
+class PaymentRequestPayload(BaseModel):
     upi_id: Optional[str] = UPI_ID
     amount: Optional[int] = 1
     notes: Optional[str] = None
@@ -68,6 +73,66 @@ def get_user_quota(current_user: User = Depends(get_current_user), db: Session =
         payee_name=PAYEE_NAME,
         qr_image_url="/upi_payment_qr.jpg"
     )
+
+
+@router.post("/request-approval")
+def request_payment_approval(
+    payload: PaymentRequestPayload,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """User submits ₹1 payment for approval without needing reference ID. Notifies mobile companion app."""
+    import time
+    req_ref = f"UPI-REQ-{current_user.id}-{int(time.time())}"
+
+    payment = Payment(
+        user_id=current_user.id,
+        amount=payload.amount or COST_PER_WEBSITE,
+        currency="INR",
+        upi_id=payload.upi_id or UPI_ID,
+        utr_reference=req_ref,
+        status="PENDING",
+        verified_by="PENDING_APPROVAL",
+        notes=payload.notes or "1 Additional Website Creation Credit (₹1 UPI - Awaiting Mobile Approval)"
+    )
+    db.add(payment)
+    db.commit()
+    db.refresh(payment)
+
+    return {
+        "success": True,
+        "payment_id": payment.id,
+        "status": "PENDING",
+        "message": "Payment request sent to Super Admin. Please keep this screen open while Ayush approves on his mobile app."
+    }
+
+
+@router.get("/status/{payment_id}")
+def check_payment_status(
+    payment_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Poll payment status: returns PENDING, COMPLETED, or REJECTED. User website credit updates immediately when COMPLETED."""
+    payment = db.query(Payment).filter(Payment.id == payment_id, Payment.user_id == current_user.id).first()
+    if not payment:
+        raise HTTPException(status_code=404, detail="Payment request not found.")
+
+    website_count = db.query(Website).filter(Website.user_id == current_user.id).count()
+    is_admin = bool(current_user.is_admin or getattr(current_user, "is_super_admin", False))
+    paid_credits = current_user.paid_credits or 0
+    total_allowed = 999999 if is_admin else (FREE_LIMIT + paid_credits)
+
+    return {
+        "payment_id": payment.id,
+        "status": payment.status,
+        "verified_by": getattr(payment, "verified_by", "PENDING_APPROVAL"),
+        "paid_credits": paid_credits,
+        "can_create": is_admin or (website_count < total_allowed),
+        "total_allowed": total_allowed,
+        "current_websites": website_count,
+        "message": "Approved!" if payment.status == "COMPLETED" else ("Denied by Admin" if payment.status == "REJECTED" else "Pending approval...")
+    }
 
 
 @router.post("/verify-upi")

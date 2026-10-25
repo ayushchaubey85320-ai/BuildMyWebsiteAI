@@ -43,9 +43,6 @@ const AdminDashboard = () => {
   const [suspendModalUser, setSuspendModalUser] = useState(null);
   const [suspendReason, setSuspendReason] = useState('');
 
-  // Mobile Companion APK Modal State
-  const [mobileApkModalOpen, setMobileApkModalOpen] = useState(false);
-
   const fetchAdminData = async () => {
     try {
       const storedUser = localStorage.getItem('buildmywebsiteai_user');
@@ -323,14 +320,6 @@ const AdminDashboard = () => {
           </div>
 
           <div className="flex items-center gap-3 flex-wrap">
-            <button
-              onClick={() => setMobileApkModalOpen(true)}
-              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-600 hover:from-emerald-600 hover:to-cyan-700 text-white text-xs font-bold flex items-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-95 transition"
-            >
-              <Smartphone className="w-4 h-4 animate-bounce" />
-              <span>Mobile Companion APK</span>
-            </button>
-
             <ThemeToggle />
 
             <Link
@@ -1055,122 +1044,6 @@ const AdminDashboard = () => {
                     )}
                   </button>
                 </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* MODAL 3: MOBILE COMPANION APK */}
-      <AnimatePresence>
-        {mobileApkModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className={`relative w-full max-w-lg rounded-3xl border p-6 sm:p-7 shadow-2xl ${
-                isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-slate-900 border-slate-800 text-white'
-              }`}
-            >
-              <button
-                onClick={() => setMobileApkModalOpen(false)}
-                className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800/60 transition"
-              >
-                <X className="w-4 h-4" />
-              </button>
-
-              <div className="flex items-center gap-3 mb-5">
-                <div className="p-3 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-white shadow-lg shadow-emerald-500/20">
-                  <Smartphone className="w-6 h-6" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-black tracking-tight">Super Admin Mobile Companion</h3>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                      APK v1.0
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-400 mt-0.5 font-medium">
-                    Instant sound alert when ₹1 UPI payment is received & 1-tap credit allocation
-                  </p>
-                </div>
-              </div>
-
-              {/* QR Code and Download Block */}
-              <div className={`p-4 rounded-2xl border mb-5 flex flex-col sm:flex-row items-center gap-5 ${
-                isLight ? 'bg-slate-50 border-slate-200' : 'bg-slate-950/70 border-slate-800'
-              }`}>
-                <div className="relative p-2 bg-white rounded-xl shadow-md border border-slate-200 shrink-0">
-                  <img
-                    src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=http://192.168.1.14:8000/download/admin-apk"
-                    alt="Scan to Download APK"
-                    className="w-32 h-32 rounded-lg"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 bg-black/60 rounded-xl transition text-white text-[10px] font-bold text-center p-1">
-                    Scan with phone camera
-                  </div>
-                </div>
-
-                <div className="space-y-2 text-center sm:text-left">
-                  <p className="text-xs font-bold text-emerald-400 flex items-center justify-center sm:justify-start gap-1">
-                    <QrCode className="w-3.5 h-3.5" />
-                    Scan to Install on Android
-                  </p>
-                  <p className="text-[11px] text-slate-400 leading-relaxed">
-                    Point your Android camera at the QR code to instantly download and install <b className="text-white">BuildMyWebsiteAI_Admin.apk</b> directly onto your phone.
-                  </p>
-                  <a
-                    href="http://192.168.1.14:8000/download/admin-apk"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold shadow-md shadow-emerald-500/20 transition"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                    <span>Direct APK Download</span>
-                  </a>
-                </div>
-              </div>
-
-              {/* Key Features List */}
-              <div className="space-y-2.5 mb-6 text-xs">
-                <div className="flex items-start gap-2.5">
-                  <div className="w-5 h-5 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 font-bold">
-                    🔔
-                  </div>
-                  <div>
-                    <span className="font-bold text-slate-200">Real-Time Chime & Vibration:</span>
-                    <span className="text-slate-400"> Chimes like a cash register and vibrates the phone when someone pays ₹1.</span>
-                  </div>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <div className="w-5 h-5 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0 mt-0.5 font-bold">
-                    ⚡
-                  </div>
-                  <div>
-                    <span className="font-bold text-slate-200">1-Tap Credit Giving:</span>
-                    <span className="text-slate-400"> Instantly grant +1 or +5 credits right from the notification card.</span>
-                  </div>
-                </div>
-                <div className="flex items-start gap-2.5">
-                  <div className="w-5 h-5 rounded-lg bg-red-500/10 text-red-400 flex items-center justify-center shrink-0 mt-0.5 font-bold">
-                    🛡️
-                  </div>
-                  <div>
-                    <span className="font-bold text-slate-200">1-Tap Fraud Revocation:</span>
-                    <span className="text-slate-400"> Reject invalid payments and claw back credits with a single tap.</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between pt-3 border-t border-slate-800 text-[11px] text-slate-400">
-                <span>Local Server: <code className="text-emerald-400 font-mono">http://192.168.1.14:8000</code></span>
-                <button
-                  onClick={() => setMobileApkModalOpen(false)}
-                  className="px-4 py-1.5 rounded-lg border border-slate-700 text-slate-300 hover:text-white font-bold"
-                >
-                  Close
-                </button>
               </div>
             </motion.div>
           </div>
