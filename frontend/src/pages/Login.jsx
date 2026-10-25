@@ -65,7 +65,7 @@ const Login = () => {
       localStorage.setItem('buildmywebsiteai_token', resp.data.access_token);
       localStorage.setItem('buildmywebsiteai_user', JSON.stringify(userData));
 
-      if (userData.is_admin || userData.email === 'admin@buildmywebsiteai.ai') {
+      if (userData.is_super_admin || userData.email === 'admin@buildmywebsiteai.ai') {
         navigate('/admin');
       } else {
         navigate('/dashboard');
@@ -88,14 +88,19 @@ const Login = () => {
       localStorage.setItem('buildmywebsiteai_token', resp.data.access_token);
       localStorage.setItem('buildmywebsiteai_user', JSON.stringify(userData));
 
-      if (userData.is_admin || userData.email === 'admin@buildmywebsiteai.ai') {
+      if (userData.is_super_admin || userData.email === 'admin@buildmywebsiteai.ai') {
         navigate('/admin');
       } else {
         navigate('/dashboard');
       }
     } catch (err) {
       if (err.response && err.response.status === 403) {
-        navigate('/verify-otp', { state: { email } });
+        const detail = err.response?.data?.detail || '';
+        if (detail.toLowerCase().includes('suspended')) {
+          setError(detail);
+        } else {
+          navigate('/verify-otp', { state: { email } });
+        }
       } else {
         const detail = err.response?.data?.detail;
         let msg = 'Login failed. Please check your credentials.';

@@ -6,7 +6,7 @@ import {
   Sparkles, CheckCircle2, Copy, ExternalLink, Loader2, Layers,
   Sliders, Palette, Sun, Moon, ArrowUp, ArrowDown, Eye, EyeOff, 
   Save, Shuffle, RefreshCw, Image, MessageCircle, Phone, X, Check,
-  Edit3, Undo2, Redo2, Code
+  Edit3, Undo2, Redo2, Code, Wand2, Search, BarChart2, Link2
 } from 'lucide-react';
 import api from '../api';
 import NavbarSection from '../components/NavbarSection';
@@ -21,6 +21,10 @@ import FooterSection from '../components/FooterSection';
 import AIEditBar from '../components/AIEditBar';
 import AnimatedBackground from '../components/AnimatedBackground';
 import ErrorBoundary from '../components/ErrorBoundary';
+import SEOMetaModal from '../components/SEOMetaModal';
+import AIImageModal from '../components/AIImageModal';
+import AnalyticsModal from '../components/AnalyticsModal';
+import CustomDomainModal from '../components/CustomDomainModal';
 import confetti from 'canvas-confetti';
 
 const getThemeColors = (themeName, themeMode = "dark") => {
@@ -99,6 +103,12 @@ const Preview = () => {
   // Custom CSS Code Inspector State (FEAT-013)
   const [cssModalOpen, setCssModalOpen] = useState(false);
   const [customCssCode, setCustomCssCode] = useState('');
+
+  // SEO & AI Image Modals state
+  const [seoModalOpen, setSeoModalOpen] = useState(false);
+  const [aiImageModalOpen, setAiImageModalOpen] = useState(false);
+  const [analyticsModalOpen, setAnalyticsModalOpen] = useState(false);
+  const [domainModalOpen, setDomainModalOpen] = useState(false);
 
   // Live Editable Project Tree State
   const [liveTree, setLiveTree] = useState(null);
@@ -705,6 +715,25 @@ const Preview = () => {
             </button>
           )}
 
+          {/* Analytics & Custom Domain Buttons in Studio Top Bar */}
+          <button
+            onClick={() => setAnalyticsModalOpen(true)}
+            className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1.5 transition"
+            title="Website Traffic Analytics"
+          >
+            <BarChart2 className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="hidden md:inline">Analytics</span>
+          </button>
+
+          <button
+            onClick={() => setDomainModalOpen(true)}
+            className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1.5 transition"
+            title="Custom Domain Mapping"
+          >
+            <Globe className="w-3.5 h-3.5 text-sky-400" />
+            <span className="hidden md:inline">Domain</span>
+          </button>
+
           <button
             onClick={handleExportZip}
             disabled={downloadingZip}
@@ -805,11 +834,29 @@ const Preview = () => {
               </button>
 
               <button
+                onClick={() => setAiImageModalOpen(true)}
+                className="px-3 py-1 rounded-lg bg-gradient-to-r from-cyan-500/20 to-pink-500/20 hover:from-cyan-500/30 hover:to-pink-500/30 border border-cyan-400/40 text-cyan-200 font-bold flex items-center gap-1.5 transition"
+                title="AI Image Studio - Generate high-res visuals"
+              >
+                <Wand2 className="w-3.5 h-3.5 text-pink-400 animate-pulse" />
+                <span>AI Images</span>
+              </button>
+
+              <button
+                onClick={() => setSeoModalOpen(true)}
+                className="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold flex items-center gap-1.5 transition"
+                title="SEO Meta Editor & Google SERP Preview"
+              >
+                <Search className="w-3.5 h-3.5 text-amber-400" />
+                <span>SEO Meta</span>
+              </button>
+
+              <button
                 onClick={() => setImageModalOpen(true)}
                 className="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold flex items-center gap-1.5 transition"
               >
                 <Image className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Replace Hero Image</span>
+                <span>Replace Image</span>
               </button>
 
               <button
@@ -1461,6 +1508,61 @@ const Preview = () => {
           </div>
         )}
       </AnimatePresence>
+
+      {/* SEO Meta Editor Modal */}
+      <SEOMetaModal
+        isOpen={seoModalOpen}
+        onClose={() => setSeoModalOpen(false)}
+        seoData={liveTree?.seo || {}}
+        brandName={website?.title || 'My Brand'}
+        onSave={(newSeo) => {
+          recordHistory(liveTree);
+          const nextTree = { ...liveTree, seo: newSeo };
+          setLiveTree(nextTree);
+          setHasUnsavedChanges(true);
+        }}
+      />
+
+      {/* AI Image Studio Generator Modal */}
+      <AIImageModal
+        isOpen={aiImageModalOpen}
+        onClose={() => setAiImageModalOpen(false)}
+        defaultPrompt={website?.title ? `${website.title} professional business background` : ''}
+        onApplyImage={(imgUrl) => {
+          recordHistory(liveTree);
+          const heroObj = liveTree?.hero || {};
+          const nextTree = {
+            ...liveTree,
+            hero: {
+              ...heroObj,
+              hero_image: imgUrl,
+              image_url: imgUrl
+            }
+          };
+          setLiveTree(nextTree);
+          setHasUnsavedChanges(true);
+        }}
+      />
+
+      {/* Analytics Modal in Studio */}
+      {website && (
+        <AnalyticsModal
+          isOpen={analyticsModalOpen}
+          onClose={() => setAnalyticsModalOpen(false)}
+          websiteId={website.id}
+          websiteTitle={website.title}
+        />
+      )}
+
+      {/* Custom Domain Modal in Studio */}
+      {website && (
+        <CustomDomainModal
+          isOpen={domainModalOpen}
+          onClose={() => setDomainModalOpen(false)}
+          project={website}
+          onDomainUpdated={fetchWebsiteDetails}
+        />
+      )}
     </div>
   );
 };

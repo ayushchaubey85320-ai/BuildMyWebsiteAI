@@ -102,6 +102,8 @@ def generate_svg_logo(brand_name: str, primary_color: str, secondary_color: str)
     </svg>'''
 
 def generate_export_zip(website_data: Dict[str, Any]) -> io.BytesIO:
+    website_id = website_data.get("id") or ""
+    subdomain = website_data.get("subdomain") or ""
     page_tree = safe_dict(website_data.get("page_tree"))
     brand_name = page_tree.get("brand_name") or website_data.get("title") or "My Website"
     
@@ -892,11 +894,17 @@ footer a {{ color: var(--accent-color); }}
               <small style="opacity: 0.7; font-size: 11px;">({html.escape(item.get("price", ""))})</small>
             </label>''' for item in services.get("items", []) if isinstance(item, dict)])
 
-        # Determine SEO and Social Meta tags (FEAT-021, FEAT-022)
-        seo_title = f"{page_name} | {brand_name}" if page_name != "Home" else f"{brand_name} - Official Website"
+        # Determine SEO and Social Meta tags (FEAT-021, FEAT-022, Custom SEO Editor)
+        custom_seo = safe_dict(p_data.get("seo")) if (is_subpage and "seo" in p_data) else safe_dict(page_tree.get("seo"))
+        default_seo_title = f"{page_name} | {brand_name}" if page_name != "Home" else f"{brand_name} - Official Website"
+        seo_title = custom_seo.get("title") or default_seo_title
+        
         hero_desc = p_hero.get("subheadline") if p_hero else ""
-        seo_description = hero_desc[:155] if hero_desc else f"Welcome to {brand_name}. Explore our specialized services, portfolio, and connect with our team."
-        hero_img = (p_hero.get("image_url") if p_hero else "") or "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80"
+        default_seo_desc = hero_desc[:155] if hero_desc else f"Welcome to {brand_name}. Explore our specialized services, portfolio, and connect with our team."
+        seo_description = custom_seo.get("description") or default_seo_desc
+        
+        seo_keywords = custom_seo.get("keywords") or f"{brand_name}, {category}, services, official website"
+        hero_img = custom_seo.get("og_image") or (p_hero.get("image_url") if p_hero else "") or "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80"
 
         # Determine business type for Schema.org LocalBusiness JSON-LD (FEAT-023)
         schema_type = "LocalBusiness"
@@ -945,6 +953,7 @@ footer a {{ color: var(--accent-color); }}
 
   <!-- Dynamic Localized SEO Meta Generator (FEAT-021) -->
   <meta name="description" content="{html.escape(seo_description)}">
+  <meta name="keywords" content="{html.escape(seo_keywords)}">
   <meta name="robots" content="index, follow">
   <meta name="author" content="{html.escape(brand_name)}">
 
@@ -1336,6 +1345,28 @@ footer a {{ color: var(--accent-color); }}
       }}
       e.target.reset();
     }}
+  </script>
+
+  <!-- Lightweight Privacy Analytics Tracking Beacon -->
+  <script>
+    (function() {{
+      try {{
+        var siteId = "{website_id or subdomain or brand_name}";
+        if (siteId && window.location.protocol.indexOf('http') === 0) {{
+          var host = window.location.hostname;
+          var isLocal = host === 'localhost' || host === '127.0.0.1';
+          var apiUrl = isLocal ? 'http://localhost:8000/api/analytics/track/' + encodeURIComponent(siteId) : 'https://buildmywebsiteai-backend.onrender.com/api/analytics/track/' + encodeURIComponent(siteId);
+          fetch(apiUrl, {{
+            method: 'POST',
+            headers: {{ 'Content-Type': 'application/json' }},
+            body: JSON.stringify({{
+              path: window.location.pathname || '/',
+              referrer: document.referrer || 'direct'
+            }})
+          }}).catch(function(){{}});
+        }}
+      }} catch(err){{}}
+    }})();
   </script>
 </body>
 </html>"""

@@ -82,6 +82,7 @@ class WebsiteResponse(BaseModel):
     prompt: Optional[str] = None
     page_tree: Dict[str, Any]
     subdomain: Optional[str] = None
+    custom_domain: Optional[str] = None
     is_published: bool = False
     created_at: datetime.datetime
     updated_at: datetime.datetime

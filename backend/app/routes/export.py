@@ -25,6 +25,7 @@ def download_website_zip(website_id: int, current_user: User = Depends(get_curre
         "title": website.title,
         "category": website.category,
         "logo_url": website.logo_url,
+        "subdomain": website.subdomain,
         "page_tree": page_tree
     }
     

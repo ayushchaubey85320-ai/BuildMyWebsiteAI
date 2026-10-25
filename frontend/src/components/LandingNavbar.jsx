@@ -85,11 +85,11 @@ const LandingNavbar = () => {
 
           {user ? (
             <Link
-              to={user.is_admin || user.email === 'admin@buildmywebsiteai.ai' ? '/admin' : '/dashboard'}
+              to={user.is_super_admin || user.email === 'admin@buildmywebsiteai.ai' ? '/admin' : '/dashboard'}
               className="px-5 py-2.5 rounded-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-lg shadow-indigo-500/25 transition-all transform hover:scale-105"
             >
               <Layout className="w-4 h-4" />
-              <span>Go to Dashboard</span>
+              <span>{user.is_super_admin || user.email === 'admin@buildmywebsiteai.ai' ? 'Super Admin Portal' : 'Go to Dashboard'}</span>
             </Link>
           ) : (
             <>

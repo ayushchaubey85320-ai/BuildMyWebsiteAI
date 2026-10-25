@@ -4,14 +4,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, Eye, Download, Globe, Trash2, Sparkles, 
   Layers, Search, Loader2, LogOut, User as UserIcon, AlertTriangle, 
-  X, Lock, KeyRound, CheckCircle2, ShieldCheck, Mail, UserCheck
+  X, Lock, KeyRound, CheckCircle2, ShieldCheck, Mail, UserCheck,
+  Copy, EyeOff, Tag, ExternalLink, BarChart2, Link2, CreditCard, QrCode
 } from 'lucide-react';
 import api from '../api';
 import AnimatedBackground from '../components/AnimatedBackground';
 import CreationWizardModal from '../components/CreationWizardModal';
 import CreationLoader from '../components/CreationLoader';
 import ThemeToggle from '../components/ThemeToggle';
+import AnalyticsModal from '../components/AnalyticsModal';
+import CustomDomainModal from '../components/CustomDomainModal';
+import UPIPaymentModal from '../components/UPIPaymentModal';
 import { useTheme } from '../context/ThemeContext';
+
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -25,6 +30,7 @@ const Dashboard = () => {
   const [userEmail, setUserEmail] = useState('');
   const [userFullName, setUserFullName] = useState('');
   const [userId, setUserId] = useState(null);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   
   // Modals state
   const [isWizardOpen, setIsWizardOpen] = useState(false);
@@ -49,6 +55,18 @@ const Dashboard = () => {
   // 3-Second Welcome Toast Notification state
   const [showWelcomeToast, setShowWelcomeToast] = useState(false);
 
+  // Clone & Publish state
+  const [cloningId, setCloningId] = useState(null);
+  const [publishingId, setPublishingId] = useState(null);
+
+  // Analytics & Custom Domain Modal state
+  const [analyticsModalProject, setAnalyticsModalProject] = useState(null);
+  const [domainModalProject, setDomainModalProject] = useState(null);
+
+  // Quota & UPI Payment Modal state
+  const [quota, setQuota] = useState(null);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+
   const fetchDashboardData = async () => {
     try {
       const storedUser = localStorage.getItem('buildmywebsiteai_user');
@@ -61,9 +79,10 @@ const Dashboard = () => {
         } catch (e) {}
       }
 
-      const [meRes, projRes] = await Promise.allSettled([
+      const [meRes, projRes, quotaRes] = await Promise.allSettled([
         api.get('/auth/me'),
-        api.get('/dashboard/projects')
+        api.get('/dashboard/projects'),
+        api.get('/payment/quota')
       ]);
 
       if (meRes.status === 'fulfilled' && meRes.value?.data) {
@@ -71,6 +90,7 @@ const Dashboard = () => {
         setUserEmail(u.email || '');
         setUserFullName(u.full_name || '');
         setUserId(u.id || null);
+        setIsSuperAdmin(Boolean(u.is_super_admin || u.email === 'admin@buildmywebsiteai.ai' || u.email === 'admin@webrisk.ai'));
         const curStr = localStorage.getItem('buildmywebsiteai_user');
         const newStr = JSON.stringify(u);
         if (curStr !== newStr) {
@@ -81,12 +101,17 @@ const Dashboard = () => {
       if (projRes.status === 'fulfilled' && projRes.value?.data) {
         setProjects(projRes.value.data || []);
       }
+
+      if (quotaRes.status === 'fulfilled' && quotaRes.value?.data) {
+        setQuota(quotaRes.value.data);
+      }
     } catch (err) {
       console.error('Error fetching dashboard projects:', err);
     } finally {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     fetchDashboardData();
@@ -123,6 +148,20 @@ const Dashboard = () => {
     navigate('/');
   };
 
+  const handleOpenCreateFlow = () => {
+    if (quota && !quota.can_create) {
+      setIsPaymentModalOpen(true);
+      return;
+    }
+    setIsWizardOpen(true);
+  };
+
+  const handlePaymentSuccess = async (paymentData) => {
+    await fetchDashboardData();
+    setIsPaymentModalOpen(false);
+    setIsWizardOpen(true);
+  };
+
   const handleCreateSubmit = async (payload) => {
     setIsWizardOpen(false);
     setIsGenerating(true);
@@ -140,6 +179,12 @@ const Dashboard = () => {
       navigate(`/preview/${resp.data.id}`);
     } catch (err) {
       clearInterval(stepTimer);
+
+      if (err.response?.status === 402) {
+        setIsGenerating(false);
+        setIsPaymentModalOpen(true);
+        return;
+      }
 
       // Smart recovery: check if project was actually generated on the backend
       try {
@@ -168,6 +213,7 @@ const Dashboard = () => {
       }
     }
   };
+
 
   const handleDeleteProject = async (id) => {
     if (!window.confirm('Are you sure you want to delete this project?')) return;
@@ -272,6 +318,45 @@ const Dashboard = () => {
     }
   };
 
+  const handleCloneProject = async (id, title) => {
+    if (quota && !quota.can_create) {
+      setIsPaymentModalOpen(true);
+      return;
+    }
+    if (!window.confirm(`Clone "${title}"? A full copy will be created in your dashboard.`)) return;
+    setCloningId(id);
+    try {
+      const resp = await api.post(`/dashboard/projects/${id}/clone`);
+      await fetchDashboardData();
+      navigate(`/preview/${resp.data.id}`);
+    } catch (err) {
+      if (err.response?.status === 402) {
+        setIsPaymentModalOpen(true);
+      } else {
+        alert('Clone failed: ' + (err.response?.data?.detail || err.message));
+      }
+    } finally {
+      setCloningId(null);
+    }
+  };
+
+
+  const handleTogglePublish = async (project) => {
+    setPublishingId(project.id);
+    try {
+      if (project.is_published) {
+        await api.post(`/dashboard/projects/${project.id}/unpublish`);
+      } else {
+        await api.post(`/export/deploy/${project.id}`);
+      }
+      await fetchDashboardData();
+    } catch (err) {
+      alert('Publish toggle failed: ' + (err.response?.data?.detail || err.message));
+    } finally {
+      setPublishingId(null);
+    }
+  };
+
   const filteredProjects = projects.filter(p => 
     p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.category.toLowerCase().includes(searchQuery.toLowerCase())
@@ -360,8 +445,41 @@ const Dashboard = () => {
               </div>
             </button>
 
+            {quota && (
+              <div className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold ${
+                quota.can_create
+                  ? isLight ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-emerald-950/40 border-emerald-800 text-emerald-400'
+                  : isLight ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-amber-950/40 border-amber-800 text-amber-400'
+              }`}>
+                <CreditCard className="w-3.5 h-3.5" />
+                <span>
+                  {quota.is_admin ? 'Forever Free (Unlimited Websites)' : `Websites: ${quota.current_websites}/${quota.total_allowed}`}
+                </span>
+                {!quota.can_create && !quota.is_admin && (
+                  <button
+                    type="button"
+                    onClick={() => setIsPaymentModalOpen(true)}
+                    className="px-2 py-0.5 rounded-lg bg-amber-500 text-white text-[10px] font-black hover:bg-amber-600 transition shadow-sm"
+                  >
+                    +₹1 Add
+                  </button>
+                )}
+              </div>
+            )}
+
+            {isSuperAdmin && (
+              <Link
+                to="/admin"
+                className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 hover:bg-purple-500/20 text-xs font-bold transition shadow-sm"
+                title="Open Super Admin Portal"
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Super Admin</span>
+              </Link>
+            )}
+
             <button
-              onClick={() => setIsWizardOpen(true)}
+              onClick={handleOpenCreateFlow}
               className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 via-sky-400 to-pink-500 hover:from-cyan-500 hover:to-pink-600 text-white font-black text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-sky-500/25 transition transform hover:scale-105"
             >
               <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -382,13 +500,13 @@ const Dashboard = () => {
         </header>
 
         {/* Dynamic Metrics Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className={`p-6 rounded-3xl border flex items-center justify-between shadow-md ${
             isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-slate-900 border-slate-800 text-white'
           }`}>
             <div>
               <p className="text-xs font-black uppercase tracking-wider opacity-70">Total Projects</p>
-              <h3 className="text-4xl font-black mt-1">{totalProjectsCount}</h3>
+              <h3 className="text-3xl font-black mt-1">{totalProjectsCount}</h3>
             </div>
             <div className="p-3 rounded-2xl bg-cyan-50 text-cyan-600 dark:bg-cyan-950/60 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800">
               <Layers className="w-7 h-7" />
@@ -400,7 +518,7 @@ const Dashboard = () => {
           }`}>
             <div>
               <p className="text-xs font-black uppercase tracking-wider opacity-70">Live Co-Domains</p>
-              <h3 className="text-4xl font-black text-emerald-500 mt-1">{liveCoDomainsCount}</h3>
+              <h3 className="text-3xl font-black text-emerald-500 mt-1">{liveCoDomainsCount}</h3>
             </div>
             <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
               <Globe className="w-7 h-7" />
@@ -412,10 +530,38 @@ const Dashboard = () => {
           }`}>
             <div>
               <p className="text-xs font-black uppercase tracking-wider opacity-70">Active Categories</p>
-              <h3 className="text-4xl font-black text-pink-500 mt-1">{activeCategoriesCount}</h3>
+              <h3 className="text-3xl font-black text-pink-500 mt-1">{activeCategoriesCount}</h3>
             </div>
             <div className="p-3 rounded-2xl bg-pink-50 text-pink-600 dark:bg-pink-950/60 dark:text-pink-400 border border-pink-200 dark:border-pink-800">
               <Sparkles className="w-7 h-7" />
+            </div>
+          </div>
+
+          <div className={`p-6 rounded-3xl border flex items-center justify-between shadow-md ${
+            isLight ? 'bg-white border-slate-200 text-slate-900' : 'bg-slate-900 border-slate-800 text-white'
+          }`}>
+            <div>
+              <p className="text-xs font-black uppercase tracking-wider opacity-70">Website Quota</p>
+              <h3 className="text-2xl font-black mt-1">
+                {quota?.is_admin ? 'Unlimited Websites' : `${quota?.current_websites ?? totalProjectsCount} / ${quota?.total_allowed || 1}`}
+              </h3>
+              <div className="mt-1 flex items-center gap-1.5">
+                <span className="text-[10px] opacity-70 font-semibold">
+                  {quota?.is_admin ? 'Forever Free Admin Active' : '1 Free • ₹1/Extra'}
+                </span>
+                {!quota?.is_admin && (
+                  <button
+                    type="button"
+                    onClick={() => setIsPaymentModalOpen(true)}
+                    className="text-[10px] font-black text-sky-400 hover:underline"
+                  >
+                    +Unlock (₹1)
+                  </button>
+                )}
+              </div>
+            </div>
+            <div className="p-3 rounded-2xl bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+              <CreditCard className="w-7 h-7" />
             </div>
           </div>
         </div>
@@ -463,85 +609,208 @@ const Dashboard = () => {
               Create your first website using the BuildMyWebsiteAI Creation Wizard.
             </p>
             <button
-              onClick={() => setIsWizardOpen(true)}
+              onClick={handleOpenCreateFlow}
               className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 via-sky-400 to-pink-500 text-white font-black text-sm shadow-md transition hover:scale-105"
             >
               Create Website
             </button>
           </div>
+
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProjects.map((project) => (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`group relative p-6 rounded-3xl border transition-all shadow-md hover:shadow-xl flex flex-col justify-between ${
-                  isLight ? 'bg-white border-slate-200 text-slate-900 hover:border-sky-400' : 'bg-slate-900 border-slate-800 text-white hover:border-indigo-500'
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className={`text-xs font-black px-3 py-1 rounded-full border ${
-                      isLight ? 'bg-sky-100 text-sky-800 border-sky-300' : 'bg-indigo-950 text-indigo-300 border-indigo-800'
-                    }`}>
-                      {project.category}
-                    </span>
-                    <span className={`text-xs font-bold ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
-                      {new Date(project.created_at).toLocaleDateString()}
-                    </span>
-                  </div>
+            {filteredProjects.map((project) => {
+              // Visual theme color thumbnail — extract primary color from page_tree
+              const tree = project.page_tree || {};
+              const primaryColor = tree.colors?.primary || '#6366f1';
+              const secondaryColor = tree.colors?.secondary || '#ec4899';
+              const bgColor = tree.colors?.bg || '#0f172a';
+              const themeMode = tree.theme_mode || 'dark';
 
-                  <h3 className="text-2xl font-black mb-1 group-hover:text-sky-500 transition tracking-tight">
-                    {project.title}
-                  </h3>
-                  <p className="text-xs text-sky-500 font-mono font-bold mb-4">
-                    {project.subdomain}.buildmywebsiteai.site
-                  </p>
-                </div>
-
-                <div className={`pt-4 border-t flex items-center justify-between gap-2 ${
-                  isLight ? 'border-slate-200' : 'border-slate-800'
-                }`}>
-                  <Link
-                    to={`/preview/${project.id}`}
-                    className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 via-sky-400 to-pink-500 text-white text-xs font-black flex items-center gap-1.5 shadow-md transition transform hover:scale-105"
+              return (
+                <motion.div
+                  key={project.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`group relative rounded-3xl border transition-all shadow-md hover:shadow-xl flex flex-col overflow-hidden ${
+                    isLight ? 'bg-white border-slate-200 text-slate-900 hover:border-sky-400' : 'bg-slate-900 border-slate-800 text-white hover:border-indigo-500'
+                  }`}
+                >
+                  {/* Visual Theme Thumbnail */}
+                  <div
+                    className="relative h-24 w-full flex items-center justify-center overflow-hidden"
+                    style={{ background: `linear-gradient(135deg, ${bgColor} 0%, ${primaryColor}30 100%)` }}
                   >
-                    <Eye className="w-4 h-4" />
-                    <span>Preview & Edit</span>
-                  </Link>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handleExportZip(project.id, project.title)}
-                      disabled={downloadingZipId === project.id}
-                      className="p-2.5 rounded-xl bg-slate-50 border border-slate-300 hover:bg-slate-100 text-slate-800 text-xs font-bold transition shadow-sm"
-                      title="Export ZIP"
-                    >
-                      {downloadingZipId === project.id ? (
-                        <Loader2 className="w-4 h-4 text-sky-600 animate-spin" />
-                      ) : (
-                        <Download className="w-4 h-4 text-sky-600" />
-                      )}
-                    </button>
-
-                    <button
-                      onClick={() => handleDeleteProject(project.id)}
-                      disabled={deletingId === project.id}
-                      className="p-2.5 rounded-xl bg-pink-50 border border-pink-300 hover:bg-pink-100 text-pink-600 text-xs font-bold transition shadow-sm"
-                      title="Delete Project"
-                    >
-                      {deletingId === project.id ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Trash2 className="w-4 h-4" />
-                      )}
-                    </button>
+                    {/* Theme color accent bars */}
+                    <div className="absolute bottom-0 left-0 right-0 h-1.5 flex">
+                      <div className="flex-1 h-full" style={{ backgroundColor: primaryColor }} />
+                      <div className="flex-1 h-full" style={{ backgroundColor: secondaryColor }} />
+                      <div className="flex-1 h-full" style={{ backgroundColor: primaryColor, opacity: 0.6 }} />
+                    </div>
+                    {/* Mini website preview dots */}
+                    <div className="flex flex-col items-center gap-1.5 opacity-70">
+                      <div className="w-28 h-2 rounded-full" style={{ backgroundColor: primaryColor, opacity: 0.9 }} />
+                      <div className="w-20 h-1.5 rounded-full bg-white/20" />
+                      <div className="w-24 h-1.5 rounded-full bg-white/20" />
+                    </div>
+                    {/* Theme badge */}
+                    <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[10px] font-black bg-black/30 text-white backdrop-blur-sm border border-white/10">
+                      {project.theme?.replace(/_/g, ' ') || 'Custom'}
+                    </div>
+                    {/* Publish live badge */}
+                    {project.is_published && (
+                      <div className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/90 text-white">
+                        <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                        LIVE
+                      </div>
+                    )}
                   </div>
-                </div>
-              </motion.div>
-            ))}
+
+                  {/* Card Body */}
+                  <div className="p-5 flex flex-col flex-1">
+                    <div className="flex items-start justify-between mb-2 gap-2">
+                      <span className={`text-[10px] font-black px-2.5 py-1 rounded-full border shrink-0 ${
+                        isLight ? 'bg-sky-100 text-sky-800 border-sky-300' : 'bg-indigo-950 text-indigo-300 border-indigo-800'
+                      }`}>
+                        {project.category}
+                      </span>
+                      <span className={`text-[10px] font-bold ${isLight ? 'text-slate-500' : 'text-slate-400'}`}>
+                        {new Date(project.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
+
+                    <h3 className="text-lg font-black mb-0.5 group-hover:text-sky-500 transition tracking-tight line-clamp-1">
+                      {project.title}
+                    </h3>
+                    <p className="text-[10px] text-sky-500 font-mono font-bold mb-3 truncate">
+                      {project.subdomain}.buildmywebsiteai.site
+                    </p>
+
+                    {/* Action row 1: Preview + Publish */}
+                    <div className="flex items-center gap-2 mb-2">
+                      <Link
+                        to={`/preview/${project.id}`}
+                        className="flex-1 px-3 py-2 rounded-xl bg-gradient-to-r from-cyan-400 via-sky-400 to-pink-500 text-white text-xs font-black flex items-center justify-center gap-1.5 shadow-md transition transform hover:scale-105"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>Preview & Edit</span>
+                      </Link>
+
+                      {/* Publish / Unpublish toggle */}
+                      <button
+                        onClick={() => handleTogglePublish(project)}
+                        disabled={publishingId === project.id}
+                        className={`px-3 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 transition shadow-sm border ${
+                          project.is_published
+                            ? 'bg-emerald-50 border-emerald-300 text-emerald-700 hover:bg-emerald-100'
+                            : isLight
+                            ? 'bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200'
+                            : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'
+                        }`}
+                        title={project.is_published ? 'Unpublish Website' : 'Publish to Live Co-Domain'}
+                      >
+                        {publishingId === project.id ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : project.is_published ? (
+                          <EyeOff className="w-3.5 h-3.5" />
+                        ) : (
+                          <Globe className="w-3.5 h-3.5" />
+                        )}
+                        <span className="hidden sm:inline">{project.is_published ? 'Unpublish' : 'Publish'}</span>
+                      </button>
+                    </div>
+
+                    {/* Action row 2: ZIP, Clone, Delete */}
+                    <div className={`pt-3 border-t flex items-center justify-between gap-2 ${isLight ? 'border-slate-200' : 'border-slate-800'}`}>
+                      {/* Live URL link if published */}
+                      {project.is_published && (
+                        <a
+                          href={`https://${project.subdomain}.buildmywebsiteai.site`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[10px] font-bold text-emerald-500 hover:underline flex items-center gap-0.5 truncate max-w-[120px]"
+                          title="Open live site"
+                        >
+                          <ExternalLink className="w-3 h-3 shrink-0" />
+                          <span className="truncate">View Live</span>
+                        </a>
+                      )}
+
+                      <div className="flex items-center gap-1.5 ml-auto">
+                        {/* Traffic Analytics button */}
+                        <button
+                          onClick={() => setAnalyticsModalProject(project)}
+                          className={`p-2 rounded-xl border text-xs font-bold transition shadow-sm ${
+                            isLight ? 'bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100' : 'bg-emerald-950/50 border-emerald-800 text-emerald-400 hover:bg-emerald-900/50'
+                          }`}
+                          title="Website Traffic Analytics"
+                        >
+                          <BarChart2 className="w-3.5 h-3.5" />
+                        </button>
+
+                        {/* Custom Domain button */}
+                        <button
+                          onClick={() => setDomainModalProject(project)}
+                          className={`p-2 rounded-xl border text-xs font-bold transition shadow-sm ${
+                            project.custom_domain
+                              ? 'bg-indigo-50 border-indigo-300 text-indigo-600 hover:bg-indigo-100'
+                              : isLight
+                              ? 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                              : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'
+                          }`}
+                          title={project.custom_domain ? `Custom Domain: ${project.custom_domain}` : 'Connect Custom Domain'}
+                        >
+                          <Link2 className="w-3.5 h-3.5" />
+                        </button>
+
+                        {/* Clone button */}
+                        <button
+                          onClick={() => handleCloneProject(project.id, project.title)}
+                          disabled={cloningId === project.id}
+                          className={`p-2 rounded-xl border text-xs font-bold transition shadow-sm ${
+                            isLight ? 'bg-violet-50 border-violet-200 text-violet-600 hover:bg-violet-100' : 'bg-violet-950/50 border-violet-800 text-violet-400 hover:bg-violet-900/50'
+                          }`}
+                          title="Clone / Duplicate Project"
+                        >
+                          {cloningId === project.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Copy className="w-3.5 h-3.5" />}
+                        </button>
+
+                        {/* ZIP Download */}
+                        <button
+                          onClick={() => handleExportZip(project.id, project.title)}
+                          disabled={downloadingZipId === project.id}
+                          className={`p-2 rounded-xl border text-xs font-bold transition shadow-sm ${
+                            isLight ? 'bg-sky-50 border-sky-200 text-sky-600 hover:bg-sky-100' : 'bg-sky-950/50 border-sky-800 text-sky-400 hover:bg-sky-900/50'
+                          }`}
+                          title="Export ZIP"
+                        >
+                          {downloadingZipId === project.id ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <Download className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+
+                        {/* Delete */}
+                        <button
+                          onClick={() => handleDeleteProject(project.id)}
+                          disabled={deletingId === project.id}
+                          className="p-2 rounded-xl bg-pink-50 border border-pink-200 hover:bg-pink-100 text-pink-600 text-xs font-bold transition shadow-sm"
+                          title="Delete Project"
+                        >
+                          {deletingId === project.id ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <Trash2 className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
+
         )}
       </div>
 
@@ -741,8 +1010,37 @@ const Dashboard = () => {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Website Traffic Analytics Modal */}
+      {analyticsModalProject && (
+        <AnalyticsModal
+          isOpen={!!analyticsModalProject}
+          onClose={() => setAnalyticsModalProject(null)}
+          websiteId={analyticsModalProject.id}
+          websiteTitle={analyticsModalProject.title}
+        />
+      )}
+
+      {/* Custom Domain Modal */}
+      {domainModalProject && (
+        <CustomDomainModal
+          isOpen={!!domainModalProject}
+          onClose={() => setDomainModalProject(null)}
+          project={domainModalProject}
+          onDomainUpdated={fetchDashboardData}
+        />
+      )}
+
+      {/* UPI Payment Modal (₹1 per additional website) */}
+      <UPIPaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        onPaymentSuccess={handlePaymentSuccess}
+        quotaInfo={quota}
+      />
     </div>
   );
 };
 
 export default Dashboard;
+

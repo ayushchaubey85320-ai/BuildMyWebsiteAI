@@ -14,11 +14,26 @@ router = APIRouter(prefix="/generator", tags=["Gemini AI Generation Engine"])
 
 @router.post("/create", response_model=WebsiteResponse)
 def create_website(payload: WebsiteCreatePayload, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    # Check website creation quota: 1 Free website limit, extra websites require ₹1 via UPI.
+    # Forever Free Admins & Super Admins can build UNLIMITED websites for free!
+    if not (current_user.is_admin or getattr(current_user, "is_super_admin", False)):
+        user_site_count = db.query(Website).filter(Website.user_id == current_user.id).count()
+        allowed_limit = 1 + (current_user.paid_credits or 0)
+        if user_site_count >= allowed_limit:
+            raise HTTPException(
+                status_code=402,
+                detail=(
+                    f"Website quota limit reached ({user_site_count}/{allowed_limit}). "
+                    "Free plan allows 1 website. Please pay ₹1 via UPI to create an additional website."
+                )
+            )
+
     clean_subdomain = re.sub(r'[^a-zA-Z0-9]', '', payload.title.lower()) or "mywebsite"
     suffix = uuid.uuid4().hex[:6]
     subdomain_val = f"{clean_subdomain}-{current_user.id}-{suffix}"
     
     # Generate JSON structure using Gemini
+
     page_tree = generate_website_tree(
         title=payload.title,
         category=payload.category,
@@ -135,3 +150,31 @@ def get_website_history(website_id: int, current_user: User = Depends(get_curren
     ).limit(20).all()
 
     return histories
+
+from typing import Optional
+from app.services.gemini import generate_website_tree, edit_website_tree, generate_ai_image_with_gemini
+
+class GenerateImagePayload(BaseModel):
+    prompt: str
+    style: Optional[str] = "photorealistic"
+    width: Optional[int] = 1200
+    height: Optional[int] = 800
+    api_key: Optional[str] = None
+
+@router.post("/generate-image")
+def generate_ai_image(payload: GenerateImagePayload, current_user: User = Depends(get_current_user)):
+    """Generate high-resolution contextual AI images using Google Gemini API."""
+    clean_prompt = payload.prompt.strip()
+    if not clean_prompt:
+        raise HTTPException(status_code=400, detail="Prompt is required.")
+
+    result = generate_ai_image_with_gemini(
+        prompt=clean_prompt,
+        style=payload.style or "photorealistic",
+        width=payload.width or 1200,
+        height=payload.height or 800,
+        user_api_key=payload.api_key
+    )
+    return result
+
+

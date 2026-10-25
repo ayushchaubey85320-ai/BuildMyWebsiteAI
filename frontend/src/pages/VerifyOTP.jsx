@@ -87,11 +87,16 @@ const VerifyOTP = () => {
             </label>
             <input
               type="text"
+              name="verification_otp_code"
+              id="verification_otp_code"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              autoComplete="one-time-code"
               maxLength={6}
               required
               placeholder="123456"
               value={otpCode}
-              onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+              onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
               className="w-full text-center text-3xl font-black tracking-[12px] py-4 rounded-2xl bg-slate-900/80 border border-indigo-500/40 text-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition"
             />
           </div>

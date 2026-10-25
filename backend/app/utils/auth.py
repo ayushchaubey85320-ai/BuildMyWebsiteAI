@@ -54,6 +54,13 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     
     if user is None:
         raise credentials_exception
+
+    if getattr(user, "is_suspended", False):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Your account service has been suspended by the Super Administrator. {getattr(user, 'suspension_reason', None) or 'Please contact support.'}"
+        )
+
     return user
 
 import re

@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from google.oauth2 import id_token
 from google.auth.transport import requests
+from app.services.email import send_password_reset_email, send_otp_email
 
 from app.config.settings import settings
 from app.db.session import get_db
@@ -32,6 +33,9 @@ def get_me(current_user: User = Depends(get_current_user)):
         "full_name": current_user.full_name or current_user.email.split("@")[0],
         "is_verified": current_user.is_verified,
         "is_admin": current_user.is_admin,
+        "is_super_admin": bool(getattr(current_user, "is_super_admin", False) or current_user.email in ["admin@buildmywebsiteai.ai", "admin@webrisk.ai"]),
+        "is_suspended": bool(getattr(current_user, "is_suspended", False)),
+        "paid_credits": current_user.paid_credits or 0,
         "created_at": current_user.created_at
     }
 
@@ -82,6 +86,12 @@ def register_user(payload: RegisterPayload, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(user)
 
+    # Dispatch welcome OTP email via email service
+    try:
+        send_otp_email(to_email=user.email, otp_code=otp)
+    except Exception as email_err:
+        print(f"[EMAIL WARNING] Could not send welcome OTP email to {user.email}: {email_err}")
+
     token = create_access_token(data={"sub": user.email, "name": user.full_name})
     return TokenResponse(
         access_token=token,
@@ -123,6 +133,28 @@ def verify_otp(payload: VerifyOTPPayload, db: Session = Depends(get_db)):
         }
     )
 
+@router.post("/resend-otp")
+def resend_otp(payload: ForgotPasswordPayload, db: Session = Depends(get_db)):
+    clean_email = payload.email.strip().lower()
+    user = db.query(User).filter(User.email == clean_email).first()
+    if not user:
+        return {"message": "If this email is registered, a new OTP code has been dispatched."}
+
+    new_otp = generate_otp()
+    user.otp_code = new_otp
+    user.otp_expires_at = datetime.datetime.utcnow() + datetime.timedelta(minutes=15)
+    db.commit()
+
+    try:
+        send_otp_email(to_email=user.email, otp_code=new_otp)
+    except Exception as email_err:
+        print(f"[EMAIL WARNING] Could not resend OTP to {user.email}: {email_err}")
+
+    return {
+        "message": "If this email is registered, a new OTP code has been dispatched.",
+        "debug_otp": new_otp
+    }
+
 # 2. LOGIN / SIGN IN
 @router.post("/login", response_model=TokenResponse)
 def login_user(payload: LoginPayload, db: Session = Depends(get_db)):
@@ -137,6 +169,13 @@ def login_user(payload: LoginPayload, db: Session = Depends(get_db)):
     if not user or not verify_password(payload.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Incorrect email or password.")
 
+    if getattr(user, "is_suspended", False):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Your account service has been suspended by the Super Administrator. {getattr(user, 'suspension_reason', None) or 'Please contact support.'}"
+        )
+
+    is_super = bool(getattr(user, "is_super_admin", False) or user.email in ["admin@buildmywebsiteai.ai", "admin@webrisk.ai"])
     token = create_access_token(data={"sub": user.email, "name": user.full_name})
     return TokenResponse(
         access_token=token,
@@ -146,7 +185,10 @@ def login_user(payload: LoginPayload, db: Session = Depends(get_db)):
             "email": user.email,
             "full_name": user.full_name,
             "is_verified": user.is_verified,
-            "is_admin": user.is_admin
+            "is_admin": user.is_admin,
+            "is_super_admin": is_super,
+            "is_suspended": bool(getattr(user, "is_suspended", False)),
+            "paid_credits": user.paid_credits or 0
         }
     )
 
@@ -173,7 +215,12 @@ def forgot_password(payload: ForgotPasswordPayload, db: Session = Depends(get_db
 
     frontend_base = os.getenv("FRONTEND_URL", "https://buildmywebsiteai-frontend.onrender.com").rstrip("/")
     reset_link = f"{frontend_base}/reset-password?token={reset_token}"
-    print(f"\n[EMAIL DISPATCH] Target: {user.email}\nReset Link: {reset_link}\nOTP Code: {otp}\n")
+
+    # Dispatch actual password reset email via email service (SMTP / Resend / Brevo / SendGrid)
+    try:
+        send_password_reset_email(to_email=user.email, otp_code=otp, reset_link=reset_link)
+    except Exception as email_err:
+        print(f"[EMAIL WARNING] Could not send reset email to {user.email}: {email_err}")
 
     return {
         "message": "If this email is registered, a password reset link and OTP have been dispatched.",
